@@ -352,14 +352,16 @@ def return_to_main_menu(root, current_frame):      # se eu precisar de um botao 
     setup_module_selection(root, load_vocabulary())
 
 
-def start_study_session(root, previous_frame, words, selected_mode):
+def start_study_session(root, previous_frame, words, selected_mode, selected_module=None):
 
     # Start the study session according to the selected mode
 
-    previous_frame.pack_forget()
+    if previous_frame and previous_frame.winfo_ismapped():
+        previous_frame.pack_forget()
 
     root.session_settings = {
         'selected_mode': selected_mode,
+        'selected_module': selected_module or words[0]['Module'],
         'words': words
     }
 

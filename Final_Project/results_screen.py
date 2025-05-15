@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 import routes
-from routes import return_to_main_menu
+from routes import return_to_main_menu, Retry
 
 
 class ResultsScreen:
@@ -103,13 +103,22 @@ class ResultsScreen:
           #  button_frame,
           ## retry_button.pack(side=tk.LEFT, padx=8)
 
-        from routes import return_to_main_menu
+        from routes import return_to_main_menu, Retry
+        from project import load_vocabulary
+        vocabulary = load_vocabulary()
         ttk.Button(
             button_frame,
             text="Back to Main Menu",
             command=lambda: return_to_main_menu(self.root, self.main_frame)
         ).pack() # pelo visto button aceita tanto pack quanto grid, mas o grid eh mais flexivel, testar depois o posicionamento
 
+        retry_button = Retry(
+            parent=button_frame,
+            root=self.root,
+            current_frame=self.main_frame,
+            vocabulary=self.root.session_settings['words']
+        )
+        retry_button.pack(side=tk.RIGHT, padx=8)
 
     def add_input_item(self, parent_frame, word, user_answer, correct):
 

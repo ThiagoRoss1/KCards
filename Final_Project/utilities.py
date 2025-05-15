@@ -269,7 +269,7 @@ class CustomizeStudySession:
             text="Back",
             width=10,
             style="Accent.TButton",
-            command=lambda: return_to_choose_study_mode(self.root, self.cframe)
+            command=lambda: return_to_choose_study_mode(self.root, self.cframe, selected_module=self.vocabulary[0]['Module'])
         )
         bbutton.pack(anchor="s", pady=5, ipady=5)
 
