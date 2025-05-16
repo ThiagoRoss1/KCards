@@ -8,6 +8,7 @@ from all_flashcards import standard_flashcards, input_practice, MultipleChoiceGa
 import routes
 from language_manager import LanguageManager
 from utilities import CustomizeStudySession
+from utilities import SessionTimer
 
 
 
@@ -358,6 +359,9 @@ def start_study_session(root, previous_frame, words, selected_mode, selected_mod
 
     if previous_frame and previous_frame.winfo_ismapped():
         previous_frame.pack_forget()
+
+    root.session_timer = SessionTimer()
+    root.session_timer.start()
 
     root.session_settings = {
         'selected_mode': selected_mode,

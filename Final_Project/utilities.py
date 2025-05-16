@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
+import time
 
 # Progress Bar
 
@@ -99,6 +100,41 @@ class ToggleSwitch(ttk.Frame):
             self.canvas.itemconfig(self.bg, fill="#e0e0e0")
 
 
+class SessionTimer:
+    def __init__(self):
+        self.start_time = None
+        self.elapsed_time = 0
+
+    def start(self):
+        self.start_time = time.time()
+    
+    def pause(self):
+        if self.start_time is not None:
+            self.elapsed_time += time.time() - self.start_time
+            self.start_time = None
+    
+    def get_elapsed_time(self):
+        if self.start_time is not None:
+            return self.elapsed_time + (time.time() - self.start_time)
+    
+    def format_time(self, seconds):
+        minutes, seconds = divmod(int(seconds), 60)
+        return f"{minutes:02}:{seconds:02}"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Customize Study Session
 
 class CustomizeStudySession:
@@ -133,6 +169,7 @@ class CustomizeStudySession:
         self.create_word_count_selector()
         self.create_feedback_switch()
         self.create_direction_selector()
+        self.create_timer_button()
 
 
         self.create_start_button()
@@ -245,6 +282,24 @@ class CustomizeStudySession:
         self.feedback_switch = ToggleSwitch(sframe)
         self.feedback_switch.pack(anchor="nw", pady=5)
         self.settings['realtime_feedback'] = self.feedback_switch.state
+
+    def create_timer_button(self):
+        tframe = ttk.Frame(self.cframe)
+        tframe.pack(fill=tk.X, pady=10)
+
+        from utilities import SessionTimer
+
+        tlabel = ttk.Label(
+            tframe,
+            text="Timer",
+            font=("Arial", 12)
+        )
+        tlabel.pack(anchor="nw", side=tk.LEFT, padx=5)
+
+        self.timer_switch = ToggleSwitch(tframe)
+        self.timer_switch.pack(anchor="nw", pady=5)
+        self.timer = SessionTimer()
+
 
     def create_start_button(self):
         bframe = ttk.Frame(self.cframe)

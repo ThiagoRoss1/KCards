@@ -223,6 +223,12 @@ class MultipleChoiceGame:
         self.used_words = []  # Talvez tirar esse used_words ao adicionar o sistema de revisao espaçada
         self.history = []
         self.buttons_locked = False
+
+        from utilities import SessionTimer
+        if settings.get('timer_enabled', False):
+            root.session_timer = SessionTimer()
+            root.session_timer.start()
+
         self.setup_ui()
         self.next_question()
 
@@ -248,6 +254,16 @@ class MultipleChoiceGame:
             )
             a_button.pack(pady=5, fill=tk.X)
             self.answer_buttons.append(a_button)
+
+        if hasattr(self.root, 'session_timer'):
+            self.timer_label = ttk.Label(self.frame, text="00:00")
+            self.timer_label.pack(anchor="ne")
+            self.update_timer()
+
+    def update_timer(self):
+        if hasattr(self.root, 'session_timer'):
+            self.timer_label.config(text=self.root.session_timer.format_time(self.root.session_timer.get_elapsed_time()))
+            self.frame.after(1000, self.update_timer)
 
     def generate_options(self, correct_answer):
         wrong_answers = [

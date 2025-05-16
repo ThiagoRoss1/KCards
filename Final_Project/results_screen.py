@@ -19,10 +19,10 @@ class ResultsScreen:
         if self.total > 0:
             self.percentage = self.correct / self.total 
 
-        self.create_widgets()
+        self.create_widgets(root)
 
 
-    def create_widgets(self):
+    def create_widgets(self, root):
 
         # Main Frame
 
@@ -31,6 +31,16 @@ class ResultsScreen:
 
         self.main_frame = ttk.Frame(self.root, padding=20)
         self.main_frame.pack(fill=tk.BOTH, expand=True)
+
+
+        from utilities import SessionTimer
+        elapsed_time = root.session_timer.get_elapsed_time()
+        time_label = ttk.Label(
+            self.main_frame,
+            text=f"Session Time: {root.session_timer.format_time(elapsed_time)}",
+            font=("Arial", 12)
+        )
+        time_label.pack(pady=10)
 
 
         # Title Label
