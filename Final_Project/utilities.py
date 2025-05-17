@@ -120,6 +120,28 @@ class SessionTimer:
     def format_time(self, seconds):
         minutes, seconds = divmod(int(seconds), 60)
         return f"{minutes:02}:{seconds:02}"
+    
+
+
+class GetMistakes:
+    def __init__(self, root, history):
+        self.root = root
+        self.history = history
+        self.mistakes = []
+        self._process_history()
+
+    def _process_history(self):
+        unique_words = set()
+        for item in self.history:
+            if not item.get('correct', False):          
+                word_id = item['word']['Hangul']
+                if word_id not in unique_words:
+                    unique_words.add(word_id)
+                    self.mistakes.append(item['word'])
+
+    def get_mistakes(self):
+        return self.mistakes.copy()
+
 
 
 
@@ -298,7 +320,8 @@ class CustomizeStudySession:
 
         self.timer_switch = ToggleSwitch(tframe)
         self.timer_switch.pack(anchor="nw", pady=5)
-        self.timer = SessionTimer()
+        
+        
 
 
     def create_start_button(self):
@@ -336,8 +359,17 @@ class CustomizeStudySession:
             'word_count': int(self.spinbox.get()),
             'study_direction': self.settings['study_direction'].get(),
             'realtime_feedback': self.settings['realtime_feedback'].get(),
-            'show_styles': self.feedback_switch.state.get()
+            'show_styles': self.feedback_switch.state.get(),
+            'timer_enabled': self.timer_switch.state.get()
         }
+
+        if hasattr(self.root, 'session_timer'):
+            del self.root.session_timer
+
+        if settings[ 'timer_enabled']:
+            from utilities import SessionTimer
+            self.root.session_timer = SessionTimer()
+            self.root.session_timer.start()
 
         words = self.vocabulary[:settings['word_count']]
 

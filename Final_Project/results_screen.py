@@ -130,6 +130,15 @@ class ResultsScreen:
         )
         retry_button.pack(side=tk.RIGHT, padx=8)
 
+
+        # ebutton = ttk.Button(
+        #     button_frame,
+        #     text="Next",
+        #     command=lambda: self.start_mistakes_session(),     # Kinda Advanced ( make it in later updates )
+        #     width=15
+        # )
+        # ebutton.pack(side=tk.RIGHT, padx=8)
+
     def add_input_item(self, parent_frame, word, user_answer, correct):
 
         from project import LanguageManager, language_manager_flashcards
@@ -211,11 +220,32 @@ class ResultsScreen:
             )
             c_label.pack(anchor="w")
 
+    # def start_mistakes_session(self):
+    #     from utilities import GetMistakes
+    #     from all_flashcards import standard_flashcards, input_practice, MultipleChoiceGame
 
+    #     mistake_words = GetMistakes(self.root, history=self.w_history).get_mistakes()
+    #     full_settings = {
+    #         **self.root.session_settings,
+    #         'word_count': len(mistake_words),
+    #         'study_direction': 'hangul_to_lang'
+    #     }
 
-
+    #     if not mistake_words:
+    #         messagebox.showinfo("100% Correct", "You got all answers correct!")
+    #         return
         
+    #     if self.root.session_settings['selected_mode'] == "multiple_choice":
+    #         self.main_frame.pack_forget()
+    #         MultipleChoiceGame(
+    #             self.root,
+    #             words=mistake_words,
+    #             settings=full_settings
+    #         )
 
-
-
-
+        # elif self.root.session_settings['selected_mode'] == "Input":
+        #     input_practice.InputPractice(
+        #         self.root,
+        #         words=mistake_words,
+        #         settings=self.root.session_settings
+        #     )

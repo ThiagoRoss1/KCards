@@ -4,6 +4,7 @@ import csv
 import random
 from results_screen import ResultsScreen
 from language_manager import LanguageManager
+from datetime import datetime
 
 
 
@@ -224,12 +225,18 @@ class MultipleChoiceGame:
         self.history = []
         self.buttons_locked = False
 
-        from utilities import SessionTimer
-        if settings.get('timer_enabled', False):
-            root.session_timer = SessionTimer()
-            root.session_timer.start()
-
         self.setup_ui()
+
+        if settings.get('timer_enabled', False):
+            from utilities import SessionTimer
+            if not hasattr(root, 'session_timer'):
+                root.session_timer = SessionTimer()
+                root.session_timer.start()
+            self.update_timer()
+        # self.settings.setdefault('study_direction', 'hangul_to_lang')
+        # self.settings.setdefault('show_styles', True)
+        # self.settings.setdefault('timer_enabled', False)
+
         self.next_question()
 
     def setup_ui(self):
@@ -246,6 +253,10 @@ class MultipleChoiceGame:
         )
         self.question_label.pack(pady=20)
 
+        if self.settings.get('timer_enabled', False):
+            self.timer_label = ttk.Label(self.frame, text="00:00")
+            self.timer_label.pack(anchor="se")
+
         # Answer Buttons
         self.answer_buttons = []
         for _ in range(4):
@@ -255,15 +266,18 @@ class MultipleChoiceGame:
             a_button.pack(pady=5, fill=tk.X)
             self.answer_buttons.append(a_button)
 
-        if hasattr(self.root, 'session_timer'):
-            self.timer_label = ttk.Label(self.frame, text="00:00")
-            self.timer_label.pack(anchor="ne")
-            self.update_timer()
 
     def update_timer(self):
-        if hasattr(self.root, 'session_timer'):
-            self.timer_label.config(text=self.root.session_timer.format_time(self.root.session_timer.get_elapsed_time()))
-            self.frame.after(1000, self.update_timer)
+        if not hasattr(self, 'timer_label') or not hasattr(self.root, 'session_timer'):
+            return
+        
+        elapsed = self.root.session_timer.get_elapsed_time()
+        self.timer_label.config(
+            text=self.root.session_timer.format_time(elapsed)
+        )
+
+        if self.settings.get('timer_enabled', False):
+            self.root.after(1000, self.update_timer)
 
     def generate_options(self, correct_answer):
         wrong_answers = [
@@ -320,7 +334,8 @@ class MultipleChoiceGame:
         self.history.append({
             'word': self.current_word,
             'user_answer': selected_answer,
-            'correct': correct
+            'correct': correct,
+            'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         })
 
         if self.settings['show_styles']:
