@@ -13,6 +13,11 @@ class ResultsScreen:
         self.w_history = w_history
         self.return_callback = return_callback
 
+        if not hasattr(root, 'session_timer'):
+            from utilities import SessionTimer
+            root.session_timer = SessionTimer()
+            root.session_timer.elapsed_time = 0
+
         # Safe Calc
 
         self.percentage = 0.0
@@ -33,11 +38,15 @@ class ResultsScreen:
         self.main_frame.pack(fill=tk.BOTH, expand=True)
 
 
-        from utilities import SessionTimer
-        elapsed_time = root.session_timer.get_elapsed_time()
+        if hasattr(root, 'session_timer') and getattr(root.session_timer, 'is_running', False):
+            elapsed_time = root.session_timer.get_elapsed_time()
+            time_text = f"Session Time: {root.session_timer.format_time(elapsed_time)}"
+        else:
+            time_text = ""
+        
         time_label = ttk.Label(
             self.main_frame,
-            text=f"Session Time: {root.session_timer.format_time(elapsed_time)}",
+            text=time_text,
             font=("Arial", 12)
         )
         time_label.pack(pady=10)
@@ -180,6 +189,19 @@ class ResultsScreen:
                 foreground="blue",
             )
             c_label.pack(anchor="w")
+
+        difficulty_color = {
+            'Easy': "#585858",
+            'Medium': "#531083",
+            'Hard': "#A78B12"    #botar uma sombra
+        }
+
+        dlabel = ttk.Label(
+            a_frame,
+            text=f"📑 Difficulty: {word['Difficulty']}",
+            foreground=difficulty_color.get(word['Difficulty'], 'black')
+        )
+        dlabel.pack(anchor="w")
 
     
     def add_multiple_choice_item(self, parent_frame, word, selected_option, selected_correct, correct_option):

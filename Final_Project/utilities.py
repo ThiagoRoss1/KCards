@@ -104,18 +104,23 @@ class SessionTimer:
     def __init__(self):
         self.start_time = None
         self.elapsed_time = 0
+        self.is_running = False
 
     def start(self):
-        self.start_time = time.time()
-    
+        if not self.is_running:
+            self.start_time = time.time()
+            self.is_running = True
+
     def pause(self):
-        if self.start_time is not None:
+        if self.is_running:
             self.elapsed_time += time.time() - self.start_time
             self.start_time = None
+            self.is_running = False
     
     def get_elapsed_time(self):
         if self.start_time is not None:
             return self.elapsed_time + (time.time() - self.start_time)
+        return self.elapsed_time
     
     def format_time(self, seconds):
         minutes, seconds = divmod(int(seconds), 60)
@@ -161,15 +166,35 @@ class GetMistakes:
 
 class CustomizeStudySession:
     from language_manager import LanguageManager
-    def __init__(self, root, vocabulary):
+    def __init__(self, root, vocabulary, initial_settings=None):
         self.root = root
         self.vocabulary = vocabulary
         self.settings = {
             'word_count': 10,
             'realtime_feedback': tk.BooleanVar(value=False),
-            'study_direction': tk.StringVar(value="hangul_to_lang")
+            'study_direction': tk.StringVar(value="hangul_to_lang"),
+            'timer_enabled': False
         }
+
+        if initial_settings:
+            self._apply_initial_settings(initial_settings)
+
+
         self.create_widgets()
+
+    def _apply_initial_settings(self, settings):
+
+        if 'word_count' in settings:
+            self.settings['word_count'] = settings['word_count']
+
+        if 'study_direction' in settings:
+            self.settings['study_direction'].set(settings['study_direction'])
+
+        if 'realtime_feedback' in settings:
+            self.settings['realtime_feedback'].set(settings['realtime_feedback'])
+
+        if 'timer_enabled' in settings:
+            self.settings['timer_enabled'] = settings['timer_enabled']
 
     def create_widgets(self):
 
@@ -192,6 +217,7 @@ class CustomizeStudySession:
         self.create_feedback_switch()
         self.create_direction_selector()
         self.create_timer_button()
+        self.create_difficulty_selector_button()
 
 
         self.create_start_button()
@@ -320,10 +346,28 @@ class CustomizeStudySession:
 
         self.timer_switch = ToggleSwitch(tframe)
         self.timer_switch.pack(anchor="nw", pady=5)
-        
-        
 
+    def create_difficulty_selector_button(self):
+        dframe = ttk.Frame(self.cframe)
+        dframe.pack(fill=tk.X, pady=10)
 
+        dlabel = ttk.Label(
+            dframe,
+            text="Difficulty Selector:",
+            font=("Arial", 12)
+        )
+        dlabel.pack(anchor="nw", side=tk.LEFT, padx=5)
+
+        self.difficulty_var = tk.StringVar(value="All")
+
+        for level in ["All", "Easy", "Medium", "Hard"]:
+            ttk.Radiobutton(
+                dframe,
+                text=level,
+                variable=self.difficulty_var,
+                value=level
+            ).pack(anchor="nw", padx=10, side=tk.LEFT)
+        
     def create_start_button(self):
         bframe = ttk.Frame(self.cframe)
         bframe.pack(fill=tk.X, pady=10)
@@ -360,18 +404,26 @@ class CustomizeStudySession:
             'study_direction': self.settings['study_direction'].get(),
             'realtime_feedback': self.settings['realtime_feedback'].get(),
             'show_styles': self.feedback_switch.state.get(),
-            'timer_enabled': self.timer_switch.state.get()
+            'timer_enabled': self.timer_switch.state.get(),
+            'difficulty': self.difficulty_var.get()
         }
 
         if hasattr(self.root, 'session_timer'):
             del self.root.session_timer
 
-        if settings[ 'timer_enabled']:
+        if settings['timer_enabled']:
             from utilities import SessionTimer
             self.root.session_timer = SessionTimer()
             self.root.session_timer.start()
 
         words = self.vocabulary[:settings['word_count']]
+
+        if settings['difficulty'] != "All":
+            words = [word for word in words if word['Difficulty'] == settings['difficulty']]
+
+        if not words:
+            messagebox.showinfo("No words available", "Please select a different difficulty level.")
+            return
 
         for word in words:
             if settings['study_direction'] == "hangul_to_lang":

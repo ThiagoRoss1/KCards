@@ -32,6 +32,7 @@ class Retry(ttk.Button):
         self.root = root
         self.current_frame = current_frame
         self.vocabulary = vocabulary
+        self.session_settings = getattr(root, 'session_settings', None)
 
         super().__init__(
             master=parent,
@@ -43,19 +44,32 @@ class Retry(ttk.Button):
 
     def _retry_session(self):
 
+        if not hasattr(self.root, 'session_settings'):
+            return
+
         self.current_frame.pack_forget()
-        
-        current_module = self.vocabulary[0]['Module']
-        
-        filtered_words = [word for word in self.vocabulary if word['Module'] == current_module]
-        
-        from project import start_study_session
-        start_study_session(
-            root=self.root,
-            previous_frame=None, 
-            words=filtered_words,
-            selected_mode=self.root.session_settings['selected_mode']
+
+        from utilities import CustomizeStudySession
+        customize_frame = ttk.Frame(self.root)
+        customize_frame.pack(fill=tk.BOTH, expand=True)
+
+        CustomizeStudySession(
+            self.root,
+            self.vocabulary,
+            initial_settings=self.session_settings if self.session_settings else None
         )
+        
+        # current_module = self.vocabulary[0]['Module']
+        
+        # filtered_words = [word for word in self.vocabulary if word['Module'] == current_module]
+        
+        # from project import start_study_session
+        # start_study_session(
+        #     root=self.root,
+        #     previous_frame=None, 
+        #     words=filtered_words,
+        #     selected_mode=self.root.session_settings['selected_mode']
+        # )
         
 
 
