@@ -5,8 +5,14 @@ import random
 from results_screen import ResultsScreen
 from language_manager import LanguageManager
 from datetime import datetime
+from unicodedata import normalize, combining
 
+def normalize_text(text):
+    text = str(text).strip().lower()
+    text = normalize('NFKD', text)
+    text = ''.join([c for c in text if not combining(c)])
 
+    return text
 
 def standard_flashcards(root, words):
 
@@ -185,7 +191,13 @@ class InputPractice:
 
     def check_answer(self):
         user_input = self.answer_entry.get().lower().strip()
-        is_correct = user_input == self.expected_answer
+        expected = self.expected_answer
+
+        user_normalized = normalize_text(user_input)
+        expected_normalized = normalize_text(expected)
+
+        is_correct = user_normalized == expected_normalized
+        exact_match = user_input.lower().strip() == expected.lower().strip()
 
         if is_correct:
             self.correct += 1
@@ -199,7 +211,8 @@ class InputPractice:
             "user_answer": user_input,
             "correct": is_correct,
             "expected": self.expected_answer,
-            "study_direction": self.settings['study_direction']
+            "study_direction": self.settings['study_direction'],
+            "exact_match": exact_match
         })
         
         self.next_word()
