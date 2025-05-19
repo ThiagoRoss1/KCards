@@ -85,129 +85,317 @@ def standard_flashcards(root, words):
             used_words = []
 
 
-def input_practice(root, words):
-
-    word_history = []
-
-    # Input practice module
-
-    s_frame = ttk.Frame(root, padding=20)
-    s_frame.pack(fill=tk.BOTH, expand=True)
-
-    # Progress Bar
-
-    from utilities import ProgressBar
-    progress = ProgressBar(s_frame, len(words))
-
-    # Variables 
-
-    used_words = []
-    current_word = random.choice(words)
-    correct = 0
-    incorrect = 0 
-    user_answer = tk.StringVar()
-
-    # Word Label
-
-    w_label = ttk.Label(
-        s_frame,
-        text=current_word['Hangul'],
-        font=("Malgun Gothic", 32),
-
-    )
-    w_label.pack(pady=20)
-
-    # Answer Entry
-
-    a_entry = ttk.Entry(
-        s_frame,
-        font=("Arial", 16),
-        width=30,
-    )
-    a_entry.pack(pady=5)
-
-    def show_placeholder():
-        a_entry.insert(0, "Type your answer")
-        a_entry.config(foreground="gray")
-        a_entry.icursor(0)
-
-    def hide_placeholder():
-        if a_entry.get() == "Type your answer":
-            a_entry.insert(0, "")
-            a_entry.delete(0, tk.END)
-        a_entry.config(foreground="#000000")
-
-    # Initial Config
-
-    show_placeholder()
-    a_entry.focus()
-    a_entry.icursor(0)
-
-    def on_key(_):
-        if a_entry.get() == "Type your answer":
-            hide_placeholder()
-
-    a_entry.bind("<Key>", on_key)
-
-    # Check Answer function
-
-    def check_answer():
-        nonlocal correct, incorrect, user_answer
+class InputPractice:
+    def __init__(self, root, words, settings):
+        self.root = root
+        self.words = self.prepare_words(words.copy(), settings)
+        self.settings = settings
+        self.used_words = []
+        self.word_history = []
+        self.correct = 0
+        self.incorrect = 0
+        self.current_word = None
         
-        user_input = a_entry.get().lower().strip()
-        from project import LanguageManager, language_manager_flashcards
-        translation = language_manager_flashcards.get_translations(current_word)
-        is_correct = user_input.lower().strip() == translation.lower()
-        if user_input.lower() == translation.lower():
-            correct += 1
-            progress.increment()
+        self.setup_ui()
 
+        if settings.get('timer_enabled', False):
+            from utilities import SessionTimer
+            if not hasattr(root, 'session_timer'):
+                root.session_timer = SessionTimer()
+                root.session_timer.start()
+            self.update_timer()
+
+
+        self.next_word()
+
+    def prepare_words(self, words, settings):
+        from project import language_manager_flashcards
+        prepared_words = []
+
+        for word in words:
+            new_word = word.copy()
+            if settings['study_direction'] == "hangul_to_lang":
+                new_word['Question'] = word['Hangul']
+                new_word['Answer'] = language_manager_flashcards.get_translations(word).lower()
+            else:
+                new_word['Question'] = language_manager_flashcards.get_translations(word)
+                new_word['Answer'] = word['Hangul'].lower()
+
+            prepared_words.append(new_word)
+        
+        return prepared_words
+
+    def setup_ui(self):
+        self.frame = ttk.Frame(self.root, padding=20)
+        self.frame.pack(fill=tk.BOTH, expand=True)
+
+        if self.settings.get('timer_enabled', False):
+            self.timer_label = ttk.Label(self.frame, text="00:00")
+            self.timer_label.pack(anchor="se")
+
+        # Progress Bar
+        from utilities import ProgressBar
+        self.progress = ProgressBar(self.frame, len(self.words))
+
+        # Configured Word Label
+        label_font = ("Malgun Gothic", 20) if self.settings['study_direction'] == "hangul_to_lang" else ("Arial", 20)
+        entry_font = ("Malgun Gothic", 16) if self.settings['study_direction'] == "lang_to_hangul" else ("Arial", 16)
+
+        self.word_label = ttk.Label(
+            self.frame,
+            font=label_font
+        )
+        self.word_label.pack(pady=20)
+
+        self.answer_entry = ttk.Entry(
+            self.frame,
+            font=entry_font,
+            width=30
+        )
+        self.answer_entry.pack(pady=5)
+        self._setup_entry_placeholder()
+
+        # Key Bindings
+        self.answer_entry.bind("<Return>", lambda _: self.check_answer())
+
+    def update_timer(self):
+        if not hasattr(self, 'timer_label') or not hasattr(self.root, 'session_timer'):
+            return
+        
+        elapsed = self.root.session_timer.get_elapsed_time()
+        self.timer_label.config(
+            text=self.root.session_timer.format_time(elapsed)
+        )
+
+        if self.settings.get('timer_enabled', False):
+            self.root.after(1000, self.update_timer)
+
+    def _setup_entry_placeholder(self):
+        self.answer_entry.insert(0, "Type your answer")
+        self.answer_entry.config(foreground="gray")
+        self.answer_entry.icursor(0)
+        self.answer_entry.focus()
+        
+        self.answer_entry.bind("<Key>", self._handle_entry_key)
+
+    def _handle_entry_key(self, _):
+        if self.answer_entry.get() == "Type your answer":
+            self.answer_entry.delete(0, tk.END)
+            self.answer_entry.config(foreground="#000000")
+
+    def check_answer(self):
+        user_input = self.answer_entry.get().lower().strip()
+        is_correct = user_input == self.expected_answer
+
+        if is_correct:
+            self.correct += 1
         else:
-            incorrect += 1
-            progress.increment()
-
-        word_history.append({
-            "word": current_word,
+            self.incorrect += 1
+            
+        self.progress.increment()
+        
+        self.word_history.append({
+            "word": self.current_word,
             "user_answer": user_input,
-            "correct": is_correct
+            "correct": is_correct,
+            "expected": self.expected_answer,
+            "study_direction": self.settings['study_direction']
         })
+        
+        self.next_word()
 
-        next_word()
-            
-
-    def next_word():
-        nonlocal current_word, used_words
-
-        used_words.append(current_word)
-
-        # Check used words to avoid repetition
-
-        available_words = [word for word in words if word not in used_words]
-
+    def next_word(self):
+        self.used_words.append(self.current_word)
+        
+        available_words = [word for word in self.words if word not in self.used_words]
+        
         if available_words:
-            current_word = random.choice(available_words)
-            w_label.config(text=current_word['Hangul'])
+            self.current_word = random.choice(available_words)
 
-            # Reset Placeholder
-            a_entry.after(10, lambda: [
-                a_entry.delete(0, tk.END),
-                show_placeholder(),
-                a_entry.focus()
-            ])
+            if self.settings['study_direction'] == "hangul_to_lang":
+                self.word_label.config(
+                    text=self.current_word['Question'],
+                    font=("Malgun Gothic", 20)
+                )
+            else:
+                self.word_label.config(
+                    text=self.current_word['Question'],
+                    font=("Arial", 20)
+                )
             
+            self.expected_answer = self.current_word['Answer'].lower()
+            self._reset_entry()
+
         else:
-            if correct + incorrect > 0:
-                s_frame.pack_forget()
-                progress.reset()
-                from routes import return_to_main_menu
-                ResultsScreen(root, correct, incorrect, word_history,
-                              lambda: return_to_main_menu(root, s_frame))
-            messagebox.showinfo("End of Session!", "You have gone through all words!")
-            used_words = []
+            self._end_session()
 
-    # Key Binding
+    def _reset_entry(self):
+        self.answer_entry.delete(0, tk.END)
+        self.answer_entry.insert(0, "Type your answer")
+        self.answer_entry.config(foreground="gray")
+        self.answer_entry.icursor(0)
 
-    a_entry.bind("<Return>", lambda _: check_answer())
+    def _end_session(self):
+        self.frame.pack_forget()
+        self.progress.reset()
+        
+        from routes import return_to_main_menu
+        ResultsScreen(
+            self.root,
+            self.correct,
+            self.incorrect,
+            self.word_history,
+            lambda: return_to_main_menu(self.root, self.frame)
+        )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# def input_practice(root, words):
+
+#     word_history = []
+
+#     # Input practice module
+
+#     s_frame = ttk.Frame(root, padding=20)
+#     s_frame.pack(fill=tk.BOTH, expand=True)
+
+#     # Progress Bar
+
+#     from utilities import ProgressBar
+#     progress = ProgressBar(s_frame, len(words))
+
+#     # Variables 
+
+#     used_words = []
+#     current_word = random.choice(words)
+#     correct = 0
+#     incorrect = 0 
+#     user_answer = tk.StringVar()
+
+#     # Word Label
+
+#     w_label = ttk.Label(
+#         s_frame,
+#         text=current_word['Hangul'],
+#         font=("Malgun Gothic", 32),
+
+#     )
+#     w_label.pack(pady=20)
+
+#     # Answer Entry
+
+#     a_entry = ttk.Entry(
+#         s_frame,
+#         font=("Arial", 16),
+#         width=30,
+#     )
+#     a_entry.pack(pady=5)
+
+#     def show_placeholder():
+#         a_entry.insert(0, "Type your answer")
+#         a_entry.config(foreground="gray")
+#         a_entry.icursor(0)
+
+#     def hide_placeholder():
+#         if a_entry.get() == "Type your answer":
+#             a_entry.insert(0, "")
+#             a_entry.delete(0, tk.END)
+#         a_entry.config(foreground="#000000")
+
+#     # Initial Config
+
+#     show_placeholder()
+#     a_entry.focus()
+#     a_entry.icursor(0)
+
+#     def on_key(_):
+#         if a_entry.get() == "Type your answer":
+#             hide_placeholder()
+
+#     a_entry.bind("<Key>", on_key)
+
+#     # Check Answer function
+
+#     def check_answer():
+#         nonlocal correct, incorrect, user_answer
+        
+#         user_input = a_entry.get().lower().strip()
+#         from project import LanguageManager, language_manager_flashcards
+#         translation = language_manager_flashcards.get_translations(current_word)
+#         is_correct = user_input.lower().strip() == translation.lower()
+#         if user_input.lower() == translation.lower():
+#             correct += 1
+#             progress.increment()
+
+#         else:
+#             incorrect += 1
+#             progress.increment()
+
+#         word_history.append({
+#             "word": current_word,
+#             "user_answer": user_input,
+#             "correct": is_correct
+#         })
+
+#         next_word()
+            
+
+#     def next_word():
+#         nonlocal current_word, used_words
+
+#         used_words.append(current_word)
+
+#         # Check used words to avoid repetition
+
+#         available_words = [word for word in words if word not in used_words]
+
+#         if available_words:
+#             current_word = random.choice(available_words)
+#             w_label.config(text=current_word['Hangul'])
+
+#             # Reset Placeholder
+#             a_entry.after(10, lambda: [
+#                 a_entry.delete(0, tk.END),
+#                 show_placeholder(),
+#                 a_entry.focus()
+#             ])
+            
+#         else:
+#             if correct + incorrect > 0:
+#                 s_frame.pack_forget()
+#                 progress.reset()
+#                 from routes import return_to_main_menu
+#                 ResultsScreen(root, correct, incorrect, word_history,
+#                               lambda: return_to_main_menu(root, s_frame))
+#             messagebox.showinfo("End of Session!", "You have gone through all words!")
+#             used_words = []
+
+#     # Key Binding
+
+#     a_entry.bind("<Return>", lambda _: check_answer())
 
 
 # Multiple choice Game Mode
@@ -215,7 +403,7 @@ def input_practice(root, words):
 class MultipleChoiceGame:
     def __init__(self, root, words, settings):
         self.root = root
-        self.words = words.copy()
+        self.words = self.prepare_words(words.copy(), settings)
         self.settings = settings
         self.current_word = None
         self.correct = 0
@@ -238,6 +426,23 @@ class MultipleChoiceGame:
         # self.settings.setdefault('timer_enabled', False)
 
         self.next_question()
+
+    def prepare_words(self, words, settings):
+        from project import language_manager_flashcards
+        prepared_words = []
+
+        for word in words:
+            new_word = word.copy()
+            if settings['study_direction'] == "hangul_to_lang":
+                new_word['Question'] = word['Hangul']
+                new_word['Answer'] = language_manager_flashcards.get_translations(word)
+            else:
+                new_word['Question'] = language_manager_flashcards.get_translations(word)
+                new_word['Answer'] = word['Hangul']
+
+            prepared_words.append(new_word)
+
+        return prepared_words
 
     def setup_ui(self):
         self.frame = ttk.Frame(self.root, padding=20)
@@ -335,7 +540,9 @@ class MultipleChoiceGame:
             'word': self.current_word,
             'user_answer': selected_answer,
             'correct': correct,
-            'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            'expected': self.current_word['Answer'],
+            'study_direction': self.settings['study_direction']
         })
 
         if self.settings['show_styles']:
@@ -344,7 +551,7 @@ class MultipleChoiceGame:
             for btn in self.answer_buttons:
                 btn.config(state=tk.DISABLED)
 
-        self.root.after(1200, self.next_question)
+        self.root.after(1000, self.next_question)
 
     def update_button_styles(self, selected_answer):
         for btn in self.answer_buttons:
@@ -379,120 +586,8 @@ class MultipleChoiceGame:
             self.correct,
             self.incorrect,
             self.history,
-            lambda: return_to_main_menu(self.root, self.frame)
+            lambda: return_to_main_menu(self.root, self.frame),
+            settings=self.settings
         )
         self.used_words = []
         self.progress.reset()
-
-
-
-
-
-
-
-
-
-
-        
-
-    #     self.next_question()
-
-    # def generate_options(self, correct_word):
-    #     wrong_words = random.sample(
-    #         [word for word in self.words if word != correct_word],
-    #         3
-    #     )
-    #     from project import language_manager_flashcards
-    #     correct_word = language_manager_flashcards.get_translations(correct_word)
-    #     options = [(correct_word, True)]
-    #     options.extend([
-    #         (language_manager_flashcards.get_translations(word), False)
-    #         for word in wrong_words
-    #     ])
-    #     random.shuffle(options)
-    #     return options[:4]
-    
-    # def check_answer(self, option_index):
-    #     selected_option = self.answer_buttons[option_index]
-
-    #     for a_button in self.answer_buttons:
-    #         a_button.config(state=tk.DISABLED)
-
-    #     self.history.append({
-    #         'word': self.current_word,
-    #         'selected_option': selected_option.cget("text"),
-    #         'selected_correct': selected_option.correct,
-    #         'correct_option': selected_option.correct_text
-    #     })
-
-    #     if selected_option.correct:
-    #         selected_option.config(style="Correct.TButton")
-    #         self.correct += 1
-    #         self.score += 1
-    #     else:
-    #         selected_option.config(style="Incorrect.TButton")
-    #         self.incorrect += 1
-
-    #         for a_button in self.answer_buttons:
-    #             if a_button.correct:
-    #                 a_button.config(style="Correct.TButton")
-
-    #     self.root.after(1200, self.next_question)
-
-
-    # def next_question(self):
-
-    #     available_words = [word for word in self.words if word not in self.used_words]
-
-    #     if not available_words:
-    #         self.frame.pack_forget()
-    #         from routes import return_to_main_menu
-    #         ResultsScreen(self.root, self.correct, self.incorrect, self.history,
-    #                       lambda: return_to_main_menu(self.root, self.frame))
-    #         return
-
-
-    #     self.current_word = random.choice(available_words)
-
-    #     ### Non Repeated Words ###
-    #     self.used_words.append(self.current_word)
-    #     ### Maybe remove this later ###
-
-    #     options = self.generate_options(self.current_word)
-
-    #     self.question_label.config(text=self.current_word['Hangul']) # Change when adding the reverse mode
-
-    #     for i in range(4):
-    #         if i < len(options):
-    #             text, is_correct = options[i]
-    #             self.answer_buttons[i].config(
-    #                 text=text,
-    #                 state=tk.NORMAL,
-    #                 style="TButton"
-    #             )
-    #             self.answer_buttons[i].correct = is_correct
-    #             from project import language_manager_flashcards
-    #             self.answer_buttons[i].correct_text = language_manager_flashcards.get_translations(self.current_word)
-    #         else:
-    #             self.answer_buttons[i].config(state=tk.DISABLED, text="")
-
-
-    # def reset_next_question(self):
-    #     for a_button in self.answer_buttons:
-    #         a_button.config(state=tk.NORMAL)
-    #         a_button.config(style="TButton")
-
-    #     self.frame.pack_forget()
-        
-
-
-
-
-
-    
-
-
-
-    
-
-            

@@ -146,21 +146,7 @@ class GetMistakes:
 
     def get_mistakes(self):
         return self.mistakes.copy()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
 
 # Customize Study Session
 
@@ -173,7 +159,8 @@ class CustomizeStudySession:
             'word_count': 10,
             'realtime_feedback': tk.BooleanVar(value=False),
             'study_direction': tk.StringVar(value="hangul_to_lang"),
-            'timer_enabled': False
+            'timer_enabled': tk.BooleanVar(value=False),
+            'difficulty': tk.StringVar(value="All")
         }
 
         if initial_settings:
@@ -188,13 +175,16 @@ class CustomizeStudySession:
             self.settings['word_count'] = settings['word_count']
 
         if 'study_direction' in settings:
-            self.settings['study_direction'].set(settings['study_direction'])
+            self.settings['study_direction'].set(settings.get('study_direction', "hangul_to_lang"))
 
         if 'realtime_feedback' in settings:
-            self.settings['realtime_feedback'].set(settings['realtime_feedback'])
+            self.settings['realtime_feedback'].set(settings.get('realtime_feedback', False))
 
         if 'timer_enabled' in settings:
-            self.settings['timer_enabled'] = settings['timer_enabled']
+            self.settings['timer_enabled'].set(settings.get('timer_enabled', False))
+
+        if 'difficulty' in settings:
+            self.settings['difficulty'].set(settings.get('difficulty', "All"))
 
     def create_widgets(self):
 
@@ -317,19 +307,21 @@ class CustomizeStudySession:
             ).pack(anchor="nw", padx=10, side=tk.LEFT)
 
     def create_feedback_switch(self):
-        sframe = ttk.Frame(self.cframe)
-        sframe.pack(fill=tk.X, pady=10)
 
-        slabel = ttk.Label(
-            sframe,
-            text="Auto Correction:",
-            font=("Arial", 12)
-        )
-        slabel.pack(anchor="nw", side=tk.LEFT, padx=5)
+        if self.root.session_settings.get('selected_mode') == "multiple_choice":
+            sframe = ttk.Frame(self.cframe)
+            sframe.pack(fill=tk.X, pady=10)
 
-        self.feedback_switch = ToggleSwitch(sframe)
-        self.feedback_switch.pack(anchor="nw", pady=5)
-        self.settings['realtime_feedback'] = self.feedback_switch.state
+            slabel = ttk.Label(
+                sframe,
+                text="Auto Correction:",
+                font=("Arial", 12)
+            )
+            slabel.pack(anchor="nw", side=tk.LEFT, padx=5)
+
+            self.feedback_switch = ToggleSwitch(sframe)
+            self.feedback_switch.pack(anchor="nw", pady=5)
+            self.settings['realtime_feedback'] = self.feedback_switch.state
 
     def create_timer_button(self):
         tframe = ttk.Frame(self.cframe)
@@ -397,16 +389,21 @@ class CustomizeStudySession:
 
     def start_session(self):
         from project import start_study_session, language_manager_flashcards
-        from all_flashcards import standard_flashcards, input_practice, MultipleChoiceGame
+        from all_flashcards import standard_flashcards, InputPractice, MultipleChoiceGame
 
         settings = {
             'word_count': int(self.spinbox.get()),
             'study_direction': self.settings['study_direction'].get(),
             'realtime_feedback': self.settings['realtime_feedback'].get(),
-            'show_styles': self.feedback_switch.state.get(),
             'timer_enabled': self.timer_switch.state.get(),
-            'difficulty': self.difficulty_var.get()
+            'difficulty': self.difficulty_var.get(),
+            'selected_mode': self.root.session_settings['selected_mode']
         }
+
+        if hasattr(self, 'feedback_switch'):
+            settings['show_styles'] = self.feedback_switch.state.get()
+        else:
+            settings['show_styles'] = False
 
         if hasattr(self.root, 'session_timer'):
             del self.root.session_timer
@@ -425,22 +422,26 @@ class CustomizeStudySession:
             messagebox.showinfo("No words available", "Please select a different difficulty level.")
             return
 
+        from project import language_manager_flashcards
+        processed_words = []
         for word in words:
+            new_word = word.copy()
             if settings['study_direction'] == "hangul_to_lang":
-                word['Question'] = word['Hangul']
-                word['Answer'] = language_manager_flashcards.get_translations(word)
+                new_word['Question'] = word['Hangul']
+                new_word['Answer'] = language_manager_flashcards.get_translations(word).lower()
             else:
-                word['Question'] = language_manager_flashcards.get_translations(word)
-                word['Answer'] = word['Hangul']
+                new_word['Question'] = language_manager_flashcards.get_translations(word)
+                new_word['Answer'] = word['Hangul'].lower()
+            processed_words.append(new_word)
         
         self.cframe.pack_forget()
 
         if self.root.session_settings['selected_mode'] == "standard":
-            standard_flashcards(self.root, words, settings)
+            standard_flashcards(self.root, processed_words, settings)
         elif self.root.session_settings['selected_mode'] == "input":
-            input_practice(self.root, words, settings)
+            InputPractice(self.root, processed_words, settings)
         elif self.root.session_settings['selected_mode'] == "multiple_choice":
-            MultipleChoiceGame(self.root, words, settings)
+            MultipleChoiceGame(self.root, processed_words, settings)
 
     
     def update_slider(self):
@@ -465,279 +466,4 @@ class CustomizeStudySession:
                 self.slider.set(value)
         except ValueError:
             pass
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        # # Module Label
-
-        # from project import start_session
-        # mlabel = ttk.Label(
-        #     self.cframe,
-        #     text=f"Module {self.vocabulary[0]['Module']} - {self.vocabulary[0]['Level']}",
-        #     font=("Arial", 10)
-        # )
-        # mlabel.pack(anchor="nw")
-
-        # tlabel = ttk.Label(
-        #     self.cframe,
-        #     text="Configure your study session",
-        #     font=("Arial", 16, "bold")
-        # )
-        # tlabel.pack(anchor="nw", pady=10)
-
-        # plabel = ttk.Label(
-        #     self.cframe,
-        #     text="Your last grade: ",   # ainda tenho que fazer o sistema de save 
-        #     font=("Arial", 12)
-        # )
-        # plabel.pack(anchor="nw", pady=5)
-
-        # _label = ttk.Label(
-        #     self.cframe,
-        #     text="------------------------------------------------------------------",
-        #     font=("Arial", 12)	
-        # )
-        # _label.pack(anchor="nw", pady=5, fill=tk.X,)
-
-
-        # bframe = ttk.Frame(self.cframe)
-        # bframe.pack(fill=tk.X, pady=10)
-
-        # # Words Count
-
-        # wlabel = ttk.Label(
-        #     bframe,
-        #     text="Words Number:",
-        #     font=("Arial", 12)
-        # )
-        # wlabel.pack(anchor="nw", side=tk.LEFT, pady=5)
-
-        # self.spinbox = ttk.Spinbox(
-        #     bframe,
-        #     from_=1,
-        #     to=len(self.vocabulary),
-        #     width=5,
-        #     command=self._update_slider
-        # )
-        # self.spinbox.pack(anchor="nw", pady=5)
-        # self.spinbox.bind("<KeyRelease>", self._sync_widgets)
-
-        # self.slider = ttk.Scale(
-        #     bframe,
-        #     from_=1,
-        #     to=len(self.vocabulary),
-        #     orient=tk.HORIZONTAL,
-        #     command=self._update_spinbox
-        # )
-        # self.slider.pack(side=tk.LEFT, fill="x", pady=5)
-
-        # self.spinbox.set(10)
-        # self.slider.set(10)
- 
-        # # Auto Correction 
-        # # Corrects the answer during the study session -- Fazer um if para o standard_flashcards visto que ele ja tem (terá) esse sistema
-
-        # fframe = ttk.Frame(self.cframe)
-        # fframe.pack(fill=tk.X, pady=10)
-
-        # flabel = ttk.Label(
-        #     fframe,
-        #     text="Auto Correction:",
-        #     font=("Arial", 12)
-        # )
-        # flabel.pack(anchor="nw", side=tk.LEFT, pady=5)
-
-        # self.feedback_switch = ToggleSwitch(fframe)
-        # self.feedback_switch.pack(anchor="nw", pady=5)
-
-        # self.settings['realtime_feedback'] = self.feedback_switch.state
-
-        # # Answer Choose
         
-        # aframe = ttk.Frame(self.cframe)
-        # aframe.pack(fill=tk.X, pady=10)
-
-        # alabel = ttk.Label(
-        #     aframe,
-        #     text="Answer With:",
-        #     font=("Arial", 12)
-        # )
-        # alabel.pack(anchor="nw", side=tk.LEFT, pady=5)
-
-
-        # from project import language_manager_flashcards
-        # ttk.Radiobutton(
-        #     aframe,
-        #     text=f"Hangul to {language_manager_flashcards.get_language()}",
-        #     variable=self.settings['study_direction'],
-        #     value="hangul_to_lang",
-        # ).pack(anchor="nw", pady=5, side=tk.LEFT)
-
-        # ttk.Radiobutton(
-        #     aframe,
-        #     text=f"{language_manager_flashcards.get_language()} to Hangul",
-        #     variable=self.settings['study_direction'],
-        #     value="lang_to_hangul"
-        # ).pack(anchor="nw", pady=5, side=tk.LEFT)
-        
-
-        
-
-
-
-
-
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # Difficulty (easy, medium, hard) -- Padrao - All (ou apenas para o sistema Leitner)
-
-
-
-
-    # def get_settings(self):
-    #     return {
-    #         'word_count': self.get_value(),
-    #         'auto_correction': self.settings['realtime_feedback'].get()
-    #     }
-
-
-
-    # def _update_slider(self):
-    #     try:
-    #         value = int(self.spinbox.get())
-    #         if 1 <= value <= len(self.vocabulary):
-    #             self.slider.set(value)
-    #     except ValueError:
-    #         pass
-        
-    # def _update_spinbox(self, value):
-    #     try:
-    #         int_value = int(float(value))
-    #         self.spinbox.set(int_value)
-    #     except ValueError:
-    #         pass
-
-    # def _sync_widgets(self, _):
-    #     try:
-    #         value = int(self.spinbox.get())
-    #         if 1 <= value <= len(self.vocabulary):
-    #             self.slider.set(value)
-    #     except ValueError:
-    #         pass
-    
-    # def get_value(self):
-    #     return int(self.spinbox.get())
-    
-    
-    
-
-    
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# class CustomizeStudySession:
-#     def __init__(self, root, vocabulary):
-#         self.root = root
-#         self.vocabulary = vocabulary
-#         self.create_widgets()
-
-#     def create_widgets(self):
-#         # Create a new GUI for the study session
-#         self.customize_frame = ttk.Frame(self.root, padding=20)
-#         self.customize_frame.pack(fill=tk.BOTH, expand=True)
-
-#         # Title Label
-#         title_label = ttk.Label(
-#             self.customize_frame,
-#             text="Customize Study Session",
-#             font=("Arial", 16, "bold")
-#         )
-#         title_label.pack(pady=10)
-        
-#         test_button = ttk.Button(
-#             self.customize_frame,
-#             text="Test",
-#             command=self.study
-#         )
-#         test_button.pack(pady=10, ipady=5)
-
-#     def study(self):
-#         self.customize_frame.pack_forget()
-#         from all_flashcards import MultipleChoiceGame
-#         MultipleChoiceGame(self.root, self.vocabulary)
-        
-
-#### Inicio gerado por ia apenas para teste, refazer tudo (esta funcionando a logica) ####
-        
-
-            
-
-

@@ -5,13 +5,14 @@ from routes import return_to_main_menu, Retry
 
 
 class ResultsScreen:
-    def __init__(self, root, correct, incorrect, w_history, return_callback):
+    def __init__(self, root, correct, incorrect, w_history, return_callback, settings=None):
         self.root = root
         self.correct = correct
         self.incorrect = incorrect
         self.total = correct + incorrect
         self.w_history = w_history
         self.return_callback = return_callback
+        self.settings = settings or getattr(root, 'session_settings', {})
 
         if not hasattr(root, 'session_timer'):
             from utilities import SessionTimer
@@ -108,9 +109,9 @@ class ResultsScreen:
 
         for item in self.w_history:
             if "user_answer" in item:
-                self.add_input_item(scrollable_frame, item['word'], item['user_answer'], item['correct'])
+                self.add_input_item(scrollable_frame, item, item['user_answer'], item['correct'])
             elif "selected_option" in item:
-                self.add_multiple_choice_item(scrollable_frame, item['word'], item['selected_option'], item['selected_correct'], item['correct_option'])
+                self.add_multiple_choice_item(scrollable_frame, item, item['selected_option'], item['correct'], item['expected'])
         # Action Buttons Frame
 
         button_frame = ttk.Frame(self.main_frame)
@@ -139,6 +140,13 @@ class ResultsScreen:
         )
         retry_button.pack(side=tk.RIGHT, padx=8)
 
+        # restart_button = Restart(
+        #     parent=button_frame,
+        #     root=self.root,
+        #     current_frame=self.main_frame,
+        #     vocabulary=self.root.session_settings['words'],
+        # )
+        # restart_button.pack(side=tk.RIGHT, padx=8)
 
         # ebutton = ttk.Button(
         #     button_frame,
@@ -148,10 +156,19 @@ class ResultsScreen:
         # )
         # ebutton.pack(side=tk.RIGHT, padx=8)
 
-    def add_input_item(self, parent_frame, word, user_answer, correct):
+    def add_input_item(self, parent_frame, item, user_answer, correct):
 
         from project import LanguageManager, language_manager_flashcards
-        translation = language_manager_flashcards.get_translations(word)
+        word = item['word']
+
+        study_direction = item.get('study_direction', 'hangul_to_lang')
+
+        if study_direction == "hangul_to_lang":
+            question_text = f"{word['Hangul']} ({language_manager_flashcards.get_translations(word)})"
+            correct_answer = language_manager_flashcards.get_translations(word)
+        else:
+            question_text = f"{language_manager_flashcards.get_translations(word)} ({word['Hangul']})"
+            correct_answer = word['Hangul']
 
         # Answers List
 
@@ -162,7 +179,7 @@ class ResultsScreen:
 
         w_label = ttk.Label(
             a_frame,
-            text=f"{word['Hangul']} ({translation})",
+            text=question_text,
             font=("Malgun Gothic", 12, "bold")
         )
         w_label.pack(anchor="w")
@@ -185,7 +202,7 @@ class ResultsScreen:
         if not correct:
             c_label = ttk.Label(
                 a_frame,
-                text=f"❌ Correct Answer: {language_manager_flashcards.get_translations(word)}", # caso tenha 2 versoes isso sera mudado
+                text=f"❌ Correct Answer: {correct_answer}",
                 foreground="blue",
             )
             c_label.pack(anchor="w")
@@ -204,17 +221,26 @@ class ResultsScreen:
         dlabel.pack(anchor="w")
 
     
-    def add_multiple_choice_item(self, parent_frame, word, selected_option, selected_correct, correct_option):
+    def add_multiple_choice_item(self, parent_frame, item, selected_option, selected_correct, correct_option):
         # Multiple Choice Item
         from project import language_manager_flashcards
-        translation = language_manager_flashcards.get_translations(word)
+        word = item['word']
+
+        study_direction = item.get('study_direction', 'hangul_to_lang')
+
+        if study_direction == "hangul_to_lang":
+            question_text = f"{word['Hangul']} ({language_manager_flashcards.get_translations(word)})"
+            correct_answer = language_manager_flashcards.get_translations(word)
+        else:
+            question_text = f"{language_manager_flashcards.get_translations(word)} ({word['Hangul']})"
+            correct_answer = word['Hangul']
 
         m_frame = ttk.Frame(parent_frame, padding=10, relief="solid")
         m_frame.pack(fill=tk.X, pady=5)
 
         w_label = ttk.Label(
             m_frame,
-            text=f"{word['Hangul']} ({translation})",
+            text=question_text,
             font=("Malgun Gothic", 12, "bold")
         )
         w_label.pack(anchor="w")
@@ -237,7 +263,7 @@ class ResultsScreen:
         if not selected_correct:
             c_label = ttk.Label(
                 m_frame,
-                text=f"❌ Correct Answer: {translation}",
+                text=f"❌ Correct Answer: {correct_answer}",
                 foreground="blue"
             )
             c_label.pack(anchor="w")

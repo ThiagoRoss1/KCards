@@ -36,7 +36,7 @@ class Retry(ttk.Button):
 
         super().__init__(
             master=parent,
-            text="🔄 Retry",
+            text="⚙ Retry",
             command=self._retry_session,
             width=15  
         )
@@ -56,21 +56,60 @@ class Retry(ttk.Button):
         CustomizeStudySession(
             self.root,
             self.vocabulary,
-            initial_settings=self.session_settings if self.session_settings else None
+            initial_settings=self.root.session_settings
         )
-        
-        # current_module = self.vocabulary[0]['Module']
-        
-        # filtered_words = [word for word in self.vocabulary if word['Module'] == current_module]
-        
-        # from project import start_study_session
-        # start_study_session(
-        #     root=self.root,
-        #     previous_frame=None, 
-        #     words=filtered_words,
-        #     selected_mode=self.root.session_settings['selected_mode']
-        # )
-        
 
+# class Restart(ttk.Button):
+#     def __init__(self, parent, root, current_frame, vocabulary):
+#         self.root = root
+#         self.current_frame = current_frame
+#         self.vocabulary = vocabulary
 
+#         super().__init__(
+#             master=parent,
+#             text="🔄 Restart",
+#             command=self._restart_session,
+#             width=15
+#         )
+
+#     def _restart_session(self):
+#         from all_flashcards import standard_flashcards, input_practice, MultipleChoiceGame
+
+#         if not hasattr(self.root, 'session_settings'):
+#             self.root.session_settings = {}
+
+#         self.current_frame.pack_forget()
+
+#         s_settings = {
+#             'study_direction': self.root.session_settings.get('study_direction', 'hangul_to_lang'),
+#             'realtime_feedback': self.root.session_settings.get('realtime_feedback', False),
+#             'timer_enabled': self.root.session_settings.get('timer_enabled', False),
+#             'show_styles': self.root.session_settings.get('show_styles', True),
+#             'word_count': self.root.session_settings.get('word_count', len(self.vocabulary)),
+#             'difficulty': self.root.session_settings.get('difficulty', "All")
+
+#         }
+
+#         if self.root.session_settings.get('selected_mode') == 'standard':
+#             standard_flashcards(
+#                 self.root,
+#                 words=self.vocabulary,
+#                 settings=s_settings
+#             )
+        
+#         elif self.root.session_settings.get('selected_mode') == 'input':
+#             input_practice(
+#                 self.root,
+#                 words=self.vocabulary,
+#                 settings=s_settings
+#             )
+        
+#         elif self.root.session_settings.get('selected_mode') == 'multiple_choice':
+#             MultipleChoiceGame(
+#                 self.root,
+#                 words=self.vocabulary,
+#                 settings=s_settings
+#             )
+
+#### Do it after ####
 

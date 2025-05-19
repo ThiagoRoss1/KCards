@@ -4,7 +4,7 @@ from tkinter import ttk, messagebox
 import csv
 import random
 import all_flashcards
-from all_flashcards import standard_flashcards, input_practice, MultipleChoiceGame
+from all_flashcards import standard_flashcards, InputPractice, MultipleChoiceGame
 import routes
 from language_manager import LanguageManager
 from utilities import CustomizeStudySession
@@ -20,6 +20,17 @@ def main():
     # Main function to run the application
     
     root = tk.Tk()
+
+    def configure_hangul_support():
+        try:
+            from ctypes import windll
+            windll.shcore.SetProcessDpiAwareness(1)
+        except:
+            pass
+
+        root.option_add("*Font", ("Malgun Gothic", 10))
+
+    configure_hangul_support()
 
     # Loads Vocabulary function
     vocabulary = load_vocabulary()
@@ -373,7 +384,7 @@ def start_study_session(root, previous_frame, words, selected_mode, selected_mod
         standard_flashcards(root, words)
 
     elif selected_mode == "input":
-        input_practice(root, words)
+        CustomizeStudySession(root, words)
 
     elif selected_mode == "multiple_choice":
         CustomizeStudySession(root, words)
