@@ -265,27 +265,6 @@ class InputPractice:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # def input_practice(root, words):
 
 #     word_history = []
@@ -604,3 +583,254 @@ class MultipleChoiceGame:
         )
         self.used_words = []
         self.progress.reset()
+
+
+# Matching Game Mode 
+
+class MatchingGame:
+    def __init__(self, root, words, settings):
+        self.root = root
+        self.words = self.prepare_words(words.copy(), settings)
+        self.settings = settings
+        self.selected_cards = []
+        self.matched_pairs = 0
+        self.attempts = 0
+
+        self.card_width = 6
+        self.card_height = 4
+        self.max_pairs = min(6, len(self.words))
+
+        self.words = self.prepare_words(words, settings)
+
+        self.setup_ui()
+
+        if not hasattr(root, 'session_timer'):
+            from utilities import SessionTimer
+            root.session_timer = SessionTimer()
+            root.session_timer.start()
+    
+        if settings.get('timer_enabled', False):
+            self.update_timer()
+
+        self.root.bind("<Configure>", self.window_resize)
+
+    def prepare_words(self, words, settings):
+        from project import language_manager_flashcards
+        game_words = words[:6]
+        settings = settings.copy()
+        pairs = []
+
+        for word in game_words:
+            pairs.append({
+                'type': 'hangul',
+                'text': word['Hangul'],
+                'match_id': word['Hangul'],
+                'translation': language_manager_flashcards.get_translations(word),
+            })
+            pairs.append({
+                'type': 'translation',
+                'text': language_manager_flashcards.get_translations(word),
+                'match_id': word['Hangul']
+            })
+
+        random.shuffle(pairs)
+        return pairs
+    
+    def setup_ui(self):
+        self.frame = ttk.Frame(self.root, padding=20)
+        self.frame.pack(fill=tk.BOTH, expand=True)
+
+        # Change the background color of the main frame and cards frame
+        bg_color = "#b6badb"  # Set your desired background color here
+
+        self.frame.configure(style="Custom.TFrame")
+        style = ttk.Style()
+        style.configure("Custom.TFrame", background=bg_color)
+
+        if self.settings.get('timer_enabled', False):
+            self.timer_label = ttk.Label(self.frame, text="00:00", background=bg_color)
+            self.timer_label.pack(anchor="se")
+
+        container = ttk.Frame(self.frame, style="Custom.TFrame")
+        container.pack(expand=True, fill=tk.BOTH)
+
+        self.cards_frame = ttk.Frame(container, style="Custom.TFrame")
+        self.cards_frame.pack(expand=True, anchor="center")
+
+        self.setup_grid()
+
+        self.create_cards()
+
+    def setup_grid(self):
+        for i in range(3):
+            self.cards_frame.grid_rowconfigure(i, weight=0, minsize=120)
+        for i in range(4):
+            self.cards_frame.grid_columnconfigure(i, weight=0, minsize=160)
+
+    def update_timer(self):
+        if not hasattr(self, 'timer_label') or not hasattr(self.root, 'session_timer'):
+            return
+        
+        elapsed = self.root.session_timer.get_elapsed_time()
+        self.timer_label.config(
+            text=self.root.session_timer.format_time(elapsed)
+        )
+
+        if self.settings.get('timer_enabled', False):
+            self.root.after(1000, self.update_timer)
+
+    def create_cards(self):
+        # Grid 3x4
+
+        self.cards = []
+        card_bg = "#f0f0f8"
+        card_fg = "#0A0A0A"
+        for i in range(12):
+            row, col = divmod(i, 3)
+            card = tk.Label(
+                self.cards_frame,
+                text=self.words[i]['text'],
+                font=("Malgun Gothic", 16) if self.words[i]['type'] == 'hangul' else ("Arial", 16),
+                relief="raised",
+                width=self.card_width,
+                height=self.card_height,
+                wraplength=150,
+                padx=10,
+                pady=10,
+                cursor="hand2",
+                bg=card_bg,
+                fg=card_fg,
+                bd=2
+            )
+            card.grid(row=row, column=col, padx=5, pady=5, sticky="nsew")
+            card.bind("<Button-1>", lambda e, idx=i: self.card_click(idx))
+            self.cards.append(card)
+
+            card.grid_info()['original_pos'] = (row, col)
+
+    def window_resize(self, event):
+        new_width = max(12, min(20, int(event.width / 80)))
+        if new_width != self.card_width:
+            self.card_width = new_width
+            for card in self.cards:
+                if card.winfo_ismapped():
+                    card.config(width=self.card_width)
+
+    def card_click(self, card_index):
+        # Check if card is already selected
+        selected_indices = [c[0] for c in self.selected_cards]
+        card = self.cards[card_index]
+
+        if card_index in selected_indices:
+            # Deselect the card if already selected
+            card.config(relief="raised", bg="#f0f0f8")
+            self.selected_cards = [c for c in self.selected_cards if c[0] != card_index]
+            return
+
+        if len(self.selected_cards) >= 2:
+            return
+
+        card.config(relief="sunken")
+        self.selected_cards.append((card_index, card))
+
+        if len(self.selected_cards) == 2:
+            self.attempts += 1
+            self.check_match()
+
+    def check_match(self):
+        idx1, card1 = self.selected_cards[0]
+        idx2, card2 = self.selected_cards[1]
+        word1 = self.words[idx1]
+        word2 = self.words[idx2]
+
+        if word1['match_id'] == word2['match_id'] and word1['type'] != word2['type']:
+            card1.config(bg="#96F97B", relief="flat")
+            card2.config(bg="#96F97B", relief="flat")
+            self.matched_pairs += 1
+            self.selected_cards = []
+            self.root.after(500, lambda: self.remove_cards(card1, card2))
+
+            if self.matched_pairs == 6:
+                self.root.after(500, lambda: self.end_game())
+        
+        else:
+            card1.config(bg="#FF6347")
+            card2.config(bg="#FF6347")
+            self.root.after(500, self.reset_cards)
+
+    def remove_cards(self, card1, card2):
+        card1_pos = card1.grid_info()
+        card2_pos = card2.grid_info()
+
+        card1.grid_remove()
+        card2.grid_remove()
+
+        # Invisible Placeholders
+        if 'row' in card1_pos and 'column' in card1_pos:
+            placeholder1 = tk.Label(self.cards_frame, text="", width=self.card_width, height=self.card_height)
+            placeholder1.grid(row=card1_pos['row'], column=card1_pos['column'], padx=5, pady=5, sticky="nsew")
+            placeholder1.lower()
+        
+        if 'row' in card2_pos and 'column' in card2_pos:
+            placeholder2 = tk.Label(self.cards_frame, text="", width=self.card_width, height=self.card_height)
+            placeholder2.grid(row=card2_pos['row'], column=card2_pos['column'], padx=5, pady=5, sticky="nsew")
+            placeholder2.lower()
+
+    def reset_cards(self):
+        for idx, card in self.selected_cards:
+            card.config(bg="SystemButtonFace", relief="raised")
+        self.selected_cards = []
+
+    def end_game(self):
+        from results_screen import MatchingResultsScreen
+        from routes import return_to_main_menu
+
+        unique_words = []
+        words_ids = set()
+
+        for word_data in self.words:
+            if word_data['match_id'] not in words_ids:
+                words_ids.add(word_data['match_id'])
+
+                original_word = next(
+                    (w for w in self.root.session_settings['words']
+                     if w['Hangul'] == word_data['match_id']),
+                     None
+                )
+                if original_word:
+                    unique_words.append(original_word)
+
+        history = [{
+            'mode': 'matching',
+            'attempts': self.attempts,
+            'pairs': self.max_pairs,
+            'accuracy': self.max_pairs / self.attempts if self.attempts > 0 else 0,
+            'words_list': unique_words
+        }]
+
+        self.frame.pack_forget()
+
+        MatchingResultsScreen(
+            root=self.root,
+            pairs=self.max_pairs,
+            attempts=self.attempts,
+            correct=self.matched_pairs,
+            incorrect=self.attempts - self.matched_pairs,
+            w_history=history,
+            accuracy=self.matched_pairs / self.attempts if self.attempts > 0 else 0.0,
+            return_callback=lambda: return_to_main_menu(self.root, self.frame),
+            settings=self.settings
+        )
+        
+        
+        # (
+        #     self.root,
+        #     correct=self.matched_pairs,
+        #     incorrect=self.attempts - self.matched_pairs,
+        #     w_history=history,
+        #     pairs=self.max_pairs,
+        #     attempts=self.attempts,
+        #     accuracy=self.matched_pairs / self.attempts if self.attempts > 0 else 0.0,
+        #     return_callback=lambda: return_to_main_menu(self.root, self.frame),
+        #     settings=self.settings
+        # )

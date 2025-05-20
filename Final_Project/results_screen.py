@@ -112,6 +112,9 @@ class ResultsScreen:
                 self.add_input_item(scrollable_frame, item, item['user_answer'], item['correct'])
             elif "selected_option" in item:
                 self.add_multiple_choice_item(scrollable_frame, item, item['selected_option'], item['correct'], item['expected'])
+            elif "pairs" in item:
+                for pair in item['pairs']:
+                    self.add_input_item(scrollable_frame, pair, pair['user_answer'], pair['correct'])
         # Action Buttons Frame
 
         button_frame = ttk.Frame(self.main_frame)
@@ -128,7 +131,7 @@ class ResultsScreen:
         vocabulary = load_vocabulary()
         ttk.Button(
             button_frame,
-            text="Back to Main Menu",
+            text="🏠 Main Menu",
             command=lambda: return_to_main_menu(self.root, self.main_frame)
         ).pack() # pelo visto button aceita tanto pack quanto grid, mas o grid eh mais flexivel, testar depois o posicionamento
 
@@ -157,7 +160,6 @@ class ResultsScreen:
         # ebutton.pack(side=tk.RIGHT, padx=8)
 
     def add_input_item(self, parent_frame, item, user_answer, correct):
-
         from project import LanguageManager, language_manager_flashcards
         word = item['word']
 
@@ -191,7 +193,7 @@ class ResultsScreen:
 
         u_label = ttk.Label(
             a_frame,
-            text=f"{status} Your Answer: {user_answer}",
+            text=f"{status} Your Answer: {user_answer}",   # Mudar isso para adaptar ao Multiple Choice
             font=("Arial", 12),
             foreground=color
         )
@@ -268,32 +270,237 @@ class ResultsScreen:
             )
             c_label.pack(anchor="w")
 
-    # def start_mistakes_session(self):
-    #     from utilities import GetMistakes
-    #     from all_flashcards import standard_flashcards, input_practice, MultipleChoiceGame
 
-    #     mistake_words = GetMistakes(self.root, history=self.w_history).get_mistakes()
-    #     full_settings = {
-    #         **self.root.session_settings,
-    #         'word_count': len(mistake_words),
-    #         'study_direction': 'hangul_to_lang'
-    #     }
+class MatchingResultsScreen:
+    def __init__(self, root, pairs, attempts, correct, incorrect, accuracy, w_history, return_callback, settings=None):
+        self.root = root
+        self.pairs = pairs
+        self.attempts = attempts
+        self.correct = correct
+        self.incorrect = incorrect
+        self.accuracy = accuracy
+        self.w_history = w_history
+        self.return_callback = return_callback
+        self.settings = settings or getattr(root, 'session_settings', {})
 
-    #     if not mistake_words:
-    #         messagebox.showinfo("100% Correct", "You got all answers correct!")
-    #         return
+        self.accuracy = (6 / self.attempts) if self.attempts > 0 else 0.0
+
+        if not hasattr(root, 'session_timer'):
+            from utilities import SessionTimer
+            root.session_timer = SessionTimer()
+            root.session_timer.elapsed_time = 0
+
+        self.create_widgets(root)
+
+    def create_widgets(self, root):
+        for widget in self.root.winfo_children():
+            widget.pack_forget()
+
         
-    #     if self.root.session_settings['selected_mode'] == "multiple_choice":
-    #         self.main_frame.pack_forget()
-    #         MultipleChoiceGame(
-    #             self.root,
-    #             words=mistake_words,
-    #             settings=full_settings
-    #         )
+        self.main_frame = ttk.Frame(self.root, padding=20)
+        self.main_frame.pack(fill=tk.BOTH, expand=True)
 
-        # elif self.root.session_settings['selected_mode'] == "Input":
-        #     input_practice.InputPractice(
-        #         self.root,
-        #         words=mistake_words,
-        #         settings=self.root.session_settings
+        # Title Label
+
+        tlabel = ttk.Label(
+            self.main_frame,
+            text="🎯 Matching Game Results",
+            font=("Arial", 16, "bold")
+        )
+        tlabel.pack(pady=10)
+
+        self.statsframe = ttk.Frame(self.main_frame)
+        self.statsframe.pack(fill=tk.X, pady=10)
+
+        accuracy_label = ttk.Label(
+            self.statsframe,
+            text=f"• ✔ Accuracy: {self.accuracy:.0%}",
+            font=("Arial", 16, "bold"),
+            foreground="#13e263" if self.accuracy >= 0.75 else "#ff3a00" if self.accuracy >= 0.5 else "#ca1d10"
+        )
+        accuracy_label.pack(anchor="center", pady=5)
+
+        attempts_label = ttk.Label(
+            self.statsframe,
+            text=f"• 📑 Attempts: {self.attempts}",
+            font=("Arial", 16, "bold"),
+            foreground="#12eccf" if self.attempts == 6 else "#ff6400" if 6 < self.attempts < 12 else "#E0115F"
+        )
+        attempts_label.pack(anchor="center", pady=5)
+
+        wrong_label = ttk.Label(
+            self.statsframe,
+            text=f"• ❌ Incorrects: {self.incorrect}",
+            font=("Arial", 16, "bold"),
+            foreground="#4dd6a2" if self.incorrect == 0 else "#ff8f00" if 6 < self.incorrect < 12 else "#FF073A"
+        )
+        wrong_label.pack(anchor="center", pady=5)
+
+        if hasattr(root, 'session_timer') and getattr(root.session_timer, 'is_running', False):
+            elapsed_time = root.session_timer.get_elapsed_time()
+            time_text = f"• ⏱ Session Time: {root.session_timer.format_time(elapsed_time)}"
+        else:
+            time_text = ""
+
+        time_label = ttk.Label(
+            self.statsframe,
+            text=time_text,
+            font=("Arial", 16, "bold")
+        )
+        time_label.pack(anchor="center", pady=5)
+
+        # Words List Frame
+
+        words_frame = ttk.Frame(self.main_frame)
+        words_frame.pack(fill=tk.BOTH, expand=True, pady=20)
+
+        wlabel = ttk.Label(
+            words_frame,
+            text="🔠 Words List",
+            font=("Arial", 16, "bold")
+        )
+        wlabel.pack(anchor="center", pady=5)
+
+        container = ttk.Frame(words_frame)
+        container.pack(fill=tk.BOTH, expand=True)
+
+        canvas = tk.Canvas(container)
+        v_scrollbar = ttk.Scrollbar(container, orient="vertical", command=canvas.yview)
+        h_scrollbar = ttk.Scrollbar(container, orient="horizontal", command=canvas.xview)
+
+        canvas.configure(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
+        canvas.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+
+        scrollable_frame = ttk.Frame(canvas)
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+
+        canvas.grid(row=0, column=0, sticky="nsew")
+        v_scrollbar.grid(row=0, column=1, sticky="ns")
+        h_scrollbar.grid(row=1, column=0, sticky="ew")
+
+        container.grid_rowconfigure(0, weight=1)
+        container.grid_columnconfigure(0, weight=1)
+
+        def on_mousewheel(event):
+            canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+        canvas.bind_all("<MouseWheel>", on_mousewheel)
+
+        # canvas = tk.Canvas(words_frame, height=200)
+        # scrollbar = ttk.Scrollbar(words_frame, orient="vertical", command=canvas.yview)
+        # scrollable_frame = ttk.Frame(canvas)
+
+        # scrollable_frame.bind(
+        #     "<Configure>",
+        #     lambda e: canvas.configure(
+        #         scrollregion=canvas.bbox("all")
         #     )
+        # )
+
+        # canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        # canvas.configure(yscrollcommand=scrollbar.set)
+
+        # canvas.pack(side="left", fill="both", expand=True)
+        # scrollbar.pack(side="right", fill="y")
+
+        # bscrollbar = ttk.Scrollbar(words_frame, orient="horizontal", command=canvas.xview)
+        # bscrollable_frame = ttk.Frame(canvas)
+
+        # bscrollable_frame.bind(
+        #     "<Configure>",
+        #     lambda e: canvas.configure(
+        #         scrollregion=canvas.bbox("all")
+        #     )
+        # )
+
+        # canvas.create_window((0, 0), window=bscrollable_frame, anchor="nw")
+        # canvas.configure(xscrollcommand=bscrollbar.set)
+
+        # canvas.pack(side="left", fill="both", expand=True)
+        # bscrollbar.pack(side="bottom", fill="x")
+
+        unique_words = []
+        seen_words = set()
+
+        if isinstance(self.w_history, list):
+            for item in self.w_history:
+                if 'words_list' in item:
+                    for word in item['words_list']:
+                        if word ['Hangul'] not in seen_words:
+                            seen_words.add(word['Hangul'])
+                            unique_words.append(word)
+                elif 'word' in item:
+                    if item['word']['Hangul'] not in seen_words:
+                        seen_words.add(item['word']['Hangul'])
+                        unique_words.append(item['word'])
+
+        for word in unique_words:
+            self.add_word_pair(scrollable_frame, word)
+
+
+        button_frame = ttk.Frame(self.main_frame)
+        button_frame.pack(pady=10)
+
+        from routes import return_to_main_menu, Retry
+        from project import load_vocabulary
+        vocabulary = load_vocabulary()
+
+        Menu = ttk.Button(
+            button_frame,
+            text="🏠 Main Menu",
+            command=lambda: return_to_main_menu(self.root, self.main_frame)
+        )
+        Menu.pack()
+
+        RetryB = Retry(
+            parent=button_frame,
+            root=self.root,
+            current_frame=self.main_frame,
+            vocabulary=self.root.session_settings['words']
+        )
+        RetryB.pack(side=tk.RIGHT, padx=8)
+
+    def add_word_pair(self, parent, word):
+        from project import language_manager_flashcards
+
+        pair_frame = ttk.Frame(parent, padding=10, relief="ridge")
+        pair_frame.pack(fill=tk.X, pady=5)
+
+        ttk.Label(
+            pair_frame,
+            text=word['Hangul'],
+            font=("Malgun Gothic", 13, "bold"),
+            width=15,
+            anchor="center",
+        ).pack(side=tk.LEFT, padx=5)
+
+        ttk.Label(
+            pair_frame,
+            text="→",
+            font=("Arial", 12),
+            foreground="gray",
+        ).pack(side=tk.LEFT, padx=5)
+
+        ttk.Label(
+            pair_frame,
+            text=language_manager_flashcards.get_translations(word),
+            font=("Arial", 12),
+            width=20,
+            anchor="center",
+            wraplength=200
+        ).pack(side=tk.LEFT, padx=5)
+
+
+        # Difficulty Label
+
+        difficulty_color = {
+            'Easy': "#585858",
+            'Medium': "#531083",
+            'Hard': "#A78B12"
+        }
+
+        ttk.Label(
+            pair_frame,
+            text=f"📑 Difficulty: {word['Difficulty']}",
+            font=("Arial", 10),
+            foreground=difficulty_color.get(word['Difficulty'], 'gray')
+        ).pack(side=tk.RIGHT, padx=5)

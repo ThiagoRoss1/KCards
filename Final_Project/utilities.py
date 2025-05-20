@@ -240,71 +240,75 @@ class CustomizeStudySession:
 
     def create_word_count_selector(self):
 
-        wframe = ttk.Frame(self.cframe)
-        wframe.pack(fill=tk.X, pady=10)
+        if self.root.session_settings.get('selected_mode') != "matching":
 
-        wlabel = ttk.Label(
-            wframe,
-            text="Words Number:",
-            font=("Arial", 12)
-        )
-        wlabel.pack(anchor="nw", side=tk.LEFT, padx=5)
+            wframe = ttk.Frame(self.cframe)
+            wframe.pack(fill=tk.X, pady=10)
 
-        # Spinbox
+            wlabel = ttk.Label(
+                wframe,
+                text="Words Number:",
+                font=("Arial", 12)
+            )
+            wlabel.pack(anchor="nw", side=tk.LEFT, padx=5)
 
-        min_words = min(4, len(self.vocabulary))
-        default_value = max(min(10, len(self.vocabulary)), min_words)
+            # Spinbox
 
-        self.spinbox = ttk.Spinbox(
-            wframe,
-            from_=min_words,
-            to=len(self.vocabulary),
-            width=5,
-            command=self.update_slider
-        )
-        self.spinbox.pack(anchor="nw", pady=5, side=tk.LEFT)
-        self.spinbox.bind("<KeyRelease>", self.sync_widgets)
+            min_words = min(4, len(self.vocabulary))
+            default_value = max(min(10, len(self.vocabulary)), min_words)
 
-        # Slider
+            self.spinbox = ttk.Spinbox(
+                wframe,
+                from_=min_words,
+                to=len(self.vocabulary),
+                width=5,
+                command=self.update_slider
+            )
+            self.spinbox.pack(anchor="nw", pady=5, side=tk.LEFT)
+            self.spinbox.bind("<KeyRelease>", self.sync_widgets)
 
-        self.slider = ttk.Scale(
-            wframe,
-            from_=min_words,
-            to=len(self.vocabulary),
-            orient=tk.HORIZONTAL,
-            command=self.update_spinbox
-        )
-        self.slider.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
+            # Slider
 
-        # Valores Iniciais
-        
-        self.spinbox.set(default_value)
-        self.slider.set(default_value)
+            self.slider = ttk.Scale(
+                wframe,
+                from_=min_words,
+                to=len(self.vocabulary),
+                orient=tk.HORIZONTAL,
+                command=self.update_spinbox
+            )
+            self.slider.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
+
+            # Valores Iniciais
+            
+            self.spinbox.set(default_value)
+            self.slider.set(default_value)
 
     def create_direction_selector(self):
-        tframe = ttk.Frame(self.cframe)
-        tframe.pack(fill=tk.X, pady=10)
 
-        tlabel = ttk.Label(
-            tframe,
-            text="Answer With:",
-            font=("Arial", 12)
-        )
-        tlabel.pack(anchor="nw", side=tk.LEFT, padx=5)
+        if self.root.session_settings.get('selected_mode') != "matching":
+            tframe = ttk.Frame(self.cframe)
+            tframe.pack(fill=tk.X, pady=10)
 
-        from project import language_manager_flashcards
-        directions = [
-            (f"Hangul to {language_manager_flashcards.get_language()}", "hangul_to_lang"),
-            (f"{language_manager_flashcards.get_language()} to Hangul", "lang_to_hangul")
-        ]
-
-        for text, value in directions:
-            ttk.Radiobutton(
+            tlabel = ttk.Label(
                 tframe,
-                text=text,
-                variable=self.settings['study_direction'],
-                value=value
-            ).pack(anchor="nw", padx=10, side=tk.LEFT)
+                text="Answer With:",
+                font=("Arial", 12)
+            )
+            tlabel.pack(anchor="nw", side=tk.LEFT, padx=5)
+
+            from project import language_manager_flashcards
+            directions = [
+                (f"Hangul to {language_manager_flashcards.get_language()}", "hangul_to_lang"),
+                (f"{language_manager_flashcards.get_language()} to Hangul", "lang_to_hangul")
+            ]
+
+            for text, value in directions:
+                ttk.Radiobutton(
+                    tframe,
+                    text=text,
+                    variable=self.settings['study_direction'],
+                    value=value
+                ).pack(anchor="nw", padx=10, side=tk.LEFT)
 
     def create_feedback_switch(self):
 
@@ -389,10 +393,10 @@ class CustomizeStudySession:
 
     def start_session(self):
         from project import start_study_session, language_manager_flashcards
-        from all_flashcards import standard_flashcards, InputPractice, MultipleChoiceGame
+        from all_flashcards import standard_flashcards, InputPractice, MultipleChoiceGame, MatchingGame
 
         settings = {
-            'word_count': int(self.spinbox.get()),
+            'word_count': int(self.spinbox.get()) if self.root.session_settings.get('selected_mode') != "matching" else None,
             'study_direction': self.settings['study_direction'].get(),
             'realtime_feedback': self.settings['realtime_feedback'].get(),
             'timer_enabled': self.timer_switch.state.get(),
@@ -442,6 +446,9 @@ class CustomizeStudySession:
             InputPractice(self.root, processed_words, settings)
         elif self.root.session_settings['selected_mode'] == "multiple_choice":
             MultipleChoiceGame(self.root, processed_words, settings)
+        elif self.root.session_settings['selected_mode'] == "matching":
+            MatchingGame(self.root, processed_words, settings)
+
 
     
     def update_slider(self):

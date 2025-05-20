@@ -48,7 +48,7 @@ def myapp_gui(root):
     # Graphical User Interface
 
     root.title("Flashcard App - Coreano")
-    root.geometry("600x500")
+    root.geometry("600x700")
     # root.minsize(400, 300)
     # root.columnconfigure(0, weight=1)   # Resize uniforme, ver depois
     # root.rowconfigure(0, weight=1)
@@ -387,6 +387,9 @@ def start_study_session(root, previous_frame, words, selected_mode, selected_mod
         CustomizeStudySession(root, words)
 
     elif selected_mode == "multiple_choice":
+        CustomizeStudySession(root, words)
+    
+    elif selected_mode == "matching":
         CustomizeStudySession(root, words)
         
 
