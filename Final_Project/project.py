@@ -309,6 +309,9 @@ def choose_study_mode(root, words, previous_frame=None):
         "Multiple Choice": {
             "mode": "multiple_choice",
         },
+        "True or False": {
+            "mode": "true_or_false",
+        },
         #"Listening Practice": {
         #    "mode": "listening",
        # }
@@ -390,6 +393,9 @@ def start_study_session(root, previous_frame, words, selected_mode, selected_mod
         CustomizeStudySession(root, words)
     
     elif selected_mode == "matching":
+        CustomizeStudySession(root, words)
+    
+    elif selected_mode == "true_or_false":
         CustomizeStudySession(root, words)
         
 

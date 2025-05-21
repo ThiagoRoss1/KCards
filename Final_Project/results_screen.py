@@ -504,3 +504,180 @@ class MatchingResultsScreen:
             font=("Arial", 10),
             foreground=difficulty_color.get(word['Difficulty'], 'gray')
         ).pack(side=tk.RIGHT, padx=5)
+
+class TrueFalseResultsScreen:
+    def __init__(self, root, correct, incorrect, w_history, return_callback, settings=None):
+        self.root = root
+        self.correct = correct
+        self.incorrect = incorrect
+        self.total = correct + incorrect
+        self.w_history = w_history
+        self.return_callback = return_callback
+        self.settings = settings or getattr(root, 'session_settings', {})
+
+        if not hasattr(root, 'session_timer'):
+            from utilities import SessionTimer
+            root.session_timer = SessionTimer()
+            root.session_timer.elapsed_time = 0
+
+        self.create_widgets(root)
+
+    def create_widgets(self, root):
+        for widget in self.root.winfo_children():
+            widget.pack_forget()
+
+        self.main_frame = ttk.Frame(self.root, padding=20)
+        self.main_frame.pack(fill=tk.BOTH, expand=True)
+
+        if hasattr(root, 'session_timer'):
+            elapsed_time = root.session_timer.get_elapsed_time()
+            time_text = f"Session Time: {root.session_timer.format_time(elapsed_time)}"     
+            time_label = ttk.Label(
+                self.main_frame,
+                text=time_text,
+                font=("Arial", 12)
+            )
+            time_label.pack(pady=10)
+        else:
+            time_label = ttk.Label(
+                self.main_frame,
+                text="",
+                font=("Arial", 12)
+            )
+            time_label.pack(pady=10)
+
+        tlabel = ttk.Label(
+            self.main_frame,
+            text="⚫ True or False Game Results",
+            font=("Arial", 16, "bold")
+        )
+        tlabel.pack(pady=10)
+
+        rlabel = ttk.Label(
+            self.main_frame,
+            text=f"Results: {self.correct}/{self.total} ({self.correct/self.total:.0%})",
+            font=("Arial", 16, "bold")
+        )
+        rlabel.pack(pady=10)
+
+        stats_frame = ttk.Frame(self.main_frame)
+        stats_frame.pack(fill=tk.X, pady=10)
+
+        ttk.Label(
+            stats_frame,
+            text=f"✔ Corrects: {self.correct}",
+            foreground="green"
+        ).pack(side=tk.LEFT)
+
+        ttk.Label(
+            stats_frame,
+            text=f"❌ Incorrects: {self.incorrect}",
+            foreground="red"
+        ).pack(side=tk.RIGHT)
+
+        self.canvas = tk.Canvas(self.main_frame)
+        self.canvas.bind("<MouseWheel>",
+                         lambda e: self.canvas.yview_scroll(int(-1*(e.delta/120)), "units"))
+        
+        self.canvas.bind("<Button-4>", lambda e: self.canvas.yview_scroll(-1, "units"))
+        self.canvas.bind("<Button-5>", lambda e: self.canvas.yview_scroll(1, "units"))
+
+        scrollbar = ttk.Scrollbar(self.main_frame, orient=tk.VERTICAL, command=self.canvas.yview)
+        scrollable_frame = ttk.Frame(self.canvas)
+
+        scrollable_frame.bind(
+            "<Configure>",
+            lambda _: self.canvas.configure(
+                scrollregion=self.canvas.bbox("all")
+            )
+        )
+
+        self.canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        self.canvas.configure(yscrollcommand=scrollbar.set)
+
+        self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scrollbar.pack(side="right", fill="y")
+
+        for item in self.w_history:
+            self.add_result_item(scrollable_frame, item)
+
+        # Buttons Frame
+
+        button_frame = ttk.Frame(self.main_frame)
+        button_frame.pack(pady=10)
+
+        from routes import return_to_main_menu, Retry
+        from project import load_vocabulary
+        vocabulary = load_vocabulary()
+
+        Menu = ttk.Button(
+            button_frame,
+            text="🏠 Main Menu",
+            command=lambda: return_to_main_menu(self.root, self.main_frame)
+        )
+        Menu.pack()
+
+        RetryB = Retry(
+            parent=button_frame,
+            root=self.root,
+            current_frame=self.main_frame,
+            vocabulary=self.root.session_settings['words']
+        )
+        RetryB.pack(side=tk.RIGHT, padx=8)
+
+    def add_result_item(self, parent_frame, item):
+        from project import language_manager_flashcards
+        word = item['word']
+        frame = ttk.Frame(parent_frame, padding=10, relief="solid")
+        frame.pack(fill=tk.X, pady=5)
+
+        user_answer = item.get('user_answer', 'False')
+        correct_answer = item.get('expected', 'False')
+        is_correct = item.get('correct', False)
+
+        user_answer = str(user_answer) if isinstance(user_answer, bool) else user_answer
+        correct_answer = str(correct_answer) if isinstance(correct_answer, bool) else correct_answer
+
+        ttk.Label(
+            frame,
+            text=f"Word: {item.get('question_word', '')}",
+            font=("Arial", 12, "bold")
+        ).pack(anchor="w")
+
+        ttk.Label(
+            frame,
+            text=f"Question: {item.get('statement_question', '')}",
+            font=("Arial", 12)
+        ).pack(anchor="w")
+
+        status = "✔" if is_correct else "❌"
+        color = "green" if is_correct else "red"
+        
+        ttk.Label(
+            frame,
+            text=f"{status} Your Answer: {user_answer}",
+            font=("Arial", 12),
+            foreground=color
+        ).pack(anchor="w")
+
+        if not is_correct:
+            ttk.Label(
+                frame,
+                text=f"Correct Answer: {correct_answer}",
+                font=("Arial", 12),
+                foreground="blue"
+            ).pack(anchor="w")
+
+        difficulty_color = {
+            'Easy': "#585858",
+            'Medium': "#531083",
+            'Hard': "#A78B12"
+        }
+
+        ttk.Label(
+            frame,
+            text=f"📑 Difficulty: {word['Difficulty']}",
+            foreground=difficulty_color.get(word['Difficulty'], 'black')
+        ).pack(anchor="w")
+
+        

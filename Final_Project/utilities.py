@@ -312,7 +312,7 @@ class CustomizeStudySession:
 
     def create_feedback_switch(self):
 
-        if self.root.session_settings.get('selected_mode') == "multiple_choice":
+        if self.root.session_settings.get('selected_mode') == "multiple_choice" or self.root.session_settings.get('selected_mode') == "true_or_false":
             sframe = ttk.Frame(self.cframe)
             sframe.pack(fill=tk.X, pady=10)
 
@@ -393,7 +393,7 @@ class CustomizeStudySession:
 
     def start_session(self):
         from project import start_study_session, language_manager_flashcards
-        from all_flashcards import standard_flashcards, InputPractice, MultipleChoiceGame, MatchingGame
+        from all_flashcards import standard_flashcards, InputPractice, MultipleChoiceGame, MatchingGame, TrueFalseGame
 
         settings = {
             'word_count': int(self.spinbox.get()) if self.root.session_settings.get('selected_mode') != "matching" else None,
@@ -448,6 +448,8 @@ class CustomizeStudySession:
             MultipleChoiceGame(self.root, processed_words, settings)
         elif self.root.session_settings['selected_mode'] == "matching":
             MatchingGame(self.root, processed_words, settings)
+        elif self.root.session_settings['selected_mode'] == "true_or_false":
+            TrueFalseGame(self.root, processed_words, settings)
 
 
     

@@ -184,13 +184,21 @@ class InputPractice:
         
         self.answer_entry.bind("<Key>", self._handle_entry_key)
 
-    def _handle_entry_key(self, _):
-        if self.answer_entry.get() == "Type your answer":
+    def _handle_entry_key(self, event):
+        current_text = self.answer_entry.get()
+        if current_text == "Type your answer":
             self.answer_entry.delete(0, tk.END)
             self.answer_entry.config(foreground="#000000")
+        
+        if event.keysym == "Return" and current_text == "Type your answer":
+            return "break"
 
     def check_answer(self):
         user_input = self.answer_entry.get().lower().strip()
+
+        if user_input == "type your answer":
+            user_input = ""
+
         expected = self.expected_answer
 
         user_normalized = normalize_text(user_input)
@@ -823,14 +831,236 @@ class MatchingGame:
         )
         
         
-        # (
-        #     self.root,
-        #     correct=self.matched_pairs,
-        #     incorrect=self.attempts - self.matched_pairs,
-        #     w_history=history,
-        #     pairs=self.max_pairs,
-        #     attempts=self.attempts,
-        #     accuracy=self.matched_pairs / self.attempts if self.attempts > 0 else 0.0,
-        #     return_callback=lambda: return_to_main_menu(self.root, self.frame),
-        #     settings=self.settings
-        # )
+# True or False Game Mode 
+
+class TrueFalseGame:
+    def __init__(self, root, words, settings):
+        self.root = root
+        self.words = self.prepare_words(words.copy(), settings)
+        self.settings = settings
+        self.current_word = None
+        self.correct = 0
+        self.incorrect = 0
+        self.score = 0
+        self.used_words = []
+        self.history = []
+        self.buttons_locked = False
+
+
+        self.setup_ui()
+
+        from utilities import SessionTimer
+        if not hasattr(root, 'session_timer'):
+            from utilities import SessionTimer
+            root.session_timer = SessionTimer()
+            root.session_timer.start()
+
+        if settings.get('timer_enabled', False):
+            self.update_timer()
+
+        self.next_question()
+
+
+    def prepare_words(self, words, settings):
+        from project import language_manager_flashcards
+        prepared_words = []
+
+        for word in words:
+            new_word = word.copy()
+            if settings['study_direction'] == "hangul_to_lang":
+                new_word['Question'] = word['Hangul']
+                new_word['Answer'] = language_manager_flashcards.get_translations(word)
+            else:
+                new_word['Question'] = language_manager_flashcards.get_translations(word)
+                new_word['Answer'] = word['Hangul']
+
+            prepared_words.append(new_word)
+        
+        return prepared_words
+    
+    def setup_ui(self):
+        self.frame = ttk.Frame(self.root, padding=20)
+        self.frame.pack(fill=tk.BOTH, expand=True)
+
+        from utilities import ProgressBar
+        self.progress = ProgressBar(self.frame, len(self.words))
+
+        self.question_label = ttk.Label(
+            self.frame,
+            font=("Malgun Gothic", 20) if self.settings['study_direction'] == "hangul_to_lang" else ("Arial", 20),
+            relief="solid",
+            wraplength=500
+        )
+        self.question_label.pack(pady=20)
+
+        if self.settings.get('timer_enabled', False):
+            self.timer_label = ttk.Label(self.frame, text="00:00")
+            self.timer_label.pack(anchor="se")
+
+        self.statement_label = ttk.Label(
+            self.frame,
+            font=("Arial", 16),
+            wraplength=500
+        )
+        self.statement_label.pack(pady=10)
+
+        # Answer Buttons
+
+        buttons_frame = ttk.Frame(self.frame)
+        buttons_frame.pack(pady=15)
+
+        self.answer_buttons = []
+        self.true_button = ttk.Button(
+            buttons_frame,
+            text="True",
+            command=lambda: self.check_answer("True"),
+            width=15
+        )
+        self.true_button.pack(side=tk.LEFT, padx=10)
+
+        self.false_button = ttk.Button(
+            buttons_frame,
+            text="False",
+            command=lambda: self.check_answer("False"),
+            width=15
+        )
+        self.false_button.pack(side=tk.LEFT, padx=10)
+        self.answer_buttons.append(self.true_button)
+        self.answer_buttons.append(self.false_button)
+
+    def update_timer(self):
+        if not hasattr(self, 'timer_label') or not hasattr(self.root, 'session_timer'):
+            return
+        
+        elapsed = self.root.session_timer.get_elapsed_time()
+        self.timer_label.config(
+            text=self.root.session_timer.format_time(elapsed)
+        )
+
+        if self.settings.get('timer_enabled', False):
+            self.root.after(1000, self.update_timer)
+            
+
+    def next_question(self):
+        self.buttons_locked = False
+
+        available_words = [word for word in self.words if word not in self.used_words]
+
+        if not available_words:
+            self.show_results()
+            return
+        
+
+        self.current_word = random.choice(available_words)
+        self.used_words.append(self.current_word)
+
+        self.current_statement_is_true = random.choice([True, False])
+
+        if self.current_statement_is_true:
+
+            statement_text = f"{self.current_word['Question']} is {self.current_word['Answer']}"
+        else:
+            wrong_answer = random.choice([
+                word['Answer'] for word in self.words if word['Answer'] != self.current_word['Answer']
+            ])
+            statement_text = f"{self.current_word['Question']} is {wrong_answer}"
+
+        self.question_label.config(text=self.current_word['Question'])
+        self.statement_label.config(text=statement_text)
+
+        for button, answer in zip(self.answer_buttons, ["True", "False"]):
+            button.config(
+                text=answer,
+                command=lambda a=answer: self.check_answer(a),
+                style="TButton",
+                state=tk.NORMAL
+            )
+
+    def check_answer(self, selected_answer):
+        if self.buttons_locked:
+            return
+        
+        self.buttons_locked = True
+        
+        user_answer = str(selected_answer) if not isinstance(selected_answer, str) else selected_answer
+
+        is_correct = (user_answer.lower() == str(self.current_statement_is_true).lower())
+
+        if is_correct:
+            self.correct += 1
+            self.score += 1
+        else:
+            self.incorrect += 1
+        
+        self.progress.increment()
+
+        self.history.append({
+            'word': self.current_word,
+            'user_answer': user_answer,
+            'correct': is_correct,
+            'statement_question': self.statement_label.cget("text"),
+            'correct_answer': str(self.current_statement_is_true),
+            'question_word': self.current_word['Question'],
+            'is_true': self.current_statement_is_true
+        })
+    
+        
+        if self.settings['show_styles']:
+            self.update_button_styles(selected_answer)
+        else:
+            for btn in self.answer_buttons:
+                btn.config(state=tk.DISABLED)
+
+        self.root.after(1000, self.next_question)
+
+    def update_button_styles(self, selected_answer):
+        for btn in self.answer_buttons:
+            btn.config(state=tk.DISABLED)
+
+            is_correct_button = (
+                (btn['text'] == "True" and self.current_statement_is_true) or
+                (btn['text'] == "False" and not self.current_statement_is_true)
+            )
+
+            is_selected_button = (
+                (btn['text'] == "True" and selected_answer is True) or
+                (btn['text'] == "False" and selected_answer is False)
+            )
+
+            if is_correct_button:
+                btn.config(style="Correct.TButton")
+            elif is_selected_button is False:
+                btn.config(style="Incorrect.TButton")
+            else:
+                btn.config(style="TButton")
+            
+
+    def show_results(self):
+        from results_screen import TrueFalseResultsScreen
+        from routes import return_to_main_menu
+
+        self.frame.pack_forget()
+
+        TrueFalseResultsScreen(
+            self.root,
+            self.correct,
+            self.incorrect,
+            self.history,
+            lambda: return_to_main_menu(self.root, self.frame),
+            settings=self.settings
+        )
+        self.used_words = []
+        self.progress.reset()
+
+
+
+
+        # Auto Correction Bugado #####
+        #Difficulty Selector - Testar ######
+        # Results Screen - Criar Nova
+        #Talvez mudar o design pique quizlet - Definiçao >>>> Embaixo o Termo
+
+
+
+        
+
