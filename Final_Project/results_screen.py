@@ -14,6 +14,7 @@ class ResultsScreen:
         self.return_callback = return_callback
         self.settings = settings or getattr(root, 'session_settings', {})
 
+
         if not hasattr(root, 'session_timer'):
             from utilities import SessionTimer
             root.session_timer = SessionTimer()
@@ -285,11 +286,6 @@ class MatchingResultsScreen:
 
         self.accuracy = (6 / self.attempts) if self.attempts > 0 else 0.0
 
-        if not hasattr(root, 'session_timer'):
-            from utilities import SessionTimer
-            root.session_timer = SessionTimer()
-            root.session_timer.elapsed_time = 0
-
         self.create_widgets(root)
 
     def create_widgets(self, root):
@@ -336,7 +332,7 @@ class MatchingResultsScreen:
         )
         wrong_label.pack(anchor="center", pady=5)
 
-        if hasattr(root, 'session_timer') and getattr(root.session_timer, 'is_running', False):
+        if hasattr(root, 'session_timer') and root.session_timer.should_display(self.settings):
             elapsed_time = root.session_timer.get_elapsed_time()
             time_text = f"• ⏱ Session Time: {root.session_timer.format_time(elapsed_time)}"
         else:
@@ -382,7 +378,8 @@ class MatchingResultsScreen:
         container.grid_columnconfigure(0, weight=1)
 
         def on_mousewheel(event):
-            canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+            if canvas.winfo_exists():
+                canvas.yview_scroll(int(-1*(event.delta/120)), "units")
         canvas.bind_all("<MouseWheel>", on_mousewheel)
 
         # canvas = tk.Canvas(words_frame, height=200)
@@ -515,11 +512,6 @@ class TrueFalseResultsScreen:
         self.return_callback = return_callback
         self.settings = settings or getattr(root, 'session_settings', {})
 
-        if not hasattr(root, 'session_timer'):
-            from utilities import SessionTimer
-            root.session_timer = SessionTimer()
-            root.session_timer.elapsed_time = 0
-
         self.create_widgets(root)
 
     def create_widgets(self, root):
@@ -529,22 +521,18 @@ class TrueFalseResultsScreen:
         self.main_frame = ttk.Frame(self.root, padding=20)
         self.main_frame.pack(fill=tk.BOTH, expand=True)
 
-        if hasattr(root, 'session_timer'):
-            elapsed_time = root.session_timer.get_elapsed_time()
-            time_text = f"Session Time: {root.session_timer.format_time(elapsed_time)}"     
-            time_label = ttk.Label(
-                self.main_frame,
-                text=time_text,
-                font=("Arial", 12)
-            )
-            time_label.pack(pady=10)
+        if hasattr(self.root, 'session_timer') and self.root.session_timer.should_display(self.settings):
+            elapsed_time = self.root.session_timer.get_elapsed_time()
+            time_text = f"Session Time: {self.root.session_timer.format_time(elapsed_time)}"
         else:
-            time_label = ttk.Label(
-                self.main_frame,
-                text="",
-                font=("Arial", 12)
-            )
-            time_label.pack(pady=10)
+            time_text = ""
+
+        time_label = ttk.Label(
+            self.main_frame,
+            text=time_text,
+            font=("Arial", 12)
+        )
+        time_label.pack(pady=10)
 
         tlabel = ttk.Label(
             self.main_frame,
@@ -680,4 +668,218 @@ class TrueFalseResultsScreen:
             foreground=difficulty_color.get(word['Difficulty'], 'black')
         ).pack(anchor="w")
 
+        # ttk.Label(
+        #     frame,
+        #     text=item['timestamp'],  # Funcionando mas amanha tentar botar em todos
+        #     font=("Arial", 9),
+        #     foreground="gray"
+        # ).pack(side=tk.RIGHT)
+
+
+class StandardResultsScreen:
+    def __init__(self, root, correct, incorrect, w_history, return_callback, settings=None):
+        self.root = root
+        self.correct = correct
+        self.incorrect = incorrect
+        self.w_history = w_history
+        self.return_callback = return_callback
+        self.settings = settings or getattr(root, 'session_settings', {})
+
+        if not hasattr(root, 'session_timer'):
+            from utilities import SessionTimer
+            root.session_timer = SessionTimer()
+            root.session_timer.elapsed_time = 0
+
+        self.setup_styles()
+        self.setup_ui()
         
+    def setup_styles(self):
+        self.style = ttk.Style()
+        self.style.configure("Title.TLabel", font=("Arial", 16, "bold"))
+        self.style.configure("Stats.TLabel", font=("Arial", 12))
+        self.style.configure("Correct.TLabel", foreground="#2ecc71")
+        self.style.configure("Incorrect.TLabel", foreground="#e74c3c") 
+        self.style.configure("Word.TLabel", font=("Malgun Gothic", 14))
+        self.style.configure("Translation.TLabel", font=("Arial", 12, "bold") if self.settings.get('study_direction') == "hangul_to_lang" else ("Malgun Gothic", 12, "bold"))
+        self.style.configure("History.TFrame", relief="solid", borderwidth=1)
+        
+    def setup_ui(self):
+        self.main_frame = ttk.Frame(self.root, padding=20)
+        self.main_frame.pack(fill=tk.BOTH, expand=True)
+        
+        self.create_header()
+        
+        self.create_stats_section()
+        
+        self.create_history_section()
+        
+        self.create_action_buttons()
+        
+    def create_header(self):
+        from utilities import SessionTimer
+        header_frame = ttk.Frame(self.main_frame)
+        header_frame.pack(fill=tk.X, pady=(0, 20))
+
+        if hasattr(self.root, 'session_timer') and getattr(self.root.session_timer, 'is_running', False):
+            elapsed_time = self.root.session_timer.get_elapsed_time()
+            time_text = f"Session Time: {self.root.session_timer.format_time(elapsed_time)}"
+        else:
+            time_text = ""
+        
+        time_label = ttk.Label(
+            self.main_frame,
+            text=time_text,
+            font=("Arial", 12)
+        )
+        time_label.pack(pady=10)
+        
+        ttk.Label(
+            header_frame,
+            text="Standard Flashcards Results",
+            font=("Arial", 16, "bold"),
+        ).pack(pady=5)
+        
+    def create_stats_section(self):
+        stats_frame = ttk.Frame(self.main_frame)
+        stats_frame.pack(fill=tk.X, pady=(0, 20))
+        
+        total = self.correct + self.incorrect
+        accuracy = self.correct / total if total > 0 else 0
+        
+        ttk.Label(
+            stats_frame,
+            text=f"✔ Corrects: {self.correct}",
+            style="Correct.TLabel"
+        ).pack(side=tk.LEFT, expand=True)
+        
+        ttk.Label(
+            stats_frame,
+            text=f"Results: {self.correct}/{total} ({accuracy:.0%})",
+            font=("Arial", 16, "bold"),
+        ).pack(side=tk.LEFT, expand=True)
+        
+        ttk.Label(
+            stats_frame,
+            text=f"✖ Incorrects: {self.incorrect}",
+            style="Incorrect.TLabel"
+        ).pack(side=tk.RIGHT, expand=True)
+    
+    def create_history_section(self):
+        
+        container = ttk.Frame(self.main_frame)
+        container.pack(fill=tk.BOTH, expand=True)
+
+        self.canvas = tk.Canvas(container)
+        v_scrollbar = ttk.Scrollbar(container, orient="vertical", command=self.canvas.yview)
+        h_scrollbar = ttk.Scrollbar(container, orient="horizontal", command=self.canvas.xview)
+
+        self.canvas.configure(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
+        self.canvas.bind('<Configure>', lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
+
+        scrollable_frame = ttk.Frame(self.canvas)
+        self.canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+
+        self.canvas.grid(row=0, column=0, sticky="nsew")
+        v_scrollbar.grid(row=0, column=1, sticky="ns")
+        h_scrollbar.grid(row=1, column=0, sticky="ew")
+
+        container.grid_rowconfigure(0, weight=1)
+        container.grid_columnconfigure(0, weight=1)
+
+        def on_mousewheel(event):
+            if hasattr(self, 'canvas') and self.canvas.winfo_exists():
+                self.canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+
+        self._mousewheel_binding = self.root.bind_all("<MouseWheel>", on_mousewheel)
+        
+        for item in self.w_history:
+            self.add_history_item(scrollable_frame, item)
+
+    def __del__(self):
+        if hasattr(self, '_mousewheel_binding'):
+            try:
+                if self.root.winfo_exists():
+                    self.root.unbind_all("<MouseWheel>")
+            except tk.TclError:
+                pass
+    
+    def add_history_item(self, parent, item):
+        from project import language_manager_flashcards
+        frame = ttk.Frame(parent, padding=10, style="History.TFrame")
+        frame.pack(fill=tk.X, pady=2)
+        
+        word = item['word']
+        is_correct = item.get('correct', False)
+        
+        top_frame = ttk.Frame(frame)
+        top_frame.pack(fill=tk.X)
+        
+        ttk.Label(
+            top_frame,
+            text=word['Hangul'] if self.settings['study_direction'] == "hangul_to_lang" else language_manager_flashcards.get_translations(word),
+            style="Word.TLabel"
+        ).pack(side=tk.LEFT)
+        
+        status = "✔" if is_correct else "✖"
+        status_style = "Correct.TLabel" if is_correct else "Incorrect.TLabel"
+        ttk.Label(
+            top_frame,
+            text=status,
+            style=status_style
+        ).pack(side=tk.RIGHT)
+        
+        ttk.Label(
+            frame,
+            text=f"→ {language_manager_flashcards.get_translations(word)}" if self.settings['study_direction'] == "hangul_to_lang" else f"→ {word['Hangul']}",
+            style="Translation.TLabel"
+        ).pack(anchor="w")
+        
+        bottom_frame = ttk.Frame(frame)
+        bottom_frame.pack(fill=tk.X)
+
+        difficulty_color = {
+            'Easy': "#585858",
+            'Medium': "#531083",
+            'Hard': "#A78B12"    #botar uma sombra
+        }
+        
+        ttk.Label(
+            bottom_frame,
+            text=f"Dificuldade: {word['Difficulty']}",
+            font=("Arial", 9),
+            foreground=difficulty_color.get(word['Difficulty'], "black")
+        ).pack(side=tk.LEFT)
+        
+        # ttk.Label(
+        #     bottom_frame,
+        #     text=item['timestamp'],   # Funcionando mas amanha tentar botar em todos
+        #     font=("Arial", 9),
+        #     foreground="gray"
+        # ).pack(side=tk.RIGHT)
+
+    def create_action_buttons(self):
+        from routes import return_to_main_menu, Retry
+        from project import load_vocabulary
+        vocabulary = load_vocabulary()
+
+        button_frame = ttk.Frame(self.main_frame)
+        button_frame.pack(pady=10)
+
+        Menu = ttk.Button(
+            button_frame,
+            text="🏠 Main Menu",
+            command=lambda: return_to_main_menu(self.root, self.main_frame),
+        )
+        Menu.pack(side=tk.RIGHT, padx=8)
+
+        RetryB = Retry(
+            parent=button_frame,
+            root=self.root,
+            current_frame=self.main_frame,
+            vocabulary=self.root.session_settings['words']
+        )
+        RetryB.pack(side=tk.RIGHT, padx=8)
+
+
+
+        # Matching e TrueFalse showing timer even if off 

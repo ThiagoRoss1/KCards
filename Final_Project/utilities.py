@@ -126,6 +126,9 @@ class SessionTimer:
         minutes, seconds = divmod(int(seconds), 60)
         return f"{minutes:02}:{seconds:02}"
     
+    def should_display(self, settings):
+        return self.is_running and settings.get('timer_enabled', False)
+    
 
 
 class GetMistakes:
@@ -393,7 +396,7 @@ class CustomizeStudySession:
 
     def start_session(self):
         from project import start_study_session, language_manager_flashcards
-        from all_flashcards import standard_flashcards, InputPractice, MultipleChoiceGame, MatchingGame, TrueFalseGame
+        from all_flashcards import StandardFlashcards, InputPractice, MultipleChoiceGame, MatchingGame, TrueFalseGame
 
         settings = {
             'word_count': int(self.spinbox.get()) if self.root.session_settings.get('selected_mode') != "matching" else None,
@@ -441,7 +444,7 @@ class CustomizeStudySession:
         self.cframe.pack_forget()
 
         if self.root.session_settings['selected_mode'] == "standard":
-            standard_flashcards(self.root, processed_words, settings)
+            StandardFlashcards(self.root, processed_words, settings)
         elif self.root.session_settings['selected_mode'] == "input":
             InputPractice(self.root, processed_words, settings)
         elif self.root.session_settings['selected_mode'] == "multiple_choice":

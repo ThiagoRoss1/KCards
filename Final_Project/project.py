@@ -4,7 +4,7 @@ from tkinter import ttk, messagebox
 import csv
 import random
 import all_flashcards
-from all_flashcards import standard_flashcards, InputPractice, MultipleChoiceGame
+from all_flashcards import StandardFlashcards, InputPractice, MultipleChoiceGame, MatchingGame, TrueFalseGame
 import routes
 from language_manager import LanguageManager
 from utilities import CustomizeStudySession
@@ -384,7 +384,7 @@ def start_study_session(root, previous_frame, words, selected_mode, selected_mod
     }
 
     if selected_mode == "standard":
-        standard_flashcards(root, words)
+        CustomizeStudySession(root, words)
 
     elif selected_mode == "input":
         CustomizeStudySession(root, words)
