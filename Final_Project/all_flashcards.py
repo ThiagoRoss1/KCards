@@ -1,5 +1,7 @@
-import tkinter as tk
-from tkinter import ttk, messagebox
+# import tkinter as tk
+# from tkinter import ttk, messagebox
+import customtkinter as ctk
+from customtkinter import *
 import csv
 import random
 from results_screen import ResultsScreen
@@ -61,34 +63,45 @@ class StandardFlashcards:
     
 
     def setup_ui(self):
-        self.frame = ttk.Frame(self.root, padding=20)
-        self.frame.pack(fill=tk.BOTH, expand=True)
+        self.frame = ctk.CTkFrame(self.root)
+        self.frame.pack(fill=ctk.BOTH, expand=True)
 
         if self.settings.get('timer_enabled', False):
-            self.timer_label = ttk.Label(self.frame, text="00:00")
+            self.timer_label = ctk.CTkLabel(self.frame, text="00:00")
             self.timer_label.pack(anchor="se")
 
         from utilities import ProgressBar
         self.progress = ProgressBar(self.frame, len(self.words))
 
+        card_container = ctk.CTkFrame(
+            self.frame,
+            fg_color="transparent"
+        )
+        card_container.pack(expand=True, padx=20, pady=20)
+
+        self.card_frame = ctk.CTkFrame(
+            card_container,
+            border_width=4,
+            width=300,
+            height=400,
+            border_color=("gray70", "gray30"),
+            corner_radius=20,
+            fg_color=("white", "gray15")
+        )
+        self.card_frame.pack_propagate(False)
+        self.card_frame.pack(pady=20)
+
         # Card Style
 
-        self.style = ttk.Style()
-        self.style.configure(
-            "Card.TLabel",
+        self.card = ctk.CTkLabel(
+            self.card_frame,
             font=("Malgun Gothic", 36) if self.settings['study_direction'] == "hangul_to_lang" else ("Arial", 36),
-            relief="solid",
-            padding=40,
             anchor="center",
-            wraplength=400,
+            wraplength=280,
+            cursor="hand2",
+            text_color=("black", "white")
         )
-
-        self.card = ttk.Label(
-            self.frame,
-            style="Card.TLabel",
-            cursor="hand2"
-        )
-        self.card.pack(expand=True, pady=20)
+        self.card.pack(fill=ctk.BOTH, expand=True, padx= 10, pady=10)
         self.card.bind("<Button-1>", self.flip_card)
 
         # Answer Buttons
@@ -97,28 +110,28 @@ class StandardFlashcards:
 
         # Error
 
-        self.ebutton = ttk.Button(
+        self.ebutton = ctk.CTkButton(
             self.frame,
             text="❌",
             command=lambda: self.check_answer(False)
         )
-        self.ebutton.pack(side=tk.LEFT, padx=5)
+        self.ebutton.pack(side=ctk.LEFT, padx=5)
 
         # Correct
 
-        self.cbutton = ttk.Button(
+        self.cbutton = ctk.CTkButton(
             self.frame,
             text="✅",
             command=lambda: self.check_answer(True)
         )
-        self.cbutton.pack(side=tk.RIGHT, padx=5)
+        self.cbutton.pack(side=ctk.RIGHT, padx=5)
 
     def update_timer(self):
         if not hasattr(self, 'timer_label') or not hasattr(self.root, 'session_timer'):
             return
 
         elapsed_time = self.root.session_timer.get_elapsed_time()
-        self.timer_label.config(text=self.root.session_timer.format_time(elapsed_time))
+        self.timer_label.configure(text=self.root.session_timer.format_time(elapsed_time))
 
         if self.settings.get('timer_enabled', False):
             self.root.after(1000, self.update_timer)
@@ -129,13 +142,13 @@ class StandardFlashcards:
             return
         
         if self.showing_translation:
-            self.card.config(
+            self.card.configure(
                 text=self.current_word['Question'],
                 font=("Malgun Gothic", 36) if self.settings['study_direction'] == "hangul_to_lang" else ("Arial", 36)
             )
             self.showing_translation = False
         else:
-            self.card.config(
+            self.card.configure(
                 text=self.current_word['Answer'],
                 font=("Arial", 36) if self.settings['study_direction'] == "hangul_to_lang" else ("Malgun Gothic", 36)
             )
@@ -172,9 +185,9 @@ class StandardFlashcards:
             self.update_button_styles(selected_answer)
         else:
             for btn in self.answer_buttons:
-                btn.config(state=tk.DISABLED)
+                btn.configure(state=ctk.DISABLED)
 
-        self.root.after(400, self.next_word)
+        self.root.after(300, self.next_word)
     
 
     def next_word(self):
@@ -189,7 +202,7 @@ class StandardFlashcards:
         self.used_words.append(self.current_word)
         self.showing_translation = False
 
-        self.card.config(
+        self.card.configure(
             text=self.current_word['Question'],
             font=("Malgun Gothic", 36) if self.settings['study_direction'] == "hangul_to_lang" else ("Arial", 36)
         )
@@ -210,96 +223,6 @@ class StandardFlashcards:
         )
         self.used_words = []
         self.progress.reset()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# def standard_flashcards(root, words):
-
-#     # Standard flashcards module
-
-#     s_frame = ttk.Frame(root, padding=20)
-#     s_frame.pack(fill=tk.BOTH, expand=True)
-
-#     # Variables
-
-#     used_words = []
-#     current_word = random.choice(words)
-#     showing_translation = False
-
-#     # Card
-
-#     style = ttk.Style()
-#     style.configure(
-#         "Card.TLabel",
-#         font=("Malgun Gothic", 36),
-#         relief="solid",
-#         padding=40,
-#         anchor="center",
-#         wraplength=400
-#     )
-
-#     # Label UI
-
-#     card = ttk.Label(
-#         s_frame,
-#         text=current_word['Hangul'],
-#         style="Card.TLabel",
-#         cursor="hand2"
-#     )
-#     card.pack(expand=True)
-
-#     # Def a function to flip the card
-
-#     def flip_card(_):
-#         if card.cget("text") == current_word['Hangul']:
-#             from project import LanguageManager, language_manager_flashcards
-#             translation = language_manager_flashcards.get_translations(current_word)
-#             card.config(text=translation, font=("Arial", 36)) # mudar futuramente ao adicionar ingles 
-#         else:
-#             card.config(text=current_word['Hangul'], font=("Malgun Gothic", 36))
-    
-#     # Flip Action
-
-#     card.bind("<Button-1>", flip_card)
-
-#     # Next Word Button
-
-#     n_button = ttk.Button(
-#         s_frame,
-#         text="Next Word",
-#         command=lambda: next_word()
-#     )
-#     n_button.pack(pady=20)
-
-#     # Update Card function
-
-#     def next_word():
-#         nonlocal current_word, used_words
-
-#         used_words.append(current_word)
-
-#         # Check used words to avoid repetition
-
-#         available_words = [word for word in words if word not in used_words]
-
-#         if available_words:
-#             current_word = random.choice(available_words)
-#             card.config(text=current_word['Hangul'], font=("Malgun Gothic", 36))
-#         else:
-#             messagebox.showinfo("End of Session!", "You have gone through all words!")
-#             used_words = []
 
 
 class InputPractice:
@@ -343,11 +266,11 @@ class InputPractice:
         return prepared_words
 
     def setup_ui(self):
-        self.frame = ttk.Frame(self.root, padding=20)
-        self.frame.pack(fill=tk.BOTH, expand=True)
+        self.frame = ctk.CTkFrame(self.root)
+        self.frame.pack(fill=ctk.BOTH, expand=True)
 
         if self.settings.get('timer_enabled', False):
-            self.timer_label = ttk.Label(self.frame, text="00:00")
+            self.timer_label = ctk.CTkLabel(self.frame, text="00:00")
             self.timer_label.pack(anchor="se")
 
         # Progress Bar
@@ -355,21 +278,65 @@ class InputPractice:
         self.progress = ProgressBar(self.frame, len(self.words))
 
         # Configured Word Label
-        label_font = ("Malgun Gothic", 20) if self.settings['study_direction'] == "hangul_to_lang" else ("Arial", 20)
-        entry_font = ("Malgun Gothic", 16) if self.settings['study_direction'] == "lang_to_hangul" else ("Arial", 16)
 
-        self.word_label = ttk.Label(
+        word_container = ctk.CTkFrame(
             self.frame,
-            font=label_font
+            fg_color="transparent"
         )
-        self.word_label.pack(pady=20)
+        word_container.pack(expand=True, anchor="center", padx=20, pady=(20, 10))
 
-        self.answer_entry = ttk.Entry(
+        self.word_frame = ctk.CTkFrame(
+            word_container,
+            border_width=4,
+            width=430,
+            height=200,
+            border_color=("gray70", "gray30"),
+            corner_radius=20,
+            fg_color=("white", "gray15")
+        )
+        self.word_frame.pack_propagate(False)
+        self.word_frame.pack(anchor="n", pady=(0, 20))
+
+        label_font = ("Malgun Gothic", 52) if self.settings['study_direction'] == "hangul_to_lang" else ("Arial", 52)
+        entry_font = ("Malgun Gothic", 26) if self.settings['study_direction'] == "lang_to_hangul" else ("Arial", 26)
+
+        self.word_label = ctk.CTkLabel(
+            self.word_frame,
+            wraplength=360,
+            font=label_font,
+            text_color=("black", "white")
+        )
+        self.word_label.pack(anchor="center", fill=ctk.BOTH, expand=True, padx=10, pady=10)
+
+        entry_container = ctk.CTkFrame(
             self.frame,
+            fg_color="transparent"
+        )
+        entry_container.pack(expand=True, anchor="n", pady=(0, 20))
+
+        self.entry_frame = ctk.CTkFrame(
+            entry_container,
+            border_width=0,
+            width=350,
+            height=100,
+            corner_radius=20,
+            fg_color=("transparent")
+        )
+        self.entry_frame.pack_propagate(False)
+        self.entry_frame.pack(anchor="n")
+
+        self.answer_entry = ctk.CTkEntry(
+            self.entry_frame,
             font=entry_font,
-            width=30
+            text_color=("white", "black") if ctk.get_appearance_mode() == "dark" else ("black", "white"),
+            width=300,
+            height=50,
+            corner_radius=20,
+            border_width=2,
+            border_color=("gray70", "gray30"),
+            fg_color=("white", "gray15"),
         )
-        self.answer_entry.pack(pady=5)
+        self.answer_entry.pack(fill=ctk.X, pady=5)
         self._setup_entry_placeholder()
 
         # Key Bindings
@@ -380,7 +347,7 @@ class InputPractice:
             return
         
         elapsed = self.root.session_timer.get_elapsed_time()
-        self.timer_label.config(
+        self.timer_label.configure(
             text=self.root.session_timer.format_time(elapsed)
         )
 
@@ -389,7 +356,7 @@ class InputPractice:
 
     def _setup_entry_placeholder(self):
         self.answer_entry.insert(0, "Type your answer")
-        self.answer_entry.config(foreground="gray")
+        self.answer_entry.configure(text_color="white")
         self.answer_entry.icursor(0)
         self.answer_entry.focus()
         
@@ -398,8 +365,8 @@ class InputPractice:
     def _handle_entry_key(self, event):
         current_text = self.answer_entry.get()
         if current_text == "Type your answer":
-            self.answer_entry.delete(0, tk.END)
-            self.answer_entry.config(foreground="#000000")
+            self.answer_entry.delete(0, ctk.END)
+            self.answer_entry.configure(text_color="#F1F1F1")
         
         if event.keysym == "Return" and current_text == "Type your answer":
             return "break"
@@ -445,16 +412,16 @@ class InputPractice:
             self.current_word = random.choice(available_words)
 
             if self.settings['study_direction'] == "hangul_to_lang":
-                self.word_label.config(
+                self.word_label.configure(
                     text=self.current_word['Question'],
-                    font=("Malgun Gothic", 20)
+                    font=("Malgun Gothic", 52)
                 )
             else:
-                self.word_label.config(
+                self.word_label.configure(
                     text=self.current_word['Question'],
-                    font=("Arial", 20)
+                    font=("Arial", 52)
                 )
-            
+
             self.expected_answer = self.current_word['Answer'].lower()
             self._reset_entry()
 
@@ -462,9 +429,9 @@ class InputPractice:
             self._end_session()
 
     def _reset_entry(self):
-        self.answer_entry.delete(0, tk.END)
+        self.answer_entry.delete(0, ctk.END)
         self.answer_entry.insert(0, "Type your answer")
-        self.answer_entry.config(foreground="gray")
+        self.answer_entry.configure(text_color="gray")
         self.answer_entry.icursor(0)
 
     def _end_session(self):
@@ -508,6 +475,8 @@ class MultipleChoiceGame:
         # self.settings.setdefault('show_styles', True)
         # self.settings.setdefault('timer_enabled', False)
 
+        self.configure_button_styles()
+
         self.next_question()
 
     def prepare_words(self, words, settings):
@@ -528,13 +497,13 @@ class MultipleChoiceGame:
         return prepared_words
 
     def setup_ui(self):
-        self.frame = ttk.Frame(self.root, padding=20)
-        self.frame.pack(fill=tk.BOTH, expand=True)
+        self.frame = ctk.CTkFrame(self.root)
+        self.frame.pack(fill=ctk.BOTH, expand=True)
 
         from utilities import ProgressBar
         self.progress = ProgressBar(self.frame, len(self.words))
 
-        self.question_label = ttk.Label(
+        self.question_label = ctk.CTkLabel(
             self.frame,
             font=("Malgun Gothic", 20) if self.settings['study_direction'] == "hangul_to_lang" else ("Arial", 20),
             wraplength=500,
@@ -542,17 +511,34 @@ class MultipleChoiceGame:
         self.question_label.pack(pady=20)
 
         if self.settings.get('timer_enabled', False):
-            self.timer_label = ttk.Label(self.frame, text="00:00")
+            self.timer_label = ctk.CTkLabel(self.frame, text="00:00")
             self.timer_label.pack(anchor="se")
+
+        self.original_button_config = {
+        'corner_radius': 20,
+        'fg_color': "transparent",
+        'text_color': "white",                            # Configurar legalzudo 
+        'hover_color': "#3B8ED0",
+        'border_width': 2,
+        'border_color': ("gray70", "gray30"),
+    }
 
         # Answer Buttons
         self.answer_buttons = []
         for _ in range(4):
-            a_button = ttk.Button(
+            a_button = ctk.CTkButton(              # Aqui
                 self.frame,
+                **self.original_button_config
             )
-            a_button.pack(pady=5, fill=tk.X)
+            a_button.pack(pady=5, fill=ctk.X)
             self.answer_buttons.append(a_button)
+
+    def reset_button_styles(self):
+        for btn in self.answer_buttons:
+            btn.configure(
+                **self.original_button_config,
+                state=ctk.NORMAL
+            )
 
 
     def update_timer(self):
@@ -560,7 +546,7 @@ class MultipleChoiceGame:
             return
         
         elapsed = self.root.session_timer.get_elapsed_time()
-        self.timer_label.config(
+        self.timer_label.configure(
             text=self.root.session_timer.format_time(elapsed)
         )
 
@@ -580,6 +566,7 @@ class MultipleChoiceGame:
     
     def next_question(self):
         self.buttons_locked = False
+        self.reset_button_styles()
 
         available_words = [word for word in self.words if word not in self.used_words]
 
@@ -593,14 +580,13 @@ class MultipleChoiceGame:
 
         options = self.generate_options(self.current_word['Answer'])
 
-        self.question_label.config(text=self.current_word['Question'])
+        self.question_label.configure(text=self.current_word['Question'])
 
         for button, answer in zip(self.answer_buttons, options):
-            button.config(
+            button.configure(
                 text=answer,
                 command=lambda a=answer: self.check_answer(a),
-                style="TButton",
-                state=tk.NORMAL
+                state=ctk.NORMAL
             )
             
     def check_answer(self, selected_answer):
@@ -632,21 +618,37 @@ class MultipleChoiceGame:
             self.update_button_styles(selected_answer)
         else:
             for btn in self.answer_buttons:
-                btn.config(state=tk.DISABLED)
+                btn.configure(state=ctk.DISABLED)
 
         self.root.after(1000, self.next_question)
 
+    def configure_button_styles(self):    
+        self.correct_style = {
+            'fg_color': "#2ecc71",     
+            'hover_color': "#27ae60",   
+            'text_color': "white"
+        }
+        
+        self.incorrect_style = {
+            'fg_color': "#e74c3c",     
+            'hover_color': "#c0392b",   
+            'text_color': "white"
+        }
+        
+
     def update_button_styles(self, selected_answer):
+        correct_answer = self.current_word['Answer']
+
         for btn in self.answer_buttons:
-            btn.config(state=tk.DISABLED)
-            if btn['text'] == self.current_word['Answer']:
-                btn.config(style="Correct.TButton")
-            elif btn['text'] == selected_answer:
-                btn.config(style="Incorrect.TButton")
-            else:
-                btn.config(style="TButton")
+            btn_text = btn.cget("text")
+            btn.configure(state=ctk.DISABLED)
 
+            if btn_text == correct_answer:
+                btn.configure(**self.correct_style)
 
+            elif btn_text == selected_answer:
+                btn.configure(**self.incorrect_style)
+            
         # style = ttk.Style()
         # style.configure(
         #     "Correct.TButton",
@@ -703,7 +705,7 @@ class MatchingGame:
         if settings.get('timer_enabled', False):
             self.update_timer()
 
-        self.root.bind("<Configure>", self.window_resize)
+        self.root.bind("<configure>", self.window_resize)
 
     def prepare_words(self, words, settings):
         from project import language_manager_flashcards
@@ -728,8 +730,8 @@ class MatchingGame:
         return pairs
     
     def setup_ui(self):
-        self.frame = ttk.Frame(self.root, padding=20)
-        self.frame.pack(fill=tk.BOTH, expand=True)
+        self.frame = ctk.CTkFrame(self.root)
+        self.frame.pack(fill=ctk.BOTH, expand=True)
 
         bg_color = "#b6badb"
 
@@ -738,13 +740,13 @@ class MatchingGame:
         style.configure("Custom.TFrame", background=bg_color)
 
         if self.settings.get('timer_enabled', False):
-            self.timer_label = ttk.Label(self.frame, text="00:00", background=bg_color)
+            self.timer_label = ctk.CTkLabel(self.frame, text="00:00", background=bg_color)
             self.timer_label.pack(anchor="se")
 
-        container = ttk.Frame(self.frame, style="Custom.TFrame")
-        container.pack(expand=True, fill=tk.BOTH)
+        container = ctk.CTkFrame(self.frame, style="Custom.TFrame")
+        container.pack(expand=True, fill=ctk.BOTH)
 
-        self.cards_frame = ttk.Frame(container, style="Custom.TFrame")
+        self.cards_frame = ctk.CTkFrame(container, style="Custom.TFrame")
         self.cards_frame.pack(expand=True, anchor="center")
 
         self.setup_grid()
@@ -762,7 +764,7 @@ class MatchingGame:
             return
         
         elapsed = self.root.session_timer.get_elapsed_time()
-        self.timer_label.config(
+        self.timer_label.configure(
             text=self.root.session_timer.format_time(elapsed)
         )
 
@@ -804,21 +806,21 @@ class MatchingGame:
             self.card_width = new_width
             for card in self.cards:
                 if card.winfo_ismapped():
-                    card.config(width=self.card_width)
+                    card.configure(width=self.card_width)
 
     def card_click(self, card_index):
         selected_indices = [c[0] for c in self.selected_cards]
         card = self.cards[card_index]
 
         if card_index in selected_indices:
-            card.config(relief="raised", bg="#f0f0f8")
+            card.configure(relief="raised", bg="#f0f0f8")
             self.selected_cards = [c for c in self.selected_cards if c[0] != card_index]
             return
 
         if len(self.selected_cards) >= 2:
             return
 
-        card.config(relief="sunken")
+        card.configure(relief="sunken")
         self.selected_cards.append((card_index, card))
 
         if len(self.selected_cards) == 2:
@@ -832,8 +834,8 @@ class MatchingGame:
         word2 = self.words[idx2]
 
         if word1['match_id'] == word2['match_id'] and word1['type'] != word2['type']:
-            card1.config(bg="#96F97B", relief="flat")
-            card2.config(bg="#96F97B", relief="flat")
+            card1.configure(bg="#96F97B", relief="flat")
+            card2.configure(bg="#96F97B", relief="flat")
             self.matched_pairs += 1
             self.selected_cards = []
             self.root.after(500, lambda: self.remove_cards(card1, card2))
@@ -842,8 +844,8 @@ class MatchingGame:
                 self.root.after(500, lambda: self.end_game())
         
         else:
-            card1.config(bg="#FF6347")
-            card2.config(bg="#FF6347")
+            card1.configure(bg="#FF6347")
+            card2.configure(bg="#FF6347")
             self.root.after(500, self.reset_cards)
 
     def remove_cards(self, card1, card2):
@@ -866,7 +868,7 @@ class MatchingGame:
 
     def reset_cards(self):
         for idx, card in self.selected_cards:
-            card.config(bg="SystemButtonFace", relief="raised")
+            card.configure(bg="SystemButtonFace", relief="raised")
         self.selected_cards = []
 
     def end_game(self):
@@ -958,13 +960,13 @@ class TrueFalseGame:
         return prepared_words
     
     def setup_ui(self):
-        self.frame = ttk.Frame(self.root, padding=20)
-        self.frame.pack(fill=tk.BOTH, expand=True)
+        self.frame = ctk.CTkFrame(self.root)
+        self.frame.pack(fill=ctk.BOTH, expand=True)
 
         from utilities import ProgressBar
         self.progress = ProgressBar(self.frame, len(self.words))
 
-        self.question_label = ttk.Label(
+        self.question_label = ctk.CTkLabel(
             self.frame,
             font=("Malgun Gothic", 20) if self.settings['study_direction'] == "hangul_to_lang" else ("Arial", 20),
             relief="solid",
@@ -973,10 +975,10 @@ class TrueFalseGame:
         self.question_label.pack(pady=20)
 
         if self.settings.get('timer_enabled', False):
-            self.timer_label = ttk.Label(self.frame, text="00:00")
+            self.timer_label = ctk.CTkLabel(self.frame, text="00:00")
             self.timer_label.pack(anchor="se")
 
-        self.statement_label = ttk.Label(
+        self.statement_label = ctk.CTkLabel(
             self.frame,
             font=("Arial", 16),
             wraplength=500
@@ -985,25 +987,25 @@ class TrueFalseGame:
 
         # Answer Buttons
 
-        buttons_frame = ttk.Frame(self.frame)
+        buttons_frame = ctk.CTkFrame(self.frame)
         buttons_frame.pack(pady=15)
 
         self.answer_buttons = []
-        self.true_button = ttk.Button(
+        self.true_button = ctk.CTkButton(
             buttons_frame,
             text="True",
             command=lambda: self.check_answer("True"),
             width=15
         )
-        self.true_button.pack(side=tk.LEFT, padx=10)
+        self.true_button.pack(side=ctk.LEFT, padx=10)
 
-        self.false_button = ttk.Button(
+        self.false_button = ctk.CTkButton(
             buttons_frame,
             text="False",
             command=lambda: self.check_answer("False"),
             width=15
         )
-        self.false_button.pack(side=tk.LEFT, padx=10)
+        self.false_button.pack(side=ctk.LEFT, padx=10)
         self.answer_buttons.append(self.true_button)
         self.answer_buttons.append(self.false_button)
 
@@ -1012,7 +1014,7 @@ class TrueFalseGame:
             return
         
         elapsed = self.root.session_timer.get_elapsed_time()
-        self.timer_label.config(
+        self.timer_label.configure(
             text=self.root.session_timer.format_time(elapsed)
         )
 
@@ -1044,11 +1046,11 @@ class TrueFalseGame:
             ])
             statement_text = f"{self.current_word['Question']} is {wrong_answer}"
 
-        self.question_label.config(text=self.current_word['Question'])
-        self.statement_label.config(text=statement_text)
+        self.question_label.configure(text=self.current_word['Question'])
+        self.statement_label.configure(text=statement_text)
 
         for button, answer in zip(self.answer_buttons, ["True", "False"]):
-            button.config(
+            button.configure(
                 text=answer,
                 command=lambda a=answer: self.check_answer(a),
                 style="TButton",
@@ -1089,13 +1091,13 @@ class TrueFalseGame:
             self.update_button_styles(selected_answer)
         else:
             for btn in self.answer_buttons:
-                btn.config(state=tk.DISABLED)
+                btn.configure(state=tk.DISABLED)
 
         self.root.after(1000, self.next_question)
 
     def update_button_styles(self, selected_answer):
         for btn in self.answer_buttons:
-            btn.config(state=tk.DISABLED)
+            btn.configure(state=tk.DISABLED)
 
             is_correct_button = (
                 (btn['text'] == "True" and self.current_statement_is_true) or
@@ -1108,11 +1110,11 @@ class TrueFalseGame:
             )
 
             if is_correct_button:
-                btn.config(style="Correct.TButton")
+                btn.configure(style="Correct.TButton")
             elif is_selected_button is False:
-                btn.config(style="Incorrect.TButton")
+                btn.configure(style="Incorrect.TButton")
             else:
-                btn.config(style="TButton")
+                btn.configure(style="TButton")
             
 
     def show_results(self):

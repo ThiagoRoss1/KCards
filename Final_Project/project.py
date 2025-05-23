@@ -1,5 +1,8 @@
 #CS50P Final Project 
-import tkinter as tk
+import customtkinter as ctk
+from customtkinter import *
+import os
+from PIL import Image
 from tkinter import ttk, messagebox
 import csv
 import random
@@ -18,8 +21,8 @@ language_manager_flashcards = LanguageManager()
 def main():
 
     # Main function to run the application
-    
-    root = tk.Tk()
+
+    root = ctk.CTk()
 
     def configure_hangul_support():
         try:
@@ -35,6 +38,10 @@ def main():
     # Loads Vocabulary function
     vocabulary = load_vocabulary()
 
+    ctk.set_appearance_mode("dark")
+    ctk.set_default_color_theme("dark-blue")
+    #ctk.set_default_color_theme("dark-blue")
+
     # Starts the GUI
     myapp_gui(root)
 
@@ -49,6 +56,7 @@ def myapp_gui(root):
 
     root.title("Flashcard App - Coreano")
     root.geometry("600x700")
+
     # root.minsize(400, 300)
     # root.columnconfigure(0, weight=1)   # Resize uniforme, ver depois
     # root.rowconfigure(0, weight=1)
@@ -81,26 +89,38 @@ def load_vocabulary(filepath='vocabulary.csv'):
 
 def main_menu_gui(root, vocabulary):
 
+    # image_path = os.path.join("assets", "ning.png")
+    # image = Image.open(image_path)
+
+    # ctk_image = ctk.CTkImage(light_image=image, dark_image=image, size=(200, 200))
+
+    # image_label = ctk.CTkLabel(
+    #     root,
+    #     image=ctk_image,
+    #     text="",
+    # )
+    # image_label.pack(pady=20)
+
     # Main menu GUI
 
-    n_selection_frame = ttk.Frame(root, padding=20)
-    n_selection_frame.pack(fill=tk.BOTH, expand=True)
+    n_selection_frame = ctk.CTkFrame(root)
+    n_selection_frame.pack(fill="both", expand=True)
 
-    n_t_label = ttk.Label(
+    n_t_label = ctk.CTkLabel(
         n_selection_frame,
         text="Korean Flashcards App",
         font=("Arial", 22, "bold")
     )
     n_t_label.pack(pady=10)
 
-    n_b_label = ttk.Label(
+    n_b_label = ctk.CTkLabel(
         n_selection_frame,
         text="Select a Level",
         font=("Arial", 16, "bold")
     )
     n_b_label.pack(pady=10)
 
-    buttons_frame = ttk.Frame(n_selection_frame)
+    buttons_frame = ctk.CTkFrame(n_selection_frame)
     buttons_frame.pack(pady=20)
 
     levels = sorted(set(word['Level'] for word in vocabulary))
@@ -113,22 +133,31 @@ def main_menu_gui(root, vocabulary):
     for _, level in enumerate(levels[:-1]):
 
         if level == "All Levels":
-            button_style = "Accent.TButton"
-        
-        else:
-            button_style = "TButton"
+            fg_color = "#2CC985"
+            hover_color = "#207a4c"
 
-        button = ttk.Button(
+        else:
+            fg_color = "#3B8ED0"
+            hover_color = "#36719F"
+
+        button = ctk.CTkButton(
             buttons_frame,
             text=f"{level}",
-            style=button_style,
-            command=lambda _=level: setup_module_selection(root, vocabulary, selected_frame=n_selection_frame)
+            border_width=0,
+            border_color=fg_color,
+            fg_color=fg_color,
+            hover_color=hover_color,
+            text_color="white",
+            height=40,
+            width=120,
+            command=lambda _=level: setup_module_selection(root, vocabulary, selected_frame=n_selection_frame),
+            corner_radius=8
         )
-        button.grid(row=_//3, column=_%3, padx=10, pady=10, ipadx=10, ipady=10)
+        button.grid(row=_ // 3, column=_ % 3, sticky="nsew") #padx=10, pady=10
 
     # All levels button
 
-    # a_button = ttk.Button(
+    # a_button = ctk.CTkButton(
     #     buttons_frame,
     #     text="All Levels",
     #     style="Accent.TButton",
@@ -146,44 +175,57 @@ def setup_module_selection(root, vocabulary, selected_frame):
 
     # Setup the module selection frame
 
-    selection_frame = ttk.Frame(root, padding=20)
-    selection_frame.pack(fill=tk.BOTH, expand=True)
+    selection_frame = ctk.CTkFrame(root, bg_color="transparent")
+    selection_frame.pack(fill=ctk.BOTH, expand=True)
 
-    ttk.Label(
+    ctk.CTkLabel(
         selection_frame,
         text="Select a Module",
         font=("Arial", 16, "bold")
-        ).pack(pady=10
-    )
+    ).pack(pady=10)
 
     # Language Button
 
-    language_container = ttk.Frame(selection_frame)
+    language_container = ctk.CTkFrame(selection_frame, bg_color="transparent", fg_color="transparent")
     language_container.pack(pady=10)
 
-    language_button = ttk.Button(
+    language_button = ctk.CTkButton(
         language_container,
         text=f"🌎 {language_manager_flashcards.get_language()[:3]}",
+        corner_radius=32,
+        border_width=0,
+        fg_color="#3B8ED0",
+        hover_color="#36719F",
+        border_color="#3B8ED0",
+        text_color="white",
         command=lambda: toggle_language_controls()
     )
     language_button.pack()
 
-    controls_frame = ttk.Frame(language_container)
+    controls_frame = ctk.CTkFrame(language_container, bg_color="transparent")
 
     # Combobox
 
-    language_combobox = ttk.Combobox(
+    language_combobox = ctk.CTkComboBox(
         controls_frame,
         values=["English", "Portuguese"],
+        border_color="#3B8ED0",
+        dropdown_fg_color="#9E9E9E",
+        dropdown_hover_color="#4e4e4e",
+        text_color="white",
         state="readonly",
     )
     language_combobox.pack(side="top")
 
     # Confirm Button
 
-    confirm_button = ttk.Button(
+    confirm_button = ctk.CTkButton(
         controls_frame,
         text="✔",
+        fg_color="#3B8ED0",
+        hover_color="#36719F",
+        border_color="#3B8ED0",
+        corner_radius=32,
         command=lambda: confirm_language()
     )
     confirm_button.pack(side="top")
@@ -203,12 +245,12 @@ def setup_module_selection(root, vocabulary, selected_frame):
         selected_lang = language_combobox.get()
         if selected_lang in ["English", "Portuguese"]:
             language_manager_flashcards.set_language(selected_lang)
-            language_button.config(text=f"🌎 {selected_lang[:3]}")
+            language_button.configure(text=f"🌎 {selected_lang[:3]}")
             controls_frame.pack_forget()
             
     # Modules buttons
 
-    buttons_frame = ttk.Frame(selection_frame)
+    buttons_frame = ctk.CTkFrame(master=selection_frame, bg_color="transparent", fg_color="transparent")
     buttons_frame.pack(pady=20)
 
     # Get all modules from vocabulary.csv
@@ -221,35 +263,59 @@ def setup_module_selection(root, vocabulary, selected_frame):
     for _, module in enumerate(modules[:-1]):
 
         if module == "All Modules":
-            button_style = "Accent.TButton"
+            fg_color = "#2CC985"
+            hover_color = "#207a4c"
         
         else:
-            button_style = "TButton"
+            fg_color = "#3B8ED0"
+            hover_color = "#36719F"
 
-        button = ttk.Button(
+        button = ctk.CTkButton(
             buttons_frame,
             text=f"Module {module}",
-            style=button_style,
+            fg_color=fg_color,
+            hover_color=hover_color,
+            text_color="white",
+            height=40,
+            width=120,
+            border_width=0,
+            border_color=fg_color,
+            corner_radius=8,
             command=lambda m=module: start_session(root, selection_frame, vocabulary, m)
         )
-        button.grid(row=_//3, column=_%3, padx=10, pady=10, ipadx=10, ipady=10)
+        button.grid(row=_//3, column=_%3, padx=10, pady=10, ipadx=10, ipady=10) #padx=10, pady=10, ipadx=10, ipady=10
 
     # All Modules button
 
-    all_button = ttk.Button(
+    all_button = ctk.CTkButton(
         buttons_frame,
         text="All Modules",
-        style="Accent.TButton",
+        fg_color="#2CC985",
+        hover_color="#207a4c",
+        text_color="white",
+        height=40,
+        width=120,
+        border_width=0,
+        border_color=fg_color,
+        corner_radius=8,
         command=lambda: start_session(root, selection_frame, vocabulary, "All Modules")
     )
-    all_button.grid(row=(len(modules)-1)//3 + 1, column=0, columnspan=3, pady=20, ipadx=10, ipady=5)
+    all_button.grid(row=(len(modules)-1)//3 + 1, column=0, columnspan=3, pady=20, ipadx=10, ipady=5)  #pady=20, ipadx=10, ipady=5
 
     # Return to Main Menu
 
     from routes import return_to_main_menu
-    m_menu = ttk.Button(
+    m_menu = ctk.CTkButton(
         buttons_frame,
         text="Back",
+        fg_color="#363636",
+        hover_color="#242424",
+        text_color="white",
+        height=40,
+        width=120,
+        border_width=0,
+        border_color="#363636",
+        corner_radius=8,
         command=lambda: [selection_frame.pack_forget(), return_to_main_menu(root, buttons_frame)]
     )
     m_menu.grid(row=(len(modules)-1)//3 + 2, column=0, columnspan=3, pady=20, ipadx=10, ipady=5)
@@ -283,12 +349,12 @@ def choose_study_mode(root, words, previous_frame=None):
 
     # Create a new GUI for the study session
 
-    study_frame = ttk.Frame(root, padding=20)
-    study_frame.pack(fill=tk.BOTH, expand=True)
+    study_frame = ctk.CTkFrame(root)
+    study_frame.pack(fill="both", expand=True)
 
     study_frame.vocabulary = words
 
-    ttk.Label(
+    ctk.CTkLabel(
         study_frame,
         text="Choose Study Mode",
         font=("Arial", 16, "bold")
@@ -317,11 +383,9 @@ def choose_study_mode(root, words, previous_frame=None):
        # }
     }
 
-    style = ttk.Style()
-
     for text, config in modes.items():
 
-        ttk.Button(
+        ctk.CTkButton(
             study_frame,
             text=text,
             command=lambda m=config["mode"]: start_study_session(root, study_frame, words, m),
@@ -330,33 +394,24 @@ def choose_study_mode(root, words, previous_frame=None):
 
 
     # Back button to return to module selection
-
-    style.configure(
-        "Back.TButton",
-        font=("Arial", 12, "bold"),
-        foreground="white",
-        background="black"
-    )
-
-    ttk.Button(
+    
+    ctk.CTkButton(
         study_frame,
         text="Back",
-        style="Back.TButton",
         command=lambda: [study_frame.pack_forget(), setup_module_selection(root, load_vocabulary(), selected_frame=study_frame)],
         width=15
-    ).pack(side=tk.LEFT, padx=10, pady=20)
+    ).pack(side=ctk.LEFT, padx=10, pady=20)
 
     # Return to Main Menu button
     
     from routes import return_to_main_menu
-    m_m_button = ttk.Button(
+    m_m_button = ctk.CTkButton(
         study_frame,
-        style="Back.TButton",
         text="Back to Main Menu",
         command=lambda: [study_frame.pack_forget(), return_to_main_menu(root, study_frame)],
         width=0
     )
-    m_m_button.pack(side=tk.RIGHT, padx=10, pady=20)
+    m_m_button.pack(side=ctk.RIGHT, padx=10, pady=20)
 
 
 def return_to_main_menu(root, current_frame):      # se eu precisar de um botao para voltar ( TUDO ) eu utilizo a funcao

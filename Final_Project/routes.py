@@ -1,5 +1,5 @@
-import tkinter as tk
-from tkinter import ttk, messagebox
+import customtkinter as ctk
+from customtkinter import *
 
 
 def return_to_main_menu(root, current_frame):
@@ -27,7 +27,7 @@ def return_to_choose_study_mode(root, current_frame, selected_module):
 
     choose_study_mode(root, words)
 
-class Retry(ttk.Button):
+class Retry(ctk.CTkButton):
     def __init__(self, parent, root, current_frame, vocabulary):
         self.root = root
         self.current_frame = current_frame
@@ -50,8 +50,8 @@ class Retry(ttk.Button):
         self.current_frame.pack_forget()
 
         from utilities import CustomizeStudySession
-        customize_frame = ttk.Frame(self.root)
-        customize_frame.pack(fill=tk.BOTH, expand=True)
+        customize_frame = ctk.CTkFrame(self.root)
+        customize_frame.pack(fill=ctk.BOTH, expand=True)
 
         CustomizeStudySession(
             self.root,

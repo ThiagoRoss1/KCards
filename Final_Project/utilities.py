@@ -1,34 +1,37 @@
+import customtkinter as ctk
 import tkinter as tk
+from tkinter import ttk, messagebox
+from customtkinter import *
 from tkinter import ttk, messagebox
 import time
 
 # Progress Bar
 
 class ProgressBar:
-    def __init__(self, root, total_questions):
+    def __init__(self, root, total_questions):                  # Ajeitar o toggle e ProgressBar para o customtkinter
         self.root = root
         self.total_questions = total_questions
         self.current_question = 0
 
         # Progress Bar Frame
 
-        self.progress_frame = ttk.Frame(self.root, padding=20)
-        self.progress_frame.pack(fill=tk.X, pady=10)
-        
+        self.progress_frame = ctk.CTkFrame(self.root)
+        self.progress_frame.pack(fill=ctk.X, pady=10)
+
         # Progress Bar
 
-        self.bar = ttk.Progressbar(
+        self.bar = ctk.CTkProgressBar(
             self.progress_frame,
-            orient="horizontal",
-            length=300,
-            mode="determinate",
-            maximum=self.total_questions
+            orientation="horizontal",
+            width=300,
+            mode="determinate"
         )
-        self.bar.pack(fill=tk.X, expand=True)
+        self.bar.set(0)  # Start at 0 progress
+        self.bar.pack(fill=ctk.X, expand=True)
 
         # Progress text
 
-        self.percent_label = ttk.Label(
+        self.percent_label = ctk.CTkLabel(
             self.progress_frame,
             text=f"{self.current_question} of {self.total_questions}"
         )
@@ -43,7 +46,7 @@ class ProgressBar:
 
     def update_display(self):
         self.bar['value'] = self.current_question
-        self.percent_label.config(
+        self.percent_label.configure(
             text=f"{self.current_question} of {self.total_questions}"
         )
 
@@ -58,7 +61,40 @@ class ProgressBar:
 
 # Toggle Switch
 
-class ToggleSwitch(ttk.Frame):
+
+
+
+#
+#
+#
+#             ############################ Ajustar Spinbox e ToggleSwitch para o CustomTkinter #############################################
+#                                               ScrollBar no Select a Module
+#
+#
+##
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class ToggleSwitch(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.state = tk.BooleanVar(value=False)
@@ -94,10 +130,10 @@ class ToggleSwitch(ttk.Frame):
     def update_appearence(self):
         if self.state.get():
             self.canvas.coords(self.button, 32, 2, 58, 28)
-            self.canvas.itemconfig(self.bg, fill="#4285F4")
+            self.canvas.itemconfigure(self.bg, fill="#4285F4")
         else:
             self.canvas.coords(self.button, 2, 2, 28, 28)
-            self.canvas.itemconfig(self.bg, fill="#e0e0e0")
+            self.canvas.itemconfigure(self.bg, fill="#e0e0e0")
 
 
 class SessionTimer:
@@ -160,10 +196,10 @@ class CustomizeStudySession:
         self.vocabulary = vocabulary
         self.settings = {
             'word_count': 10,
-            'realtime_feedback': tk.BooleanVar(value=False),
-            'study_direction': tk.StringVar(value="hangul_to_lang"),
-            'timer_enabled': tk.BooleanVar(value=False),
-            'difficulty': tk.StringVar(value="All")
+            'realtime_feedback': ctk.BooleanVar(value=False),
+            'study_direction': ctk.StringVar(value="hangul_to_lang"),
+            'timer_enabled': ctk.BooleanVar(value=False),
+            'difficulty': ctk.StringVar(value="All")
         }
 
         if initial_settings:
@@ -197,8 +233,8 @@ class CustomizeStudySession:
 
         # Gui Frame
 
-        self.cframe = ttk.Frame(self.root, padding=20)
-        self.cframe.pack(fill=tk.BOTH, expand=True)
+        self.cframe = ctk.CTkFrame(self.root)
+        self.cframe.pack(fill=ctk.BOTH, expand=True)
 
         # Header
 
@@ -219,11 +255,11 @@ class CustomizeStudySession:
 
     def create_header(self):
 
-        hframe = ttk.Frame(self.cframe)
-        hframe.pack(fill=tk.X, pady=(0, 20))
+        hframe = ctk.CTkFrame(self.cframe)
+        hframe.pack(fill=ctk.X, pady=(0, 20))
 
 
-        tlabel = ttk.Label(
+        tlabel = ctk.CTkLabel(
             hframe,
             text="Customize Your Study Session",
             font=("Arial", 16, "bold")
@@ -232,54 +268,55 @@ class CustomizeStudySession:
 
         minfo = f"Module {self.vocabulary[0]['Module']} - {self.vocabulary[0]['Level']}"
 
-        mlabel = ttk.Label(
+        mlabel = ctk.CTkLabel(
             self.cframe,
             text=minfo,
             font=("Arial", 10)
         )
         mlabel.pack(anchor="nw")
 
-        ttk.Separator(self.cframe).pack(fill=tk.X, pady=10)
+        separator = ctk.CTkLabel(master=self.cframe, text="───────────────────────────────────────────────", text_color="gray50")
+        separator.pack(anchor="w", pady=10)
 
     def create_word_count_selector(self):
 
         if self.root.session_settings.get('selected_mode') != "matching":
 
-            wframe = ttk.Frame(self.cframe)
-            wframe.pack(fill=tk.X, pady=10)
+            wframe = ctk.CTkFrame(self.cframe)
+            wframe.pack(fill=ctk.X, pady=10)
 
-            wlabel = ttk.Label(
+            wlabel = ctk.CTkLabel(
                 wframe,
                 text="Words Number:",
                 font=("Arial", 12)
             )
-            wlabel.pack(anchor="nw", side=tk.LEFT, padx=5)
+            wlabel.pack(anchor="nw", side=ctk.LEFT, padx=5)
 
             # Spinbox
 
             min_words = min(4, len(self.vocabulary))
             default_value = max(min(10, len(self.vocabulary)), min_words)
 
-            self.spinbox = ttk.Spinbox(
+            self.spinbox = ttk.Spinbox(                  
                 wframe,
                 from_=min_words,
                 to=len(self.vocabulary),
                 width=5,
                 command=self.update_slider
             )
-            self.spinbox.pack(anchor="nw", pady=5, side=tk.LEFT)
+            self.spinbox.pack(anchor="nw", pady=5, side=ctk.LEFT)
             self.spinbox.bind("<KeyRelease>", self.sync_widgets)
 
             # Slider
 
-            self.slider = ttk.Scale(
+            self.slider = ctk.CTkSlider(
                 wframe,
                 from_=min_words,
                 to=len(self.vocabulary),
-                orient=tk.HORIZONTAL,
+                orientation=ctk.HORIZONTAL,
                 command=self.update_spinbox
             )
-            self.slider.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
+            self.slider.pack(side=ctk.LEFT, fill=ctk.X, expand=True, padx=5)
 
             # Valores Iniciais
             
@@ -289,15 +326,15 @@ class CustomizeStudySession:
     def create_direction_selector(self):
 
         if self.root.session_settings.get('selected_mode') != "matching":
-            tframe = ttk.Frame(self.cframe)
-            tframe.pack(fill=tk.X, pady=10)
+            tframe = ctk.CTkFrame(self.cframe)
+            tframe.pack(fill=ctk.X, pady=10)
 
-            tlabel = ttk.Label(
+            tlabel = ctk.CTkLabel(
                 tframe,
                 text="Answer With:",
                 font=("Arial", 12)
             )
-            tlabel.pack(anchor="nw", side=tk.LEFT, padx=5)
+            tlabel.pack(anchor="nw", side=ctk.LEFT, padx=5)
 
             from project import language_manager_flashcards
             directions = [
@@ -306,90 +343,88 @@ class CustomizeStudySession:
             ]
 
             for text, value in directions:
-                ttk.Radiobutton(
+                ctk.CTkRadioButton(
                     tframe,
                     text=text,
                     variable=self.settings['study_direction'],
                     value=value
-                ).pack(anchor="nw", padx=10, side=tk.LEFT)
+                ).pack(anchor="nw", padx=10, side=ctk.LEFT)
 
     def create_feedback_switch(self):
 
         if self.root.session_settings.get('selected_mode') == "multiple_choice" or self.root.session_settings.get('selected_mode') == "true_or_false":
-            sframe = ttk.Frame(self.cframe)
-            sframe.pack(fill=tk.X, pady=10)
+            sframe = ctk.CTkFrame(self.cframe)
+            sframe.pack(fill=ctk.X, pady=10)
 
-            slabel = ttk.Label(
+            slabel = ctk.CTkLabel(
                 sframe,
                 text="Auto Correction:",
                 font=("Arial", 12)
             )
-            slabel.pack(anchor="nw", side=tk.LEFT, padx=5)
+            slabel.pack(anchor="nw", side=ctk.LEFT, padx=5)
 
             self.feedback_switch = ToggleSwitch(sframe)
             self.feedback_switch.pack(anchor="nw", pady=5)
             self.settings['realtime_feedback'] = self.feedback_switch.state
 
     def create_timer_button(self):
-        tframe = ttk.Frame(self.cframe)
-        tframe.pack(fill=tk.X, pady=10)
+        tframe = ctk.CTkFrame(self.cframe)
+        tframe.pack(fill=ctk.X, pady=10)
 
         from utilities import SessionTimer
 
-        tlabel = ttk.Label(
+        tlabel = ctk.CTkLabel(
             tframe,
             text="Timer",
             font=("Arial", 12)
         )
-        tlabel.pack(anchor="nw", side=tk.LEFT, padx=5)
+        tlabel.pack(anchor="nw", side=ctk.LEFT, padx=5)
 
         self.timer_switch = ToggleSwitch(tframe)
         self.timer_switch.pack(anchor="nw", pady=5)
 
     def create_difficulty_selector_button(self):
-        dframe = ttk.Frame(self.cframe)
-        dframe.pack(fill=tk.X, pady=10)
+        dframe = ctk.CTkFrame(self.cframe)
+        dframe.pack(fill=ctk.X, pady=10)
 
-        dlabel = ttk.Label(
+        dlabel = ctk.CTkLabel(
             dframe,
             text="Difficulty Selector:",
             font=("Arial", 12)
         )
-        dlabel.pack(anchor="nw", side=tk.LEFT, padx=5)
+        dlabel.pack(anchor="nw", side=ctk.LEFT, padx=5)
 
-        self.difficulty_var = tk.StringVar(value="All")
+        self.difficulty_var = ctk.StringVar(value="All")
 
         for level in ["All", "Easy", "Medium", "Hard"]:
-            ttk.Radiobutton(
+            ctk.CTkRadioButton(
                 dframe,
                 text=level,
                 variable=self.difficulty_var,
                 value=level
-            ).pack(anchor="nw", padx=10, side=tk.LEFT)
+            ).pack(anchor="nw", padx=10, side=ctk.LEFT)
         
     def create_start_button(self):
-        bframe = ttk.Frame(self.cframe)
-        bframe.pack(fill=tk.X, pady=10)
+        bframe = ctk.CTkFrame(self.cframe)
+        bframe.pack(fill=ctk.X, pady=10)
 
-        sbutton = ttk.Button(
+        sbutton = ctk.CTkButton(
             bframe,
             text="Start",
-            style="Accent.TButton",
             command=self.start_session,
             width=20
         )
         sbutton.pack(pady=10, ipady=10)
 
     def create_back_button(self):
-        bframe = ttk.Frame(self.cframe)
-        bframe.pack(fill=tk.X, pady=10)
+        bframe = ctk.CTkFrame(self.cframe)
+        bframe.pack(fill=ctk.X, pady=10)
         
         from routes import return_to_choose_study_mode
-        bbutton = ttk.Button(
+        bbutton = ctk.CTkButton(
             bframe,
             text="Back",
             width=10,
-            style="Accent.TButton",
             command=lambda: return_to_choose_study_mode(self.root, self.cframe, selected_module=self.vocabulary[0]['Module'])
         )
         bbutton.pack(anchor="s", pady=5, ipady=5)
