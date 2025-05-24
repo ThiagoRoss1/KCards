@@ -689,8 +689,8 @@ class MatchingGame:
         self.matched_pairs = 0
         self.attempts = 0
 
-        self.card_width = 6
-        self.card_height = 4
+        self.card_width = 160
+        self.card_height = 120
         self.max_pairs = min(6, len(self.words))
 
         self.words = self.prepare_words(words, settings)
@@ -705,7 +705,7 @@ class MatchingGame:
         if settings.get('timer_enabled', False):
             self.update_timer()
 
-        self.root.bind("<configure>", self.window_resize)
+        self.root.bind("<Configure>", self.window_resize)
 
     def prepare_words(self, words, settings):
         from project import language_manager_flashcards
@@ -733,20 +733,14 @@ class MatchingGame:
         self.frame = ctk.CTkFrame(self.root)
         self.frame.pack(fill=ctk.BOTH, expand=True)
 
-        bg_color = "#b6badb"
-
-        self.frame.configure(style="Custom.TFrame")
-        style = ttk.Style()
-        style.configure("Custom.TFrame", background=bg_color)
-
         if self.settings.get('timer_enabled', False):
-            self.timer_label = ctk.CTkLabel(self.frame, text="00:00", background=bg_color)
+            self.timer_label = ctk.CTkLabel(self.frame, text="00:00")
             self.timer_label.pack(anchor="se")
 
-        container = ctk.CTkFrame(self.frame, style="Custom.TFrame")
+        container = ctk.CTkFrame(self.frame)
         container.pack(expand=True, fill=ctk.BOTH)
 
-        self.cards_frame = ctk.CTkFrame(container, style="Custom.TFrame")
+        self.cards_frame = ctk.CTkFrame(container)
         self.cards_frame.pack(expand=True, anchor="center")
 
         self.setup_grid()
@@ -755,9 +749,9 @@ class MatchingGame:
 
     def setup_grid(self):
         for i in range(3):
-            self.cards_frame.grid_rowconfigure(i, weight=0, minsize=120)
+            self.cards_frame.grid_rowconfigure(i, weight=1, uniform="row")
         for i in range(4):
-            self.cards_frame.grid_columnconfigure(i, weight=0, minsize=160)
+            self.cards_frame.grid_columnconfigure(i, weight=1, uniform="col")
 
     def update_timer(self):
         if not hasattr(self, 'timer_label') or not hasattr(self.root, 'session_timer'):
@@ -773,59 +767,74 @@ class MatchingGame:
 
     def create_cards(self):
         # Grid 3x4
-
         self.cards = []
-        card_bg = "#f0f0f8"
-        card_fg = "#0A0A0A"
+        self.card_placeholders = []
+        card_fg_color = "#2B2B2B"
+        card_text_color = "#FFFFFF"
         for i in range(12):
-            row, col = divmod(i, 3)
-            card = tk.Label(
+            row, col = divmod(i, 4)
+
+            placeholder = ctk.CTkLabel(
+                self.cards_frame,
+                text="",
+                width=self.card_width,
+                height=self.card_height,
+                fg_color="transparent"
+            )
+            placeholder.grid(row=row, column=col, padx=5, pady=5)
+            self.card_placeholders.append(placeholder)
+
+            card = ctk.CTkButton(
                 self.cards_frame,
                 text=self.words[i]['text'],
                 font=("Malgun Gothic", 16) if self.words[i]['type'] == 'hangul' else ("Arial", 16),
-                relief="raised",
                 width=self.card_width,
                 height=self.card_height,
-                wraplength=150,
-                padx=10,
-                pady=10,
-                cursor="hand2",
-                bg=card_bg,
-                fg=card_fg,
-                bd=2
+                fg_color=card_fg_color,
+                text_color=card_text_color,
+                corner_radius=20,
+                command=lambda idx=i: self.card_click(idx),
             )
             card.grid(row=row, column=col, padx=5, pady=5, sticky="nsew")
-            card.bind("<Button-1>", lambda e, idx=i: self.card_click(idx))
+           # card.bind("<Button-1>", lambda e, idx=i: self.card_click(idx))
             self.cards.append(card)
 
             card.grid_info()['original_pos'] = (row, col)
 
     def window_resize(self, event):
-        new_width = max(12, min(20, int(event.width / 80)))
-        if new_width != self.card_width:
-            self.card_width = new_width
-            for card in self.cards:
-                if card.winfo_ismapped():
-                    card.configure(width=self.card_width)
+        pass
+        # new_width = max(12, min(20, int(event.width / 80)))
+        # if new_width != self.card_width:
+        #     self.card_width = new_width
+        #     for card in self.cards:
+        #         if card.winfo_ismapped():
+        #             card.configure(width=self.card_width)
 
     def card_click(self, card_index):
-        selected_indices = [c[0] for c in self.selected_cards]
+        if len(self.selected_cards) >= 2:
+            return
+        
         card = self.cards[card_index]
-
-        if card_index in selected_indices:
-            card.configure(relief="raised", bg="#f0f0f8")
+        
+        if any(c[0] == card_index for c in self.selected_cards):
+            card.configure(fg_color="#2B2B2B")
             self.selected_cards = [c for c in self.selected_cards if c[0] != card_index]
             return
 
-        if len(self.selected_cards) >= 2:
-            return
-
-        card.configure(relief="sunken")
+        card.configure(fg_color="#3B8ED0")
         self.selected_cards.append((card_index, card))
 
         if len(self.selected_cards) == 2:
             self.attempts += 1
             self.check_match()
+
+
+          # selected_indices = [c[0] for c in self.selected_cards]
+
+        # if card_index in selected_indices:
+        #     card.configure()
+        #     self.selected_cards = [c for c in self.selected_cards if c[0] != card_index]
+        #     return
 
     def check_match(self):
         idx1, card1 = self.selected_cards[0]
@@ -834,41 +843,44 @@ class MatchingGame:
         word2 = self.words[idx2]
 
         if word1['match_id'] == word2['match_id'] and word1['type'] != word2['type']:
-            card1.configure(bg="#96F97B", relief="flat")
-            card2.configure(bg="#96F97B", relief="flat")
+            card1.configure(fg_color="#96F97B")
+            card2.configure(fg_color="#96F97B")
             self.matched_pairs += 1
             self.selected_cards = []
             self.root.after(500, lambda: self.remove_cards(card1, card2))
 
-            if self.matched_pairs == 6:
+            if self.matched_pairs == self.max_pairs:
                 self.root.after(500, lambda: self.end_game())
         
         else:
-            card1.configure(bg="#FF6347")
-            card2.configure(bg="#FF6347")
+            card1.configure(fg_color="#FF6347")
+            card2.configure(fg_color="#FF6347")
             self.root.after(500, self.reset_cards)
 
     def remove_cards(self, card1, card2):
-        card1_pos = card1.grid_info()
-        card2_pos = card2.grid_info()
+        idx1 = self.cards.index(card1)
+        idx2 = self.cards.index(card2)
 
         card1.grid_remove()
         card2.grid_remove()
 
+        self.card_placeholders[idx1].configure(text="✓", text_color="green")
+        self.card_placeholders[idx2].configure(text="✓", text_color="green")    # Modificar 
+
         # Invisible Placeholders
-        if 'row' in card1_pos and 'column' in card1_pos:
-            placeholder1 = tk.Label(self.cards_frame, text="", width=self.card_width, height=self.card_height)
-            placeholder1.grid(row=card1_pos['row'], column=card1_pos['column'], padx=5, pady=5, sticky="nsew")
-            placeholder1.lower()
+        # if 'row' in card1_pos and 'column' in card1_pos:
+        #     placeholder1 = ctk.CTkLabel(self.cards_frame, text="", width=self.card_width, height=self.card_height)
+        #     placeholder1.grid(row=card1_pos['row'], column=card1_pos['column'], padx=5, pady=5, sticky="nsew")
+        #     placeholder1.lower()
         
-        if 'row' in card2_pos and 'column' in card2_pos:
-            placeholder2 = tk.Label(self.cards_frame, text="", width=self.card_width, height=self.card_height)
-            placeholder2.grid(row=card2_pos['row'], column=card2_pos['column'], padx=5, pady=5, sticky="nsew")
-            placeholder2.lower()
+        # if 'row' in card2_pos and 'column' in card2_pos:
+        #     placeholder2 = ctk.CTkLabel(self.cards_frame, text="", width=self.card_width, height=self.card_height)
+        #     placeholder2.grid(row=card2_pos['row'], column=card2_pos['column'], padx=5, pady=5, sticky="nsew")
+        #     placeholder2.lower()
 
     def reset_cards(self):
         for idx, card in self.selected_cards:
-            card.configure(bg="SystemButtonFace", relief="raised")
+            card.configure(fg_color="#2B2B2B")
         self.selected_cards = []
 
     def end_game(self):
@@ -966,44 +978,106 @@ class TrueFalseGame:
         from utilities import ProgressBar
         self.progress = ProgressBar(self.frame, len(self.words))
 
-        self.question_label = ctk.CTkLabel(
-            self.frame,
-            font=("Malgun Gothic", 20) if self.settings['study_direction'] == "hangul_to_lang" else ("Arial", 20),
-            relief="solid",
-            wraplength=500
-        )
-        self.question_label.pack(pady=20)
-
         if self.settings.get('timer_enabled', False):
             self.timer_label = ctk.CTkLabel(self.frame, text="00:00")
-            self.timer_label.pack(anchor="se")
+            self.timer_label.pack(anchor="n")
+
+        qs_container = ctk.CTkFrame(
+            self.frame,
+            fg_color="transparent"
+        )
+        qs_container.pack(expand=True, anchor="center", padx=20, pady=(10, 0))
+
+        qs_frame = ctk.CTkFrame(
+            qs_container,
+            fg_color="transparent",
+            border_width=4,
+            width=300,
+            height=200,
+            border_color=("gray70", "gray30"),
+            corner_radius=20,
+        )
+        qs_frame.pack(expand=True, anchor="center", padx=20, pady=(10, 0))
+
+        content_frame = ctk.CTkFrame(
+            qs_frame,
+            fg_color="transparent"
+        )
+        content_frame.pack(expand=True, anchor="center", padx=10, pady=10)
+
+        self.question_label = ctk.CTkLabel(
+            content_frame,
+            font=("Malgun Gothic", 45) if self.settings['study_direction'] == "hangul_to_lang" else ("Arial", 45),
+            fg_color="transparent",
+            text_color="white",
+            width=500,
+            height=20,
+            wraplength=500
+        )
+        self.question_label.pack(pady=10)
+
+        self.elabel = ctk.CTkLabel(
+            content_frame,
+            text="=",
+            font=("Arial", 30),
+            fg_color="transparent",
+            text_color="white",
+            width=50,
+            height=20,
+            wraplength=200
+        )
+        self.elabel.pack(pady=20)
 
         self.statement_label = ctk.CTkLabel(
-            self.frame,
-            font=("Arial", 16),
+            content_frame,
+            font=("Malgun Gothic", 45) if self.settings['study_direction'] == "lang_to_hangul" else ("Arial", 45),
+            fg_color="transparent",
+            text_color="white",
+            width=500,
+            height=50,
             wraplength=500
         )
         self.statement_label.pack(pady=10)
 
         # Answer Buttons
 
-        buttons_frame = ctk.CTkFrame(self.frame)
-        buttons_frame.pack(pady=15)
+        buttons_container = ctk.CTkFrame(
+            self.frame,
+            fg_color="transparent",
+        )
+        buttons_container.pack(expand=True, anchor="center", padx=20, pady=(0, 20))
+
+        buttons_frame = ctk.CTkFrame(buttons_container)
+        buttons_frame.pack(pady=0)
 
         self.answer_buttons = []
         self.true_button = ctk.CTkButton(
             buttons_frame,
             text="True",
-            command=lambda: self.check_answer("True"),
-            width=15
+            fg_color="transparent",
+            text_color="white",
+            hover_color="#3B8ED0",
+            border_width=2,
+            border_color=("gray70", "gray30"),
+            corner_radius=20,
+            width=250,
+            height=50,
+            command=lambda: self.check_answer("True")
         )
         self.true_button.pack(side=ctk.LEFT, padx=10)
 
         self.false_button = ctk.CTkButton(
             buttons_frame,
             text="False",
-            command=lambda: self.check_answer("False"),
-            width=15
+            fg_color="transparent",
+            text_color="white",
+            hover_color="#3B8ED0",
+            border_width=2,
+            border_color=("gray70", "gray30"),
+            corner_radius=20,
+            width=250,
+            height=50,
+            command=lambda: self.check_answer("False")
         )
         self.false_button.pack(side=ctk.LEFT, padx=10)
         self.answer_buttons.append(self.true_button)
@@ -1024,6 +1098,7 @@ class TrueFalseGame:
 
     def next_question(self):
         self.buttons_locked = False
+        self.reset_button_styles()
 
         available_words = [word for word in self.words if word not in self.used_words]
 
@@ -1039,22 +1114,35 @@ class TrueFalseGame:
 
         if self.current_statement_is_true:
 
-            statement_text = f"{self.current_word['Question']} is {self.current_word['Answer']}"
+            statement_text = f"{self.current_word['Answer']}"
         else:
             wrong_answer = random.choice([
                 word['Answer'] for word in self.words if word['Answer'] != self.current_word['Answer']
             ])
-            statement_text = f"{self.current_word['Question']} is {wrong_answer}"
+            statement_text = f"{wrong_answer}"
 
         self.question_label.configure(text=self.current_word['Question'])
+        self.elabel.configure(text=self.elabel.cget("text"))
         self.statement_label.configure(text=statement_text)
 
-        for button, answer in zip(self.answer_buttons, ["True", "False"]):
-            button.configure(
-                text=answer,
-                command=lambda a=answer: self.check_answer(a),
-                style="TButton",
-                state=tk.NORMAL
+        for btn in self.answer_buttons:
+            btn.configure(state=ctk.NORMAL)
+
+        # for button, answer in zip(self.answer_buttons, ["True", "False"]):
+        #     button.configure(
+        #         text=answer,
+        #         command=lambda a=answer: self.check_answer(a),
+        #         state=ctk.NORMAL
+        #     )
+
+    def reset_button_styles(self):
+        for btn in self.answer_buttons:
+            btn.configure(
+                fg_color="transparent",
+                text_color="white",
+                hover_color="#3B8ED0",
+                border_width=2,
+                border_color=("gray70", "gray30"),
             )
 
     def check_answer(self, selected_answer):
@@ -1063,21 +1151,19 @@ class TrueFalseGame:
         
         self.buttons_locked = True
         
-        user_answer = str(selected_answer) if not isinstance(selected_answer, str) else selected_answer
-
-        is_correct = (user_answer.lower() == str(self.current_statement_is_true).lower())
+        is_correct = (selected_answer == str(self.current_statement_is_true))
 
         if is_correct:
             self.correct += 1
             self.score += 1
+            self.progress.increment()
         else:
             self.incorrect += 1
+            self.progress.increment()
         
-        self.progress.increment()
-
         self.history.append({
             'word': self.current_word,
-            'user_answer': user_answer,
+            'user_answer': selected_answer,
             'correct': is_correct,
             'statement_question': self.statement_label.cget("text"),
             'correct_answer': str(self.current_statement_is_true),
@@ -1091,31 +1177,39 @@ class TrueFalseGame:
             self.update_button_styles(selected_answer)
         else:
             for btn in self.answer_buttons:
-                btn.configure(state=tk.DISABLED)
+                btn.configure(state=ctk.DISABLED)
 
         self.root.after(1000, self.next_question)
 
     def update_button_styles(self, selected_answer):
+        self.correct_style = {
+            'fg_color': "#2ecc71",     
+            'hover_color': "#27ae60",   
+            'text_color': "white"
+        }
+        
+        self.incorrect_style = {
+            'fg_color': "#e74c3c",     
+            'hover_color': "#c0392b",   
+            'text_color': "white"
+        }
+
         for btn in self.answer_buttons:
-            btn.configure(state=tk.DISABLED)
+            btn_text = btn.cget("text")
+            is_correct_button = (btn_text == "True" and self.current_statement_is_true) or \
+                               (btn_text == "False" and not self.current_statement_is_true)
 
-            is_correct_button = (
-                (btn['text'] == "True" and self.current_statement_is_true) or
-                (btn['text'] == "False" and not self.current_statement_is_true)
-            )
+            btn.configure(state=ctk.DISABLED)
 
-            is_selected_button = (
-                (btn['text'] == "True" and selected_answer is True) or
-                (btn['text'] == "False" and selected_answer is False)
-            )
+            if selected_answer == str(self.current_statement_is_true):
+                if is_correct_button:
+                    btn.configure(**self.correct_style)
 
-            if is_correct_button:
-                btn.configure(style="Correct.TButton")
-            elif is_selected_button is False:
-                btn.configure(style="Incorrect.TButton")
             else:
-                btn.configure(style="TButton")
-            
+                if is_correct_button:
+                    btn.configure(**self.correct_style)
+                elif btn_text == selected_answer:
+                    btn.configure(**self.incorrect_style)
 
     def show_results(self):
         from results_screen import TrueFalseResultsScreen

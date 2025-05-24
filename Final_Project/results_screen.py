@@ -1,5 +1,8 @@
-import tkinter as tk
-from tkinter import ttk, messagebox
+import customtkinter as ctk
+from customtkinter import *
+
+# import tkinter as tk
+# from tkinter import ttk, messagebox
 import routes
 from routes import return_to_main_menu, Retry
 
@@ -36,8 +39,8 @@ class ResultsScreen:
         for widget in self.root.winfo_children():
             widget.pack_forget()
 
-        self.main_frame = ttk.Frame(self.root, padding=20)
-        self.main_frame.pack(fill=tk.BOTH, expand=True)
+        self.main_frame = ctk.CTkFrame(self.root)
+        self.main_frame.pack(fill=ctk.BOTH, expand=True)
 
 
         if hasattr(root, 'session_timer') and getattr(root.session_timer, 'is_running', False):
@@ -46,7 +49,7 @@ class ResultsScreen:
         else:
             time_text = ""
         
-        time_label = ttk.Label(
+        time_label = ctk.CTkLabel(
             self.main_frame,
             text=time_text,
             font=("Arial", 12)
@@ -56,7 +59,7 @@ class ResultsScreen:
 
         # Title Label
 
-        main_label = ttk.Label(
+        main_label = ctk.CTkLabel(
             self.main_frame,
             text=f"Results: {self.correct}/{self.total} ({self.correct/self.total:.0%})",
             font=("Arial", 16, "bold")
@@ -65,33 +68,33 @@ class ResultsScreen:
 
         # Stats Label
 
-        stats_frame = ttk.Frame(self.main_frame)
-        stats_frame.pack(fill=tk.X, pady=10)
+        stats_frame = ctk.CTkFrame(self.main_frame)
+        stats_frame.pack(fill=ctk.X, pady=10)
 
-        ttk.Label(
+        ctk.CTkLabel(
             stats_frame,
             text=f"✔ Corrects: {self.correct}",
-            foreground="green"
-        ).pack(side=tk.LEFT)
+            text_color="green"
+        ).pack(side=ctk.LEFT)
 
-        ttk.Label(
+        ctk.CTkLabel(
             stats_frame,
             text=f"❌ Incorrects: {self.incorrect}",
-            foreground="red"
-        ).pack(side=tk.RIGHT)
+            text_color="red"
+        ).pack(side=ctk.RIGHT)
 
 
         # Answer List Frame
 
-        self.canvas = tk.Canvas(self.main_frame)
+        self.canvas = ctk.CTkCanvas(self.main_frame)
         self.canvas.bind("<MouseWheel>",
                          lambda e: self.canvas.yview_scroll(int(-1*(e.delta/120)), "units"))
         
         self.canvas.bind("<Button-4>", lambda e: self.canvas.yview_scroll(-1, "units"))
         self.canvas.bind("<Button-5>", lambda e: self.canvas.yview_scroll(1, "units"))
 
-        scrollbar = ttk.Scrollbar(self.main_frame, orient=tk.VERTICAL, command=self.canvas.yview)
-        scrollable_frame = ttk.Frame(self.canvas)
+        scrollbar = ctk.CTkScrollbar(self.main_frame, orientation=ctk.VERTICAL, command=self.canvas.yview)
+        scrollable_frame = ctk.CTkFrame(self.canvas)
 
         scrollable_frame.bind(
             "<Configure>",
@@ -103,7 +106,7 @@ class ResultsScreen:
         self.canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
         self.canvas.configure(yscrollcommand=scrollbar.set)
 
-        self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.canvas.pack(side=ctk.LEFT, fill=ctk.BOTH, expand=True)
         scrollbar.pack(side="right", fill="y")
 
         # History Label
@@ -118,19 +121,19 @@ class ResultsScreen:
                     self.add_input_item(scrollable_frame, pair, pair['user_answer'], pair['correct'])
         # Action Buttons Frame
 
-        button_frame = ttk.Frame(self.main_frame)
+        button_frame = ctk.CTkFrame(self.main_frame)
         button_frame.pack(pady=10)
 
         # Buttons
 
-       # retry_button = ttk.Button(
+       # retry_button = ctk.CTkButton(
           #  button_frame,
-          ## retry_button.pack(side=tk.LEFT, padx=8)
+          ## retry_button.pack(side=ctk.LEFT, padx=8)
 
         from routes import return_to_main_menu, Retry
         from project import load_vocabulary
         vocabulary = load_vocabulary()
-        ttk.Button(
+        ctk.CTkButton(
             button_frame,
             text="🏠 Main Menu",
             command=lambda: return_to_main_menu(self.root, self.main_frame)
@@ -142,7 +145,7 @@ class ResultsScreen:
             current_frame=self.main_frame,
             vocabulary=self.root.session_settings['words']
         )
-        retry_button.pack(side=tk.RIGHT, padx=8)
+        retry_button.pack(side=ctk.RIGHT, padx=8)
 
         # restart_button = Restart(
         #     parent=button_frame,
@@ -150,15 +153,15 @@ class ResultsScreen:
         #     current_frame=self.main_frame,
         #     vocabulary=self.root.session_settings['words'],
         # )
-        # restart_button.pack(side=tk.RIGHT, padx=8)
+        # restart_button.pack(side=ctk.RIGHT, padx=8)
 
-        # ebutton = ttk.Button(
+        # ebutton = ctk.CTkButton(
         #     button_frame,
         #     text="Next",
         #     command=lambda: self.start_mistakes_session(),     # Kinda Advanced ( make it in later updates )
         #     width=15
         # )
-        # ebutton.pack(side=tk.RIGHT, padx=8)
+        # ebutton.pack(side=ctk.RIGHT, padx=8)
 
     def add_input_item(self, parent_frame, item, user_answer, correct):
         from project import LanguageManager, language_manager_flashcards
@@ -175,12 +178,12 @@ class ResultsScreen:
 
         # Answers List
 
-        a_frame = ttk.Frame(parent_frame, padding=10, relief="solid")
-        a_frame.pack(fill=tk.X, pady=5)
+        a_frame = ctk.CTkFrame(parent_frame)
+        a_frame.pack(fill=ctk.X, pady=5)
 
         # Words
 
-        w_label = ttk.Label(
+        w_label = ctk.CTkLabel(
             a_frame,
             text=question_text,
             font=("Malgun Gothic", 12, "bold")
@@ -192,21 +195,21 @@ class ResultsScreen:
         status = "✔" if correct else "❌"
         color = "green" if correct else "red"
 
-        u_label = ttk.Label(
+        u_label = ctk.CTkLabel(
             a_frame,
             text=f"{status} Your Answer: {user_answer}",   # Mudar isso para adaptar ao Multiple Choice
             font=("Arial", 12),
-            foreground=color
+            text_color=color
         )
         u_label.pack(anchor="w")
 
         # Correct Answer (if incorrect)
 
         if not correct:
-            c_label = ttk.Label(
+            c_label = ctk.CTkLabel(
                 a_frame,
                 text=f"❌ Correct Answer: {correct_answer}",
-                foreground="blue",
+                text_color="blue",
             )
             c_label.pack(anchor="w")
 
@@ -216,10 +219,10 @@ class ResultsScreen:
             'Hard': "#A78B12"    #botar uma sombra
         }
 
-        dlabel = ttk.Label(
+        dlabel = ctk.CTkLabel(
             a_frame,
             text=f"📑 Difficulty: {word['Difficulty']}",
-            foreground=difficulty_color.get(word['Difficulty'], 'black')
+            text_color=difficulty_color.get(word['Difficulty'], 'black')
         )
         dlabel.pack(anchor="w")
 
@@ -238,10 +241,10 @@ class ResultsScreen:
             question_text = f"{language_manager_flashcards.get_translations(word)} ({word['Hangul']})"
             correct_answer = word['Hangul']
 
-        m_frame = ttk.Frame(parent_frame, padding=10, relief="solid")
-        m_frame.pack(fill=tk.X, pady=5)
+        m_frame = ctk.CTkFrame(parent_frame)
+        m_frame.pack(fill=ctk.X, pady=5)
 
-        w_label = ttk.Label(
+        w_label = ctk.CTkLabel(
             m_frame,
             text=question_text,
             font=("Malgun Gothic", 12, "bold")
@@ -253,21 +256,21 @@ class ResultsScreen:
         status = "✔" if selected_correct else "❌"
         color = "green" if selected_correct else "red"
 
-        m_label = ttk.Label(
+        m_label = ctk.CTkLabel(
             m_frame,
             text=f"{status} You Selected: {selected_option}",
             font=("Arial", 12),
-            foreground=color
+            text_color=color
         )
         m_label.pack(anchor="w")
 
         # Correct Answer (if incorrect)
 
         if not selected_correct:
-            c_label = ttk.Label(
+            c_label = ctk.CTkLabel(
                 m_frame,
                 text=f"❌ Correct Answer: {correct_answer}",
-                foreground="blue"
+                text_color="blue"
             )
             c_label.pack(anchor="w")
 
@@ -293,42 +296,42 @@ class MatchingResultsScreen:
             widget.pack_forget()
 
         
-        self.main_frame = ttk.Frame(self.root, padding=20)
-        self.main_frame.pack(fill=tk.BOTH, expand=True)
+        self.main_frame = ctk.CTkFrame(self.root)
+        self.main_frame.pack(fill=ctk.BOTH, expand=True)
 
         # Title Label
 
-        tlabel = ttk.Label(
+        tlabel = ctk.CTkLabel(
             self.main_frame,
             text="🎯 Matching Game Results",
             font=("Arial", 16, "bold")
         )
         tlabel.pack(pady=10)
 
-        self.statsframe = ttk.Frame(self.main_frame)
-        self.statsframe.pack(fill=tk.X, pady=10)
+        self.statsframe = ctk.CTkFrame(self.main_frame)
+        self.statsframe.pack(fill=ctk.X, pady=10)
 
-        accuracy_label = ttk.Label(
+        accuracy_label = ctk.CTkLabel(
             self.statsframe,
             text=f"• ✔ Accuracy: {self.accuracy:.0%}",
             font=("Arial", 16, "bold"),
-            foreground="#13e263" if self.accuracy >= 0.75 else "#ff3a00" if self.accuracy >= 0.5 else "#ca1d10"
+            text_color="#13e263" if self.accuracy >= 0.75 else "#ff3a00" if self.accuracy >= 0.5 else "#ca1d10"
         )
         accuracy_label.pack(anchor="center", pady=5)
 
-        attempts_label = ttk.Label(
+        attempts_label = ctk.CTkLabel(
             self.statsframe,
             text=f"• 📑 Attempts: {self.attempts}",
             font=("Arial", 16, "bold"),
-            foreground="#12eccf" if self.attempts == 6 else "#ff6400" if 6 < self.attempts < 12 else "#E0115F"
+            text_color="#12eccf" if self.attempts == 6 else "#ff6400" if 6 < self.attempts < 12 else "#E0115F"
         )
         attempts_label.pack(anchor="center", pady=5)
 
-        wrong_label = ttk.Label(
+        wrong_label = ctk.CTkLabel(
             self.statsframe,
             text=f"• ❌ Incorrects: {self.incorrect}",
             font=("Arial", 16, "bold"),
-            foreground="#4dd6a2" if self.incorrect == 0 else "#ff8f00" if 6 < self.incorrect < 12 else "#FF073A"
+            text_color="#4dd6a2" if self.incorrect == 0 else "#ff8f00" if 6 < self.incorrect < 12 else "#FF073A"
         )
         wrong_label.pack(anchor="center", pady=5)
 
@@ -338,7 +341,7 @@ class MatchingResultsScreen:
         else:
             time_text = ""
 
-        time_label = ttk.Label(
+        time_label = ctk.CTkLabel(
             self.statsframe,
             text=time_text,
             font=("Arial", 16, "bold")
@@ -347,27 +350,27 @@ class MatchingResultsScreen:
 
         # Words List Frame
 
-        words_frame = ttk.Frame(self.main_frame)
-        words_frame.pack(fill=tk.BOTH, expand=True, pady=20)
+        words_frame = ctk.CTkFrame(self.main_frame)
+        words_frame.pack(fill=ctk.BOTH, expand=True, pady=20)
 
-        wlabel = ttk.Label(
+        wlabel = ctk.CTkLabel(
             words_frame,
             text="🔠 Words List",
             font=("Arial", 16, "bold")
         )
         wlabel.pack(anchor="center", pady=5)
 
-        container = ttk.Frame(words_frame)
-        container.pack(fill=tk.BOTH, expand=True)
+        container = ctk.CTkFrame(words_frame)
+        container.pack(fill=ctk.BOTH, expand=True)
 
-        canvas = tk.Canvas(container)
-        v_scrollbar = ttk.Scrollbar(container, orient="vertical", command=canvas.yview)
-        h_scrollbar = ttk.Scrollbar(container, orient="horizontal", command=canvas.xview)
+        canvas = ctk.CTkCanvas(container)
+        v_scrollbar = ctk.CTkScrollbar(container, orientation="vertical", command=canvas.yview)
+        h_scrollbar = ctk.CTkScrollbar(container, orientation="horizontal", command=canvas.xview)
 
         canvas.configure(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
         canvas.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
 
-        scrollable_frame = ttk.Frame(canvas)
+        scrollable_frame = ctk.CTkFrame(canvas)
         canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
 
         canvas.grid(row=0, column=0, sticky="nsew")
@@ -382,9 +385,9 @@ class MatchingResultsScreen:
                 canvas.yview_scroll(int(-1*(event.delta/120)), "units")
         canvas.bind_all("<MouseWheel>", on_mousewheel)
 
-        # canvas = tk.Canvas(words_frame, height=200)
-        # scrollbar = ttk.Scrollbar(words_frame, orient="vertical", command=canvas.yview)
-        # scrollable_frame = ttk.Frame(canvas)
+        # canvas = ctk.CTkCanvas(words_frame, height=200)
+        # scrollbar = ctk.CTkScrollbar(words_frame, orientation="vertical", command=canvas.yview)
+        # scrollable_frame = ctk.CTkFrame(canvas)
 
         # scrollable_frame.bind(
         #     "<Configure>",
@@ -399,8 +402,8 @@ class MatchingResultsScreen:
         # canvas.pack(side="left", fill="both", expand=True)
         # scrollbar.pack(side="right", fill="y")
 
-        # bscrollbar = ttk.Scrollbar(words_frame, orient="horizontal", command=canvas.xview)
-        # bscrollable_frame = ttk.Frame(canvas)
+        # bscrollbar = ctk.CTkScrollbar(words_frame, orientation="horizontal", command=canvas.xview)
+        # bscrollable_frame = ctk.CTkFrame(canvas)
 
         # bscrollable_frame.bind(
         #     "<Configure>",
@@ -434,14 +437,14 @@ class MatchingResultsScreen:
             self.add_word_pair(scrollable_frame, word)
 
 
-        button_frame = ttk.Frame(self.main_frame)
+        button_frame = ctk.CTkFrame(self.main_frame)
         button_frame.pack(pady=10)
 
         from routes import return_to_main_menu, Retry
         from project import load_vocabulary
         vocabulary = load_vocabulary()
 
-        Menu = ttk.Button(
+        Menu = ctk.CTkButton(
             button_frame,
             text="🏠 Main Menu",
             command=lambda: return_to_main_menu(self.root, self.main_frame)
@@ -454,37 +457,37 @@ class MatchingResultsScreen:
             current_frame=self.main_frame,
             vocabulary=self.root.session_settings['words']
         )
-        RetryB.pack(side=tk.RIGHT, padx=8)
+        RetryB.pack(side=ctk.RIGHT, padx=8)
 
     def add_word_pair(self, parent, word):
         from project import language_manager_flashcards
 
-        pair_frame = ttk.Frame(parent, padding=10, relief="ridge")
-        pair_frame.pack(fill=tk.X, pady=5)
+        pair_frame = ctk.CTkFrame(parent)
+        pair_frame.pack(fill=ctk.X, pady=5)
 
-        ttk.Label(
+        ctk.CTkLabel(
             pair_frame,
             text=word['Hangul'],
             font=("Malgun Gothic", 13, "bold"),
             width=15,
             anchor="center",
-        ).pack(side=tk.LEFT, padx=5)
+        ).pack(side=ctk.LEFT, padx=5)
 
-        ttk.Label(
+        ctk.CTkLabel(
             pair_frame,
             text="→",
             font=("Arial", 12),
-            foreground="gray",
-        ).pack(side=tk.LEFT, padx=5)
+            text_color="gray",
+        ).pack(side=ctk.LEFT, padx=5)
 
-        ttk.Label(
+        ctk.CTkLabel(
             pair_frame,
             text=language_manager_flashcards.get_translations(word),
             font=("Arial", 12),
             width=20,
             anchor="center",
             wraplength=200
-        ).pack(side=tk.LEFT, padx=5)
+        ).pack(side=ctk.LEFT, padx=5)
 
 
         # Difficulty Label
@@ -495,12 +498,12 @@ class MatchingResultsScreen:
             'Hard': "#A78B12"
         }
 
-        ttk.Label(
+        ctk.CTkLabel(
             pair_frame,
             text=f"📑 Difficulty: {word['Difficulty']}",
             font=("Arial", 10),
-            foreground=difficulty_color.get(word['Difficulty'], 'gray')
-        ).pack(side=tk.RIGHT, padx=5)
+            text_color=difficulty_color.get(word['Difficulty'], 'gray')
+        ).pack(side=ctk.RIGHT, padx=5)
 
 class TrueFalseResultsScreen:
     def __init__(self, root, correct, incorrect, w_history, return_callback, settings=None):
@@ -518,8 +521,8 @@ class TrueFalseResultsScreen:
         for widget in self.root.winfo_children():
             widget.pack_forget()
 
-        self.main_frame = ttk.Frame(self.root, padding=20)
-        self.main_frame.pack(fill=tk.BOTH, expand=True)
+        self.main_frame = ctk.CTkFrame(self.root)
+        self.main_frame.pack(fill=ctk.BOTH, expand=True)
 
         if hasattr(self.root, 'session_timer') and self.root.session_timer.should_display(self.settings):
             elapsed_time = self.root.session_timer.get_elapsed_time()
@@ -527,51 +530,51 @@ class TrueFalseResultsScreen:
         else:
             time_text = ""
 
-        time_label = ttk.Label(
+        time_label = ctk.CTkLabel(
             self.main_frame,
             text=time_text,
             font=("Arial", 12)
         )
         time_label.pack(pady=10)
 
-        tlabel = ttk.Label(
+        tlabel = ctk.CTkLabel(
             self.main_frame,
             text="⚫ True or False Game Results",
             font=("Arial", 16, "bold")
         )
         tlabel.pack(pady=10)
 
-        rlabel = ttk.Label(
+        rlabel = ctk.CTkLabel(
             self.main_frame,
             text=f"Results: {self.correct}/{self.total} ({self.correct/self.total:.0%})",
             font=("Arial", 16, "bold")
         )
         rlabel.pack(pady=10)
 
-        stats_frame = ttk.Frame(self.main_frame)
-        stats_frame.pack(fill=tk.X, pady=10)
+        stats_frame = ctk.CTkFrame(self.main_frame)
+        stats_frame.pack(fill=ctk.X, pady=10)
 
-        ttk.Label(
+        ctk.CTkLabel(
             stats_frame,
             text=f"✔ Corrects: {self.correct}",
-            foreground="green"
-        ).pack(side=tk.LEFT)
+            text_color="green"
+        ).pack(side=ctk.LEFT)
 
-        ttk.Label(
+        ctk.CTkLabel(
             stats_frame,
             text=f"❌ Incorrects: {self.incorrect}",
-            foreground="red"
-        ).pack(side=tk.RIGHT)
+            text_color="red"
+        ).pack(side=ctk.RIGHT)
 
-        self.canvas = tk.Canvas(self.main_frame)
+        self.canvas = ctk.CTkCanvas(self.main_frame)
         self.canvas.bind("<MouseWheel>",
                          lambda e: self.canvas.yview_scroll(int(-1*(e.delta/120)), "units"))
         
         self.canvas.bind("<Button-4>", lambda e: self.canvas.yview_scroll(-1, "units"))
         self.canvas.bind("<Button-5>", lambda e: self.canvas.yview_scroll(1, "units"))
 
-        scrollbar = ttk.Scrollbar(self.main_frame, orient=tk.VERTICAL, command=self.canvas.yview)
-        scrollable_frame = ttk.Frame(self.canvas)
+        scrollbar = ctk.CTkScrollbar(self.main_frame, orientation=ctk.VERTICAL, command=self.canvas.yview)
+        scrollable_frame = ctk.CTkFrame(self.canvas)
 
         scrollable_frame.bind(
             "<Configure>",
@@ -583,7 +586,7 @@ class TrueFalseResultsScreen:
         self.canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
         self.canvas.configure(yscrollcommand=scrollbar.set)
 
-        self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.canvas.pack(side=ctk.LEFT, fill=ctk.BOTH, expand=True)
         scrollbar.pack(side="right", fill="y")
 
         for item in self.w_history:
@@ -591,14 +594,14 @@ class TrueFalseResultsScreen:
 
         # Buttons Frame
 
-        button_frame = ttk.Frame(self.main_frame)
+        button_frame = ctk.CTkFrame(self.main_frame)
         button_frame.pack(pady=10)
 
         from routes import return_to_main_menu, Retry
         from project import load_vocabulary
         vocabulary = load_vocabulary()
 
-        Menu = ttk.Button(
+        Menu = ctk.CTkButton(
             button_frame,
             text="🏠 Main Menu",
             command=lambda: return_to_main_menu(self.root, self.main_frame)
@@ -611,13 +614,13 @@ class TrueFalseResultsScreen:
             current_frame=self.main_frame,
             vocabulary=self.root.session_settings['words']
         )
-        RetryB.pack(side=tk.RIGHT, padx=8)
+        RetryB.pack(side=ctk.RIGHT, padx=8)
 
     def add_result_item(self, parent_frame, item):
         from project import language_manager_flashcards
         word = item['word']
-        frame = ttk.Frame(parent_frame, padding=10, relief="solid")
-        frame.pack(fill=tk.X, pady=5)
+        frame = ctk.CTkFrame(parent_frame)
+        frame.pack(fill=ctk.X, pady=5)
 
         user_answer = item.get('user_answer', 'False')
         correct_answer = item.get('expected', 'False')
@@ -626,13 +629,13 @@ class TrueFalseResultsScreen:
         user_answer = str(user_answer) if isinstance(user_answer, bool) else user_answer
         correct_answer = str(correct_answer) if isinstance(correct_answer, bool) else correct_answer
 
-        ttk.Label(
+        ctk.CTkLabel(
             frame,
             text=f"Word: {item.get('question_word', '')}",
             font=("Arial", 12, "bold")
         ).pack(anchor="w")
 
-        ttk.Label(
+        ctk.CTkLabel(
             frame,
             text=f"Question: {item.get('statement_question', '')}",
             font=("Arial", 12)
@@ -641,19 +644,19 @@ class TrueFalseResultsScreen:
         status = "✔" if is_correct else "❌"
         color = "green" if is_correct else "red"
         
-        ttk.Label(
+        ctk.CTkLabel(
             frame,
             text=f"{status} Your Answer: {user_answer}",
             font=("Arial", 12),
-            foreground=color
+            text_color=color
         ).pack(anchor="w")
 
         if not is_correct:
-            ttk.Label(
+            ctk.CTkLabel(
                 frame,
                 text=f"Correct Answer: {correct_answer}",
                 font=("Arial", 12),
-                foreground="blue"
+                text_color="blue"
             ).pack(anchor="w")
 
         difficulty_color = {
@@ -662,18 +665,18 @@ class TrueFalseResultsScreen:
             'Hard': "#A78B12"
         }
 
-        ttk.Label(
+        ctk.CTkLabel(
             frame,
             text=f"📑 Difficulty: {word['Difficulty']}",
-            foreground=difficulty_color.get(word['Difficulty'], 'black')
+            text_color=difficulty_color.get(word['Difficulty'], 'black')
         ).pack(anchor="w")
 
-        # ttk.Label(
+        # ctk.CTkLabel(
         #     frame,
         #     text=item['timestamp'],  # Funcionando mas amanha tentar botar em todos
         #     font=("Arial", 9),
-        #     foreground="gray"
-        # ).pack(side=tk.RIGHT)
+        #     text_color="gray"
+        # ).pack(side=ctk.RIGHT)
 
 
 class StandardResultsScreen:
@@ -693,19 +696,19 @@ class StandardResultsScreen:
         self.setup_styles()
         self.setup_ui()
         
-    def setup_styles(self):
-        self.style = ttk.Style()
-        self.style.configure("Title.TLabel", font=("Arial", 16, "bold"))
-        self.style.configure("Stats.TLabel", font=("Arial", 12))
-        self.style.configure("Correct.TLabel", foreground="#2ecc71")
-        self.style.configure("Incorrect.TLabel", foreground="#e74c3c") 
-        self.style.configure("Word.TLabel", font=("Malgun Gothic", 14))
-        self.style.configure("Translation.TLabel", font=("Arial", 12, "bold") if self.settings.get('study_direction') == "hangul_to_lang" else ("Malgun Gothic", 12, "bold"))
-        self.style.configure("History.TFrame", relief="solid", borderwidth=1)
+    # def setup_styles(self):
+    #     self.style = ttk.Style()
+    #     self.style.configure("Title.TLabel", font=("Arial", 16, "bold"))
+    #     self.style.configure("Stats.TLabel", font=("Arial", 12))
+    #     self.style.configure("Correct.TLabel", text_color="#2ecc71")
+    #     self.style.configure("Incorrect.TLabel", text_color="#e74c3c") 
+    #     self.style.configure("Word.TLabel", font=("Malgun Gothic", 14))
+    #     self.style.configure("Translation.TLabel", font=("Arial", 12, "bold") if self.settings.get('study_direction') == "hangul_to_lang" else ("Malgun Gothic", 12, "bold"))
+    #     self.style.configure("History.TFrame", borderwidth=1)
         
     def setup_ui(self):
-        self.main_frame = ttk.Frame(self.root, padding=20)
-        self.main_frame.pack(fill=tk.BOTH, expand=True)
+        self.main_frame = ctk.CTkFrame(self.root)
+        self.main_frame.pack(fill=ctk.BOTH, expand=True)
         
         self.create_header()
         
@@ -717,8 +720,8 @@ class StandardResultsScreen:
         
     def create_header(self):
         from utilities import SessionTimer
-        header_frame = ttk.Frame(self.main_frame)
-        header_frame.pack(fill=tk.X, pady=(0, 20))
+        header_frame = ctk.CTkFrame(self.main_frame)
+        header_frame.pack(fill=ctk.X, pady=(0, 20))
 
         if hasattr(self.root, 'session_timer') and getattr(self.root.session_timer, 'is_running', False):
             elapsed_time = self.root.session_timer.get_elapsed_time()
@@ -726,57 +729,57 @@ class StandardResultsScreen:
         else:
             time_text = ""
         
-        time_label = ttk.Label(
+        time_label = ctk.CTkLabel(
             self.main_frame,
             text=time_text,
             font=("Arial", 12)
         )
         time_label.pack(pady=10)
         
-        ttk.Label(
+        ctk.CTkLabel(
             header_frame,
             text="Standard Flashcards Results",
             font=("Arial", 16, "bold"),
         ).pack(pady=5)
         
     def create_stats_section(self):
-        stats_frame = ttk.Frame(self.main_frame)
-        stats_frame.pack(fill=tk.X, pady=(0, 20))
+        stats_frame = ctk.CTkFrame(self.main_frame)
+        stats_frame.pack(fill=ctk.X, pady=(0, 20))
         
         total = self.correct + self.incorrect
         accuracy = self.correct / total if total > 0 else 0
         
-        ttk.Label(
+        ctk.CTkLabel(
             stats_frame,
             text=f"✔ Corrects: {self.correct}",
             style="Correct.TLabel"
-        ).pack(side=tk.LEFT, expand=True)
+        ).pack(side=ctk.LEFT, expand=True)
         
-        ttk.Label(
+        ctk.CTkLabel(
             stats_frame,
             text=f"Results: {self.correct}/{total} ({accuracy:.0%})",
             font=("Arial", 16, "bold"),
-        ).pack(side=tk.LEFT, expand=True)
+        ).pack(side=ctk.LEFT, expand=True)
         
-        ttk.Label(
+        ctk.CTkLabel(
             stats_frame,
             text=f"✖ Incorrects: {self.incorrect}",
             style="Incorrect.TLabel"
-        ).pack(side=tk.RIGHT, expand=True)
+        ).pack(side=ctk.RIGHT, expand=True)
     
     def create_history_section(self):
         
-        container = ttk.Frame(self.main_frame)
-        container.pack(fill=tk.BOTH, expand=True)
+        container = ctk.CTkFrame(self.main_frame)
+        container.pack(fill=ctk.BOTH, expand=True)
 
-        self.canvas = tk.Canvas(container)
-        v_scrollbar = ttk.Scrollbar(container, orient="vertical", command=self.canvas.yview)
-        h_scrollbar = ttk.Scrollbar(container, orient="horizontal", command=self.canvas.xview)
+        self.canvas = ctk.CTkCanvas(container)
+        v_scrollbar = ctk.CTkScrollbar(container, orientation="vertical", command=self.canvas.yview)
+        h_scrollbar = ctk.CTkScrollbar(container, orientation="horizontal", command=self.canvas.xview)
 
         self.canvas.configure(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
         self.canvas.bind('<Configure>', lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
 
-        scrollable_frame = ttk.Frame(self.canvas)
+        scrollable_frame = ctk.CTkFrame(self.canvas)
         self.canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
 
         self.canvas.grid(row=0, column=0, sticky="nsew")
@@ -800,42 +803,42 @@ class StandardResultsScreen:
             try:
                 if self.root.winfo_exists():
                     self.root.unbind_all("<MouseWheel>")
-            except tk.TclError:
+            except Exception as e:
                 pass
     
     def add_history_item(self, parent, item):
         from project import language_manager_flashcards
-        frame = ttk.Frame(parent, padding=10, style="History.TFrame")
-        frame.pack(fill=tk.X, pady=2)
+        frame = ctk.CTkFrame(parent, padding=10, style="History.TFrame")
+        frame.pack(fill=ctk.X, pady=2)
         
         word = item['word']
         is_correct = item.get('correct', False)
         
-        top_frame = ttk.Frame(frame)
-        top_frame.pack(fill=tk.X)
+        top_frame = ctk.CTkFrame(frame)
+        top_frame.pack(fill=ctk.X)
         
-        ttk.Label(
+        ctk.CTkLabel(
             top_frame,
             text=word['Hangul'] if self.settings['study_direction'] == "hangul_to_lang" else language_manager_flashcards.get_translations(word),
             style="Word.TLabel"
-        ).pack(side=tk.LEFT)
+        ).pack(side=ctk.LEFT)
         
         status = "✔" if is_correct else "✖"
         status_style = "Correct.TLabel" if is_correct else "Incorrect.TLabel"
-        ttk.Label(
+        ctk.CTkLabel(
             top_frame,
             text=status,
             style=status_style
-        ).pack(side=tk.RIGHT)
+        ).pack(side=ctk.RIGHT)
         
-        ttk.Label(
+        ctk.CTkLabel(
             frame,
             text=f"→ {language_manager_flashcards.get_translations(word)}" if self.settings['study_direction'] == "hangul_to_lang" else f"→ {word['Hangul']}",
             style="Translation.TLabel"
         ).pack(anchor="w")
         
-        bottom_frame = ttk.Frame(frame)
-        bottom_frame.pack(fill=tk.X)
+        bottom_frame = ctk.CTkFrame(frame)
+        bottom_frame.pack(fill=ctk.X)
 
         difficulty_color = {
             'Easy': "#585858",
@@ -843,34 +846,34 @@ class StandardResultsScreen:
             'Hard': "#A78B12"    #botar uma sombra
         }
         
-        ttk.Label(
+        ctk.CTkLabel(
             bottom_frame,
             text=f"Dificuldade: {word['Difficulty']}",
             font=("Arial", 9),
-            foreground=difficulty_color.get(word['Difficulty'], "black")
-        ).pack(side=tk.LEFT)
+            text_color=difficulty_color.get(word['Difficulty'], "black")
+        ).pack(side=ctk.LEFT)
         
-        # ttk.Label(
+        # ctk.CTkLabel(
         #     bottom_frame,
         #     text=item['timestamp'],   # Funcionando mas amanha tentar botar em todos
         #     font=("Arial", 9),
-        #     foreground="gray"
-        # ).pack(side=tk.RIGHT)
+        #     text_color="gray"
+        # ).pack(side=ctk.RIGHT)
 
     def create_action_buttons(self):
         from routes import return_to_main_menu, Retry
         from project import load_vocabulary
         vocabulary = load_vocabulary()
 
-        button_frame = ttk.Frame(self.main_frame)
+        button_frame = ctk.CTkFrame(self.main_frame)
         button_frame.pack(pady=10)
 
-        Menu = ttk.Button(
+        Menu = ctk.CTkButton(
             button_frame,
             text="🏠 Main Menu",
             command=lambda: return_to_main_menu(self.root, self.main_frame),
         )
-        Menu.pack(side=tk.RIGHT, padx=8)
+        Menu.pack(side=ctk.RIGHT, padx=8)
 
         RetryB = Retry(
             parent=button_frame,
@@ -878,7 +881,7 @@ class StandardResultsScreen:
             current_frame=self.main_frame,
             vocabulary=self.root.session_settings['words']
         )
-        RetryB.pack(side=tk.RIGHT, padx=8)
+        RetryB.pack(side=ctk.RIGHT, padx=8)
 
 
 
