@@ -120,7 +120,7 @@ def main_menu_gui(root, vocabulary):
     )
     n_b_label.pack(pady=10)
 
-    buttons_frame = ctk.CTkFrame(n_selection_frame)
+    buttons_frame = ctk.CTkFrame(n_selection_frame, fg_color="transparent", bg_color="transparent")
     buttons_frame.pack(pady=20)
 
     levels = sorted(set(word['Level'] for word in vocabulary))
@@ -151,7 +151,7 @@ def main_menu_gui(root, vocabulary):
             height=40,
             width=120,
             command=lambda _=level: setup_module_selection(root, vocabulary, selected_frame=n_selection_frame),
-            corner_radius=8
+            corner_radius=20
         )
         button.grid(row=_ // 3, column=_ % 3, sticky="nsew") #padx=10, pady=10
 
@@ -192,7 +192,7 @@ def setup_module_selection(root, vocabulary, selected_frame):
     language_button = ctk.CTkButton(
         language_container,
         text=f"🌎 {language_manager_flashcards.get_language()[:3]}",
-        corner_radius=32,
+        corner_radius=20,
         border_width=0,
         fg_color="#3B8ED0",
         hover_color="#36719F",
@@ -225,7 +225,7 @@ def setup_module_selection(root, vocabulary, selected_frame):
         fg_color="#3B8ED0",
         hover_color="#36719F",
         border_color="#3B8ED0",
-        corner_radius=32,
+        corner_radius=20,
         command=lambda: confirm_language()
     )
     confirm_button.pack(side="top")
@@ -280,7 +280,7 @@ def setup_module_selection(root, vocabulary, selected_frame):
             width=120,
             border_width=0,
             border_color=fg_color,
-            corner_radius=8,
+            corner_radius=12,
             command=lambda m=module: start_session(root, selection_frame, vocabulary, m)
         )
         button.grid(row=_//3, column=_%3, padx=10, pady=10, ipadx=10, ipady=10) #padx=10, pady=10, ipadx=10, ipady=10
@@ -297,7 +297,7 @@ def setup_module_selection(root, vocabulary, selected_frame):
         width=120,
         border_width=0,
         border_color=fg_color,
-        corner_radius=8,
+        corner_radius=12,
         command=lambda: start_session(root, selection_frame, vocabulary, "All Modules")
     )
     all_button.grid(row=(len(modules)-1)//3 + 1, column=0, columnspan=3, pady=20, ipadx=10, ipady=5)  #pady=20, ipadx=10, ipady=5

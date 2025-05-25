@@ -269,13 +269,13 @@ class InputPractice:
         self.frame = ctk.CTkFrame(self.root)
         self.frame.pack(fill=ctk.BOTH, expand=True)
 
-        if self.settings.get('timer_enabled', False):
-            self.timer_label = ctk.CTkLabel(self.frame, text="00:00")
-            self.timer_label.pack(anchor="se")
-
         # Progress Bar
         from utilities import ProgressBar
         self.progress = ProgressBar(self.frame, len(self.words))
+
+        if self.settings.get('timer_enabled', False):
+            self.timer_label = ctk.CTkLabel(self.frame, text="00:00")
+            self.timer_label.pack(anchor="n")
 
         # Configured Word Label
 
@@ -503,16 +503,16 @@ class MultipleChoiceGame:
         from utilities import ProgressBar
         self.progress = ProgressBar(self.frame, len(self.words))
 
+        if self.settings.get('timer_enabled', False):
+            self.timer_label = ctk.CTkLabel(self.frame, text="00:00")
+            self.timer_label.pack(anchor="n")
+
         self.question_label = ctk.CTkLabel(
             self.frame,
             font=("Malgun Gothic", 20) if self.settings['study_direction'] == "hangul_to_lang" else ("Arial", 20),
             wraplength=500,
         )
         self.question_label.pack(pady=20)
-
-        if self.settings.get('timer_enabled', False):
-            self.timer_label = ctk.CTkLabel(self.frame, text="00:00")
-            self.timer_label.pack(anchor="se")
 
         self.original_button_config = {
         'corner_radius': 20,
@@ -662,11 +662,11 @@ class MultipleChoiceGame:
         # )
 
     def show_results(self):
-        from results_screen import ResultsScreen
+        from results_screen import MultipleChoiceResultsScreen
         from routes import return_to_main_menu
 
         self.frame.pack_forget()
-        ResultsScreen(
+        MultipleChoiceResultsScreen(
             self.root,
             self.correct,
             self.incorrect,
@@ -779,6 +779,7 @@ class MatchingGame:
                 text="",
                 width=self.card_width,
                 height=self.card_height,
+                wraplength=140,
                 fg_color="transparent"
             )
             placeholder.grid(row=row, column=col, padx=5, pady=5)
@@ -803,12 +804,6 @@ class MatchingGame:
 
     def window_resize(self, event):
         pass
-        # new_width = max(12, min(20, int(event.width / 80)))
-        # if new_width != self.card_width:
-        #     self.card_width = new_width
-        #     for card in self.cards:
-        #         if card.winfo_ismapped():
-        #             card.configure(width=self.card_width)
 
     def card_click(self, card_index):
         if len(self.selected_cards) >= 2:
@@ -827,14 +822,6 @@ class MatchingGame:
         if len(self.selected_cards) == 2:
             self.attempts += 1
             self.check_match()
-
-
-          # selected_indices = [c[0] for c in self.selected_cards]
-
-        # if card_index in selected_indices:
-        #     card.configure()
-        #     self.selected_cards = [c for c in self.selected_cards if c[0] != card_index]
-        #     return
 
     def check_match(self):
         idx1, card1 = self.selected_cards[0]
@@ -866,17 +853,6 @@ class MatchingGame:
 
         self.card_placeholders[idx1].configure(text="✓", text_color="green")
         self.card_placeholders[idx2].configure(text="✓", text_color="green")    # Modificar 
-
-        # Invisible Placeholders
-        # if 'row' in card1_pos and 'column' in card1_pos:
-        #     placeholder1 = ctk.CTkLabel(self.cards_frame, text="", width=self.card_width, height=self.card_height)
-        #     placeholder1.grid(row=card1_pos['row'], column=card1_pos['column'], padx=5, pady=5, sticky="nsew")
-        #     placeholder1.lower()
-        
-        # if 'row' in card2_pos and 'column' in card2_pos:
-        #     placeholder2 = ctk.CTkLabel(self.cards_frame, text="", width=self.card_width, height=self.card_height)
-        #     placeholder2.grid(row=card2_pos['row'], column=card2_pos['column'], padx=5, pady=5, sticky="nsew")
-        #     placeholder2.lower()
 
     def reset_cards(self):
         for idx, card in self.selected_cards:
