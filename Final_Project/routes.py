@@ -38,7 +38,13 @@ class Retry(ctk.CTkButton):
             master=parent,
             text="⚙ Retry",
             command=self._retry_session,
-            width=15  
+            width=20,
+            height=30,
+            fg_color="#CEC43F",
+            hover_color="#B1A82A",
+            text_color="white",
+            border_width=0,
+            corner_radius=20  
         )
 
 
