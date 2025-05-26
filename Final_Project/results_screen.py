@@ -1064,7 +1064,7 @@ class StandardResultsScreen:
         
         tlabel = ctk.CTkLabel(
             self.main_frame,
-            text="Standard Flashcards Results",       # botar o icone 
+            text="📘 Standard Flashcards Results",       # botar o icone 
             font=("Arial", 16, "bold")
         )
         tlabel.pack(pady=10)

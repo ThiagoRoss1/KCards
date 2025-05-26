@@ -10,10 +10,12 @@ from datetime import datetime
 from unicodedata import normalize, combining
 
 def normalize_text(text):
+    if not text:
+        return ""
+    
     text = str(text).strip().lower()
-    text = normalize('NFKD', text)
-    text = ''.join([c for c in text if not combining(c)])
-
+    text = normalize('NFKD', text).encode('ASCII', 'ignore').decode('ASCII')
+    text = ''.join(c for c in text if c.isalnum() or c.isspace())
     return text
 
 
@@ -377,13 +379,18 @@ class InputPractice:
         if user_input == "type your answer":
             user_input = ""
 
-        expected = self.expected_answer
+        expected = self.current_word['Answer'].lower()
 
-        user_normalized = normalize_text(user_input)
-        expected_normalized = normalize_text(expected)
+        # user_normalized = normalize_text(user_input)
+        # expected_normalized = normalize_text(expected)
 
-        is_correct = user_normalized == expected_normalized
-        exact_match = user_input.lower().strip() == expected.lower().strip()
+        valid_options = [opt.strip() for opt in expected.split(',')]
+        # exact_match = user_input.lower().strip() == expected.lower().strip()
+
+        is_correct = any(
+            normalize_text(user_input) == normalize_text(opt)
+            for opt in valid_options
+        )
 
         if is_correct:
             self.correct += 1
@@ -396,9 +403,9 @@ class InputPractice:
             "word": self.current_word,
             "user_answer": user_input,
             "correct": is_correct,
-            "expected": self.expected_answer,
+            "expected": valid_options[0],
             "study_direction": self.settings['study_direction'],
-            "exact_match": exact_match
+            "all_valid": valid_options
         })
         
         self.next_word()
@@ -459,7 +466,7 @@ class MultipleChoiceGame:
         self.correct = 0
         self.incorrect = 0
         self.score = 0
-        self.used_words = []  # Talvez tirar esse used_words ao adicionar o sistema de revisao espaçada
+        self.used_words = []  
         self.history = []
         self.buttons_locked = False
 
@@ -689,8 +696,8 @@ class MatchingGame:
         self.matched_pairs = 0
         self.attempts = 0
 
-        self.card_width = 160
-        self.card_height = 120
+        self.card_width = 200
+        self.card_height = 160
         self.max_pairs = min(6, len(self.words))
 
         self.words = self.prepare_words(words, settings)
@@ -709,20 +716,21 @@ class MatchingGame:
 
     def prepare_words(self, words, settings):
         from project import language_manager_flashcards
-        game_words = words[:6]
+        game_words = random.sample(words, 6)
         settings = settings.copy()
         pairs = []
 
         for word in game_words:
+            translation = language_manager_flashcards.get_translations(word).split(',')[0].strip()
             pairs.append({
                 'type': 'hangul',
                 'text': word['Hangul'],
                 'match_id': word['Hangul'],
-                'translation': language_manager_flashcards.get_translations(word),
+                'translation': translation,
             })
             pairs.append({
                 'type': 'translation',
-                'text': language_manager_flashcards.get_translations(word),
+                'text': translation,
                 'match_id': word['Hangul']
             })
 
@@ -785,16 +793,21 @@ class MatchingGame:
             placeholder.grid(row=row, column=col, padx=5, pady=5)
             self.card_placeholders.append(placeholder)
 
+            original_text = self.words[i]['text']
+            max_chars_per_line = 10 
+            text_with_breaks = '\n'.join([original_text[j:j+max_chars_per_line] 
+                                    for j in range(0, len(original_text), max_chars_per_line)])
+
             card = ctk.CTkButton(
                 self.cards_frame,
-                text=self.words[i]['text'],
+                text=text_with_breaks,
                 font=("Malgun Gothic", 16) if self.words[i]['type'] == 'hangul' else ("Arial", 16),
                 width=self.card_width,
                 height=self.card_height,
                 fg_color=card_fg_color,
                 text_color=card_text_color,
                 corner_radius=20,
-                command=lambda idx=i: self.card_click(idx),
+                command=lambda idx=i: self.card_click(idx)
             )
             card.grid(row=row, column=col, padx=5, pady=5, sticky="nsew")
            # card.bind("<Button-1>", lambda e, idx=i: self.card_click(idx))

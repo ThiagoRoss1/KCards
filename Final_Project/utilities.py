@@ -350,6 +350,18 @@ class CustomizeStudySession:
                     value=value
                 ).pack(anchor="nw", padx=10, side=ctk.LEFT)
 
+            if self.root.session_settings.get('selected_mode') == "input":
+                info = ctk.CTkButton(
+                    tframe,
+                    text="i",
+                    command=lambda: messagebox.showinfo("Info", "Hangul Entry is a little bit buggy due Tkinter limitations. \n                              --But it works--!"),
+                    width=20,
+                    height=20,
+                    corner_radius=20,
+                    border_width=0,
+                )
+                info.pack(anchor="nw", padx=10, side=ctk.LEFT)
+
     def create_feedback_switch(self):
 
         if self.root.session_settings.get('selected_mode') == "multiple_choice" or self.root.session_settings.get('selected_mode') == "true_or_false":
