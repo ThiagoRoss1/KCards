@@ -1,10 +1,13 @@
 import customtkinter as ctk
 from customtkinter import *
+from language_manager import InterfaceTranslator, T_CTkLabel
 
 # import tkinter as tk
 # from tkinter import ttk, messagebox
 import routes
 from routes import return_to_main_menu, Retry
+
+translation = InterfaceTranslator()
 
 
 class ResultsScreen:
@@ -58,16 +61,16 @@ class ResultsScreen:
 
         # Title Label
 
-        tlabel = ctk.CTkLabel(
+        tlabel = T_CTkLabel(
             self.main_frame,
-            text="⌨ Input Game Results",
+            text=f"⌨ {translation.get_translation("input_results")}",
             font=("Arial", 16, "bold")
         )
         tlabel.pack(pady=10)
 
-        main_label = ctk.CTkLabel(
+        main_label = T_CTkLabel(
             self.main_frame,
-            text=f"Results: {self.correct}/{self.total} ({self.correct/self.total:.0%})",
+            text=f"{translation.get_translation("results")}: {self.correct}/{self.total} ({self.correct/self.total:.0%})",
             font=("Arial", 16, "bold")
         )
         main_label.pack(pady=10)
@@ -92,15 +95,15 @@ class ResultsScreen:
         )
         stats_content_frame.pack(expand=True, fill=ctk.BOTH, pady=5, padx=5)
 
-        ctk.CTkLabel(
+        T_CTkLabel(
             stats_content_frame,
-            text=f"✔ Corrects: {self.correct}",
+            text=f"✔ {translation.get_translation("corrects")}: {self.correct}",
             text_color="green"
         ).pack(side=ctk.LEFT, padx=(100, 0))
 
-        ctk.CTkLabel(
+        T_CTkLabel(
             stats_content_frame,
-            text=f"❌ Incorrects: {self.incorrect}",
+            text=f"❌ {translation.get_translation("incorrects")}: {self.incorrect}",
             text_color="red"
         ).pack(side=ctk.RIGHT, padx=(0, 100))
 
@@ -139,7 +142,7 @@ class ResultsScreen:
         vocabulary = load_vocabulary()
         ctk.CTkButton(
             button_frame,
-            text="🏠 Main Menu",
+            text=f"🏠 {translation.get_translation("main_menu")}",
             command=lambda: return_to_main_menu(self.root, self.main_frame),
             fg_color="#3B8ED0",
             hover_color="#36719F",
@@ -249,9 +252,9 @@ class ResultsScreen:
         status = "✔" if correct else "❌"
         color = "#2ecc71" if correct else "#e74c3c"
 
-        u_label = ctk.CTkLabel(
+        u_label = T_CTkLabel(
             content_frame,
-            text=f"{status} Your Answer: {str(user_answer).capitalize()}",
+            text=f"{status} {translation.get_translation("your_answer")}: {str(user_answer).capitalize()}",
             font=("Arial", 12),
             wraplength=200,
             text_color=color
@@ -261,9 +264,9 @@ class ResultsScreen:
         # Correct Answer (if incorrect)
 
         if not correct:
-            c_label = ctk.CTkLabel(
+            c_label = T_CTkLabel(
                 content_frame,
-                text=f"✔ Correct Answer: {correct_answer}",
+                text=f"✔ {translation.get_translation("correct_answer")}: {correct_answer}",
                 font=("Arial", 13),
                 text_color="#3B8ED0",
             )
@@ -275,9 +278,9 @@ class ResultsScreen:
             'Hard': "#A78B12"    #botar uma sombra
         }
 
-        dlabel = ctk.CTkLabel(
+        dlabel = T_CTkLabel(
             content_frame,
-            text=f"📑 Difficulty: {word['Difficulty']}",
+            text=f"📑 {translation.get_translation("difficulty")}: {translation.get_difficulty_translation(word["Difficulty"])}",
             text_color=difficulty_color.get(word['Difficulty'], 'black')
         )
         dlabel.pack(anchor="w")
@@ -1062,16 +1065,16 @@ class StandardResultsScreen:
         )
         time_label.pack(pady=10)
         
-        tlabel = ctk.CTkLabel(
+        tlabel = T_CTkLabel(
             self.main_frame,
-            text="📘 Standard Flashcards Results",       # botar o icone 
+            text=f"📘 {translation.get_translation("standard_results")}", 
             font=("Arial", 16, "bold")
         )
         tlabel.pack(pady=10)
 
-        rlabel = ctk.CTkLabel(
+        rlabel = T_CTkLabel(
             self.main_frame,
-            text=f"Results: {self.correct}/{self.total} ({self.accuracy:.0%})",
+            text=f"{translation.get_translation("results")}: {self.correct}/{self.total} ({self.accuracy:.0%})",
             font=("Arial", 16, "bold"),
         )
         rlabel.pack(pady=10)
@@ -1096,13 +1099,13 @@ class StandardResultsScreen:
         
         ctk.CTkLabel(
             stats_content_frame,
-            text=f"✔ Corrects: {self.correct}",
+            text=f"✔ {translation.get_translation("corrects")}: {self.correct}",
             text_color="green"
         ).pack(side=ctk.LEFT, padx=(100, 0))
         
         ctk.CTkLabel(
             stats_content_frame,
-            text=f"❌ Incorrects: {self.incorrect}",
+            text=f"❌ {translation.get_translation("incorrects")}: {self.incorrect}",
             text_color="red"
         ).pack(side=ctk.RIGHT, padx=(0, 100))
 
@@ -1126,7 +1129,7 @@ class StandardResultsScreen:
 
         Menu = ctk.CTkButton(
             button_frame,
-            text="🏠 Main Menu",
+            text=f"🏠 {translation.get_translation("main_menu")}",
             command=lambda: return_to_main_menu(self.root, self.main_frame),
             hover_color="#36719F",
             text_color="white",
@@ -1234,7 +1237,7 @@ class StandardResultsScreen:
         
         dlabel = ctk.CTkLabel(
             content_frame,
-            text=f"📑 Difficulty: {word['Difficulty']}",
+            text=f"📑 {translation.get_translation("difficulty")}: {translation.get_difficulty_translation(word['Difficulty'])}",
             text_color=difficulty_color.get(word['Difficulty'], "black")
         )
         dlabel.grid(row=2, column=0, columnspan=2, sticky="w", pady=(5, 0))

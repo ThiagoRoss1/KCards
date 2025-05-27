@@ -5,9 +5,11 @@ from customtkinter import *
 import csv
 import random
 from results_screen import ResultsScreen
-from language_manager import LanguageManager
+from language_manager import LanguageManager, InterfaceTranslator
 from datetime import datetime
 from unicodedata import normalize, combining
+
+translation = InterfaceTranslator()
 
 def normalize_text(text):
     if not text:
@@ -53,12 +55,12 @@ class StandardFlashcards:
         for word in words:
             new_word = word.copy()
             if settings['study_direction'] == "hangul_to_lang":
-                new_word['Question'] = word['Hangul']
+                new_word['Question'] = word['Hangul'].split(',')[0].strip() # Get the first translation (teste certo)
                 new_word['Answer'] = language_manager_flashcards.get_translations(word)
             else:
                 new_word['Question'] = language_manager_flashcards.get_translations(word)
-                new_word['Answer'] = word['Hangul']
-            
+                new_word['Answer'] = word['Hangul'].split(',')[0].strip()  
+
             prepared_words.append(new_word)
         
         return prepared_words
@@ -357,7 +359,7 @@ class InputPractice:
             self.root.after(1000, self.update_timer)
 
     def _setup_entry_placeholder(self):
-        self.answer_entry.insert(0, "Type your answer")
+        self.answer_entry.insert(0, f"{translation.get_translation("type_your_answer")}")
         self.answer_entry.configure(text_color="white")
         self.answer_entry.icursor(0)
         self.answer_entry.focus()
@@ -366,17 +368,17 @@ class InputPractice:
 
     def _handle_entry_key(self, event):
         current_text = self.answer_entry.get()
-        if current_text == "Type your answer":
+        if current_text == f"{translation.get_translation("type_your_answer")}":
             self.answer_entry.delete(0, ctk.END)
             self.answer_entry.configure(text_color="#F1F1F1")
         
-        if event.keysym == "Return" and current_text == "Type your answer":
+        if event.keysym == "Return" and current_text == f"{translation.get_translation("type_your_answer")}":
             return "break"
 
     def check_answer(self):
         user_input = self.answer_entry.get().lower().strip()
 
-        if user_input == "type your answer":
+        if user_input == "Type Your Answer" or "Digite a sua Resposta":
             user_input = ""
 
         expected = self.current_word['Answer'].lower()
@@ -437,7 +439,7 @@ class InputPractice:
 
     def _reset_entry(self):
         self.answer_entry.delete(0, ctk.END)
-        self.answer_entry.insert(0, "Type your answer")
+        self.answer_entry.insert(0, f"{translation.get_translation("type_your_answer")}")
         self.answer_entry.configure(text_color="gray")
         self.answer_entry.icursor(0)
 
@@ -724,7 +726,7 @@ class MatchingGame:
             translation = language_manager_flashcards.get_translations(word).split(',')[0].strip()
             pairs.append({
                 'type': 'hangul',
-                'text': word['Hangul'],
+                'text': word['Hangul'].split(',')[0].strip(),
                 'match_id': word['Hangul'],
                 'translation': translation,
             })
@@ -1042,7 +1044,7 @@ class TrueFalseGame:
         self.answer_buttons = []
         self.true_button = ctk.CTkButton(
             buttons_frame,
-            text="True",
+            text=translation.get_translation("true"),
             fg_color="transparent",
             text_color="white",
             hover_color="#3B8ED0",
@@ -1057,7 +1059,7 @@ class TrueFalseGame:
 
         self.false_button = ctk.CTkButton(
             buttons_frame,
-            text="False",
+            text=translation.get_translation("false"),
             fg_color="transparent",
             text_color="white",
             hover_color="#3B8ED0",
@@ -1216,9 +1218,6 @@ class TrueFalseGame:
         )
         self.used_words = []
         self.progress.reset()
-
-
-
 
         # Auto Correction Bugado #####
         #Difficulty Selector - Testar ######

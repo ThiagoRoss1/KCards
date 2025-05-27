@@ -189,340 +189,340 @@ class GetMistakes:
 
 # Customize Study Session
 
-class CustomizeStudySession:
-    from language_manager import LanguageManager
-    def __init__(self, root, vocabulary, initial_settings=None):
-        self.root = root
-        self.vocabulary = vocabulary
-        self.settings = {
-            'word_count': 10,
-            'realtime_feedback': ctk.BooleanVar(value=False),
-            'study_direction': ctk.StringVar(value="hangul_to_lang"),
-            'timer_enabled': ctk.BooleanVar(value=False),
-            'difficulty': ctk.StringVar(value="All")
-        }
+# class CustomizeStudySession:
+#     from language_manager import LanguageManager
+#     def __init__(self, root, vocabulary, initial_settings=None):
+#         self.root = root
+#         self.vocabulary = vocabulary
+#         self.settings = {
+#             'word_count': 10,
+#             'realtime_feedback': ctk.BooleanVar(value=False),
+#             'study_direction': ctk.StringVar(value="hangul_to_lang"),
+#             'timer_enabled': ctk.BooleanVar(value=False),
+#             'difficulty': ctk.StringVar(value="All")
+#         }
 
-        if initial_settings:
-            self._apply_initial_settings(initial_settings)
-
-
-        self.create_widgets()
-
-    def _apply_initial_settings(self, settings):
-
-        if 'word_count' in settings:
-            self.settings['word_count'] = settings['word_count']
-
-        if 'study_direction' in settings:
-            self.settings['study_direction'].set(settings.get('study_direction', "hangul_to_lang"))
-
-        if 'realtime_feedback' in settings:
-            self.settings['realtime_feedback'].set(settings.get('realtime_feedback', False))
-
-        if 'timer_enabled' in settings:
-            self.settings['timer_enabled'].set(settings.get('timer_enabled', False))
-
-        if 'difficulty' in settings:
-            self.settings['difficulty'].set(settings.get('difficulty', "All"))
-
-    def create_widgets(self):
-
-        for widget in self.root.winfo_children():
-            widget.pack_forget()
+#         if initial_settings:
+#             self._apply_initial_settings(initial_settings)
 
 
-        # Gui Frame
+#         self.create_widgets()
 
-        self.cframe = ctk.CTkFrame(self.root)
-        self.cframe.pack(fill=ctk.BOTH, expand=True)
+#     def _apply_initial_settings(self, settings):
 
-        # Header
+#         if 'word_count' in settings:
+#             self.settings['word_count'] = settings['word_count']
 
-        self.create_header()
+#         if 'study_direction' in settings:
+#             self.settings['study_direction'].set(settings.get('study_direction', "hangul_to_lang"))
 
-        # Study Configs
+#         if 'realtime_feedback' in settings:
+#             self.settings['realtime_feedback'].set(settings.get('realtime_feedback', False))
 
-        self.create_word_count_selector()
-        self.create_feedback_switch()
-        self.create_direction_selector()
-        self.create_timer_button()
-        self.create_difficulty_selector_button()
+#         if 'timer_enabled' in settings:
+#             self.settings['timer_enabled'].set(settings.get('timer_enabled', False))
 
+#         if 'difficulty' in settings:
+#             self.settings['difficulty'].set(settings.get('difficulty', "All"))
 
-        self.create_start_button()
-        self.create_back_button()
+#     def create_widgets(self):
 
-
-    def create_header(self):
-
-        hframe = ctk.CTkFrame(self.cframe)
-        hframe.pack(fill=ctk.X, pady=(0, 20))
+#         for widget in self.root.winfo_children():
+#             widget.pack_forget()
 
 
-        tlabel = ctk.CTkLabel(
-            hframe,
-            text="Customize Your Study Session",
-            font=("Arial", 16, "bold")
-        )
-        tlabel.pack(anchor="nw", pady=10)
+#         # Gui Frame
 
-        minfo = f"Module {self.vocabulary[0]['Module']} - {self.vocabulary[0]['Level']}"
+#         self.cframe = ctk.CTkFrame(self.root)
+#         self.cframe.pack(fill=ctk.BOTH, expand=True)
 
-        mlabel = ctk.CTkLabel(
-            self.cframe,
-            text=minfo,
-            font=("Arial", 10)
-        )
-        mlabel.pack(anchor="nw")
+#         # Header
 
-        separator = ctk.CTkLabel(master=self.cframe, text="───────────────────────────────────────────────", text_color="gray50")
-        separator.pack(anchor="w", pady=10)
+#         self.create_header()
 
-    def create_word_count_selector(self):
+#         # Study Configs
 
-        if self.root.session_settings.get('selected_mode') != "matching":
+#         self.create_word_count_selector()
+#         self.create_feedback_switch()
+#         self.create_direction_selector()
+#         self.create_timer_button()
+#         self.create_difficulty_selector_button()
 
-            wframe = ctk.CTkFrame(self.cframe)
-            wframe.pack(fill=ctk.X, pady=10)
 
-            wlabel = ctk.CTkLabel(
-                wframe,
-                text="Words Number:",
-                font=("Arial", 12)
-            )
-            wlabel.pack(anchor="nw", side=ctk.LEFT, padx=5)
+#         self.create_start_button()
+#         self.create_back_button()
 
-            # Spinbox
 
-            min_words = min(4, len(self.vocabulary))
-            default_value = max(min(10, len(self.vocabulary)), min_words)
+#     def create_header(self):
 
-            self.spinbox = ttk.Spinbox(                  
-                wframe,
-                from_=min_words,
-                to=len(self.vocabulary),
-                width=5,
-                command=self.update_slider
-            )
-            self.spinbox.pack(anchor="nw", pady=5, side=ctk.LEFT)
-            self.spinbox.bind("<KeyRelease>", self.sync_widgets)
+#         hframe = ctk.CTkFrame(self.cframe)
+#         hframe.pack(fill=ctk.X, pady=(0, 20))
 
-            # Slider
 
-            self.slider = ctk.CTkSlider(
-                wframe,
-                from_=min_words,
-                to=len(self.vocabulary),
-                orientation=ctk.HORIZONTAL,
-                command=self.update_spinbox
-            )
-            self.slider.pack(side=ctk.LEFT, fill=ctk.X, expand=True, padx=5)
+#         tlabel = ctk.CTkLabel(
+#             hframe,
+#             text="Customize Your Study Session",
+#             font=("Arial", 16, "bold")
+#         )
+#         tlabel.pack(anchor="nw", pady=10)
 
-            # Valores Iniciais
+#         minfo = f"Module {self.vocabulary[0]['Module']} - {self.vocabulary[0]['Level']}"
+
+#         mlabel = ctk.CTkLabel(
+#             self.cframe,
+#             text=minfo,
+#             font=("Arial", 10)
+#         )
+#         mlabel.pack(anchor="nw")
+
+#         separator = ctk.CTkLabel(master=self.cframe, text="───────────────────────────────────────────────", text_color="gray50")
+#         separator.pack(anchor="w", pady=10)
+
+#     def create_word_count_selector(self):
+
+#         if self.root.session_settings.get('selected_mode') != "matching":
+
+#             wframe = ctk.CTkFrame(self.cframe)
+#             wframe.pack(fill=ctk.X, pady=10)
+
+#             wlabel = ctk.CTkLabel(
+#                 wframe,
+#                 text="Words Number:",
+#                 font=("Arial", 12)
+#             )
+#             wlabel.pack(anchor="nw", side=ctk.LEFT, padx=5)
+
+#             # Spinbox
+
+#             min_words = min(4, len(self.vocabulary))
+#             default_value = max(min(10, len(self.vocabulary)), min_words)
+
+#             self.spinbox = ttk.Spinbox(                  
+#                 wframe,
+#                 from_=min_words,
+#                 to=len(self.vocabulary),
+#                 width=5,
+#                 command=self.update_slider
+#             )
+#             self.spinbox.pack(anchor="nw", pady=5, side=ctk.LEFT)
+#             self.spinbox.bind("<KeyRelease>", self.sync_widgets)
+
+#             # Slider
+
+#             self.slider = ctk.CTkSlider(
+#                 wframe,
+#                 from_=min_words,
+#                 to=len(self.vocabulary),
+#                 orientation=ctk.HORIZONTAL,
+#                 command=self.update_spinbox
+#             )
+#             self.slider.pack(side=ctk.LEFT, fill=ctk.X, expand=True, padx=5)
+
+#             # Valores Iniciais
             
-            self.spinbox.set(default_value)
-            self.slider.set(default_value)
+#             self.spinbox.set(default_value)
+#             self.slider.set(default_value)
 
-    def create_direction_selector(self):
+#     def create_direction_selector(self):
 
-        if self.root.session_settings.get('selected_mode') != "matching":
-            tframe = ctk.CTkFrame(self.cframe)
-            tframe.pack(fill=ctk.X, pady=10)
+#         if self.root.session_settings.get('selected_mode') != "matching":
+#             tframe = ctk.CTkFrame(self.cframe)
+#             tframe.pack(fill=ctk.X, pady=10)
 
-            tlabel = ctk.CTkLabel(
-                tframe,
-                text="Answer With:",
-                font=("Arial", 12)
-            )
-            tlabel.pack(anchor="nw", side=ctk.LEFT, padx=5)
+#             tlabel = ctk.CTkLabel(
+#                 tframe,
+#                 text="Answer With:",
+#                 font=("Arial", 12)
+#             )
+#             tlabel.pack(anchor="nw", side=ctk.LEFT, padx=5)
 
-            from project import language_manager_flashcards
-            directions = [
-                (f"Hangul to {language_manager_flashcards.get_language()}", "hangul_to_lang"),
-                (f"{language_manager_flashcards.get_language()} to Hangul", "lang_to_hangul")
-            ]
+#             from project import language_manager_flashcards
+#             directions = [
+#                 (f"Hangul to {language_manager_flashcards.get_language()}", "hangul_to_lang"),
+#                 (f"{language_manager_flashcards.get_language()} to Hangul", "lang_to_hangul")
+#             ]
 
-            for text, value in directions:
-                ctk.CTkRadioButton(
-                    tframe,
-                    text=text,
-                    variable=self.settings['study_direction'],
-                    value=value
-                ).pack(anchor="nw", padx=10, side=ctk.LEFT)
+#             for text, value in directions:
+#                 ctk.CTkRadioButton(
+#                     tframe,
+#                     text=text,
+#                     variable=self.settings['study_direction'],
+#                     value=value
+#                 ).pack(anchor="nw", padx=10, side=ctk.LEFT)
 
-            if self.root.session_settings.get('selected_mode') == "input":
-                info = ctk.CTkButton(
-                    tframe,
-                    text="i",
-                    command=lambda: messagebox.showinfo("Info", "Hangul Entry is a little bit buggy due Tkinter limitations. \n                              --But it works--!"),
-                    width=20,
-                    height=20,
-                    corner_radius=20,
-                    border_width=0,
-                )
-                info.pack(anchor="nw", padx=10, side=ctk.LEFT)
+#             if self.root.session_settings.get('selected_mode') == "input":
+#                 info = ctk.CTkButton(
+#                     tframe,
+#                     text="i",
+#                     command=lambda: messagebox.showinfo("Info", "Hangul Entry is a little bit buggy due Tkinter limitations. \n                              --But it works--!"),
+#                     width=20,
+#                     height=20,
+#                     corner_radius=20,
+#                     border_width=0,
+#                 )
+#                 info.pack(anchor="nw", padx=10, side=ctk.LEFT)
 
-    def create_feedback_switch(self):
+#     def create_feedback_switch(self):
 
-        if self.root.session_settings.get('selected_mode') == "multiple_choice" or self.root.session_settings.get('selected_mode') == "true_or_false":
-            sframe = ctk.CTkFrame(self.cframe)
-            sframe.pack(fill=ctk.X, pady=10)
+#         if self.root.session_settings.get('selected_mode') == "multiple_choice" or self.root.session_settings.get('selected_mode') == "true_or_false":
+#             sframe = ctk.CTkFrame(self.cframe)
+#             sframe.pack(fill=ctk.X, pady=10)
 
-            slabel = ctk.CTkLabel(
-                sframe,
-                text="Auto Correction:",
-                font=("Arial", 12)
-            )
-            slabel.pack(anchor="nw", side=ctk.LEFT, padx=5)
+#             slabel = ctk.CTkLabel(
+#                 sframe,
+#                 text="Auto Correction:",
+#                 font=("Arial", 12)
+#             )
+#             slabel.pack(anchor="nw", side=ctk.LEFT, padx=5)
 
-            self.feedback_switch = ToggleSwitch(sframe)
-            self.feedback_switch.pack(anchor="nw", pady=5)
-            self.settings['realtime_feedback'] = self.feedback_switch.state
+#             self.feedback_switch = ToggleSwitch(sframe)
+#             self.feedback_switch.pack(anchor="nw", pady=5)
+#             self.settings['realtime_feedback'] = self.feedback_switch.state
 
-    def create_timer_button(self):
-        tframe = ctk.CTkFrame(self.cframe)
-        tframe.pack(fill=ctk.X, pady=10)
+#     def create_timer_button(self):
+#         tframe = ctk.CTkFrame(self.cframe)
+#         tframe.pack(fill=ctk.X, pady=10)
 
-        from utilities import SessionTimer
+#         from utilities import SessionTimer
 
-        tlabel = ctk.CTkLabel(
-            tframe,
-            text="Timer",
-            font=("Arial", 12)
-        )
-        tlabel.pack(anchor="nw", side=ctk.LEFT, padx=5)
+#         tlabel = ctk.CTkLabel(
+#             tframe,
+#             text="Timer",
+#             font=("Arial", 12)
+#         )
+#         tlabel.pack(anchor="nw", side=ctk.LEFT, padx=5)
 
-        self.timer_switch = ToggleSwitch(tframe)
-        self.timer_switch.pack(anchor="nw", pady=5)
+#         self.timer_switch = ToggleSwitch(tframe)
+#         self.timer_switch.pack(anchor="nw", pady=5)
 
-    def create_difficulty_selector_button(self):
-        dframe = ctk.CTkFrame(self.cframe)
-        dframe.pack(fill=ctk.X, pady=10)
+#     def create_difficulty_selector_button(self):
+#         dframe = ctk.CTkFrame(self.cframe)
+#         dframe.pack(fill=ctk.X, pady=10)
 
-        dlabel = ctk.CTkLabel(
-            dframe,
-            text="Difficulty Selector:",
-            font=("Arial", 12)
-        )
-        dlabel.pack(anchor="nw", side=ctk.LEFT, padx=5)
+#         dlabel = ctk.CTkLabel(
+#             dframe,
+#             text="Difficulty Selector:",
+#             font=("Arial", 12)
+#         )
+#         dlabel.pack(anchor="nw", side=ctk.LEFT, padx=5)
 
-        self.difficulty_var = ctk.StringVar(value="All")
+#         self.difficulty_var = ctk.StringVar(value="All")
 
-        for level in ["All", "Easy", "Medium", "Hard"]:
-            ctk.CTkRadioButton(
-                dframe,
-                text=level,
-                variable=self.difficulty_var,
-                value=level
-            ).pack(anchor="nw", padx=10, side=ctk.LEFT)
+#         for level in ["All", "Easy", "Medium", "Hard"]:
+#             ctk.CTkRadioButton(
+#                 dframe,
+#                 text=level,
+#                 variable=self.difficulty_var,
+#                 value=level
+#             ).pack(anchor="nw", padx=10, side=ctk.LEFT)
         
-    def create_start_button(self):
-        bframe = ctk.CTkFrame(self.cframe)
-        bframe.pack(fill=ctk.X, pady=10)
+#     def create_start_button(self):
+#         bframe = ctk.CTkFrame(self.cframe)
+#         bframe.pack(fill=ctk.X, pady=10)
 
-        sbutton = ctk.CTkButton(
-            bframe,
-            text="Start",
-            command=self.start_session,
-            width=20
-        )
-        sbutton.pack(pady=10, ipady=10)
+#         sbutton = ctk.CTkButton(
+#             bframe,
+#             text="Start",
+#             command=self.start_session,
+#             width=20
+#         )
+#         sbutton.pack(pady=10, ipady=10)
 
-    def create_back_button(self):
-        bframe = ctk.CTkFrame(self.cframe)
-        bframe.pack(fill=ctk.X, pady=10)
+#     def create_back_button(self):
+#         bframe = ctk.CTkFrame(self.cframe)
+#         bframe.pack(fill=ctk.X, pady=10)
         
-        from routes import return_to_choose_study_mode
-        bbutton = ctk.CTkButton(
-            bframe,
-            text="Back",
-            width=10,
-            command=lambda: return_to_choose_study_mode(self.root, self.cframe, selected_module=self.vocabulary[0]['Module'])
-        )
-        bbutton.pack(anchor="s", pady=5, ipady=5)
+#         from routes import return_to_choose_study_mode
+#         bbutton = ctk.CTkButton(
+#             bframe,
+#             text="Back",
+#             width=10,
+#             command=lambda: return_to_choose_study_mode(self.root, self.cframe, selected_module=self.vocabulary[0]['Module'])
+#         )
+#         bbutton.pack(anchor="s", pady=5, ipady=5)
 
-    def start_session(self):
-        from project import start_study_session, language_manager_flashcards
-        from all_flashcards import StandardFlashcards, InputPractice, MultipleChoiceGame, MatchingGame, TrueFalseGame
+#     def start_session(self):
+#         from project import start_study_session, language_manager_flashcards
+#         from all_flashcards import StandardFlashcards, InputPractice, MultipleChoiceGame, MatchingGame, TrueFalseGame
 
-        settings = {
-            'word_count': int(self.spinbox.get()) if self.root.session_settings.get('selected_mode') != "matching" else None,
-            'study_direction': self.settings['study_direction'].get(),
-            'realtime_feedback': self.settings['realtime_feedback'].get(),
-            'timer_enabled': self.timer_switch.state.get(),
-            'difficulty': self.difficulty_var.get(),
-            'selected_mode': self.root.session_settings['selected_mode']
-        }
+#         settings = {
+#             'word_count': int(self.spinbox.get()) if self.root.session_settings.get('selected_mode') != "matching" else None,
+#             'study_direction': self.settings['study_direction'].get(),
+#             'realtime_feedback': self.settings['realtime_feedback'].get(),
+#             'timer_enabled': self.timer_switch.state.get(),
+#             'difficulty': self.difficulty_var.get(),
+#             'selected_mode': self.root.session_settings['selected_mode']
+#         }
 
-        if hasattr(self, 'feedback_switch'):
-            settings['show_styles'] = self.feedback_switch.state.get()
-        else:
-            settings['show_styles'] = False
+#         if hasattr(self, 'feedback_switch'):
+#             settings['show_styles'] = self.feedback_switch.state.get()
+#         else:
+#             settings['show_styles'] = False
 
-        if hasattr(self.root, 'session_timer'):
-            del self.root.session_timer
+#         if hasattr(self.root, 'session_timer'):
+#             del self.root.session_timer
 
-        if settings['timer_enabled']:
-            from utilities import SessionTimer
-            self.root.session_timer = SessionTimer()
-            self.root.session_timer.start()
+#         if settings['timer_enabled']:
+#             from utilities import SessionTimer
+#             self.root.session_timer = SessionTimer()
+#             self.root.session_timer.start()
 
-        words = self.vocabulary[:settings['word_count']]
+#         words = self.vocabulary[:settings['word_count']]
 
-        if settings['difficulty'] != "All":
-            words = [word for word in words if word['Difficulty'] == settings['difficulty']]
+#         if settings['difficulty'] != "All":
+#             words = [word for word in words if word['Difficulty'] == settings['difficulty']]
 
-        if not words:
-            messagebox.showinfo("No words available", "Please select a different difficulty level.")
-            return
+#         if not words:
+#             messagebox.showinfo("No words available", "Please select a different difficulty level.")
+#             return
 
-        from project import language_manager_flashcards
-        processed_words = []
-        for word in words:
-            new_word = word.copy()
-            if settings['study_direction'] == "hangul_to_lang":
-                new_word['Question'] = word['Hangul']
-                new_word['Answer'] = language_manager_flashcards.get_translations(word).lower()
-            else:
-                new_word['Question'] = language_manager_flashcards.get_translations(word)
-                new_word['Answer'] = word['Hangul'].lower()
-            processed_words.append(new_word)
+#         from project import language_manager_flashcards
+#         processed_words = []
+#         for word in words:
+#             new_word = word.copy()
+#             if settings['study_direction'] == "hangul_to_lang":
+#                 new_word['Question'] = word['Hangul']
+#                 new_word['Answer'] = language_manager_flashcards.get_translations(word).lower()
+#             else:
+#                 new_word['Question'] = language_manager_flashcards.get_translations(word)
+#                 new_word['Answer'] = word['Hangul'].lower()
+#             processed_words.append(new_word)
         
-        self.cframe.pack_forget()
+#         self.cframe.pack_forget()
 
-        if self.root.session_settings['selected_mode'] == "standard":
-            StandardFlashcards(self.root, processed_words, settings)
-        elif self.root.session_settings['selected_mode'] == "input":
-            InputPractice(self.root, processed_words, settings)
-        elif self.root.session_settings['selected_mode'] == "multiple_choice":
-            MultipleChoiceGame(self.root, processed_words, settings)
-        elif self.root.session_settings['selected_mode'] == "matching":
-            MatchingGame(self.root, processed_words, settings)
-        elif self.root.session_settings['selected_mode'] == "true_or_false":
-            TrueFalseGame(self.root, processed_words, settings)
+#         if self.root.session_settings['selected_mode'] == "standard":
+#             StandardFlashcards(self.root, processed_words, settings)
+#         elif self.root.session_settings['selected_mode'] == "input":
+#             InputPractice(self.root, processed_words, settings)
+#         elif self.root.session_settings['selected_mode'] == "multiple_choice":
+#             MultipleChoiceGame(self.root, processed_words, settings)
+#         elif self.root.session_settings['selected_mode'] == "matching":
+#             MatchingGame(self.root, processed_words, settings)
+#         elif self.root.session_settings['selected_mode'] == "true_or_false":
+#             TrueFalseGame(self.root, processed_words, settings)
 
 
     
-    def update_slider(self):
-        try:
-            value = int(self.spinbox.get())
-            if 1 <= value <= len(self.vocabulary):
-                self.slider.set(value)
-        except ValueError:
-            pass
+#     def update_slider(self):
+#         try:
+#             value = int(self.spinbox.get())
+#             if 1 <= value <= len(self.vocabulary):
+#                 self.slider.set(value)
+#         except ValueError:
+#             pass
 
-    def update_spinbox(self, value):
-        try:
-            int_value = int(float(value))
-            self.spinbox.set(int_value)
-        except ValueError:
-            pass
+#     def update_spinbox(self, value):
+#         try:
+#             int_value = int(float(value))
+#             self.spinbox.set(int_value)
+#         except ValueError:
+#             pass
 
-    def sync_widgets(self, event=None):
-        try:
-            value = int(self.spinbox.get())
-            if 1 <= value <= len(self.vocabulary):
-                self.slider.set(value)
-        except ValueError:
-            pass
+#     def sync_widgets(self, event=None):
+#         try:
+#             value = int(self.spinbox.get())
+#             if 1 <= value <= len(self.vocabulary):
+#                 self.slider.set(value)
+#         except ValueError:
+#             pass
         

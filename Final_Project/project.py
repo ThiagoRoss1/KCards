@@ -9,13 +9,14 @@ import random
 import all_flashcards
 from all_flashcards import StandardFlashcards, InputPractice, MultipleChoiceGame, MatchingGame, TrueFalseGame
 import routes
-from language_manager import LanguageManager
-from utilities import CustomizeStudySession
+from language_manager import LanguageManager, InterfaceTranslator, T_CTkLabel
+from customize_study_session import CustomizeStudySession
 from utilities import SessionTimer
 
 
 
 language_manager_flashcards = LanguageManager()
+interface_translator = InterfaceTranslator()
 
 
 def main():
@@ -62,17 +63,17 @@ def myapp_gui(root):
     # root.rowconfigure(0, weight=1)
     root.resizable(True, True)
 
-    style = ttk.Style()
-    style.configure(
-        "Correct.TButton",
-        background="green",          # Funcionando (Testado apenas no Multiple Choice)
-        foreground="white",
-    )
-    style.configure(
-        "Incorrect.TButton",
-        background="red",
-        foreground="white",
-    )
+    # style = ttk.Style()
+    # style.configure(
+    #     "Correct.TButton",
+    #     background="green",          # Funcionando (Testado apenas no Multiple Choice)
+    #     foreground="white",
+    # )
+    # style.configure(
+    #     "Incorrect.TButton",
+    #     background="red",
+    #     foreground="white",
+    # )
 
 def load_vocabulary(filepath='vocabulary.csv'):
 
@@ -106,16 +107,88 @@ def main_menu_gui(root, vocabulary):
     n_selection_frame = ctk.CTkFrame(root)
     n_selection_frame.pack(fill="both", expand=True)
 
-    n_t_label = ctk.CTkLabel(
+    n_t_label = T_CTkLabel(
         n_selection_frame,
-        text="Korean Flashcards App",
+        text="main_menu_korean",
         font=("Arial", 22, "bold")
     )
     n_t_label.pack(pady=10)
 
-    n_b_label = ctk.CTkLabel(
+    lbutton_frame = ctk.CTkFrame(
         n_selection_frame,
-        text="Select a Level",
+        fg_color="transparent",
+    )
+    lbutton_frame.pack(pady=10)
+
+    translation_button = ctk.CTkButton(
+        lbutton_frame,
+        text=f"🌎 {interface_translator.get_language()[:3]}",
+        command=lambda: toggle_translation_controls()
+    )
+    translation_button.pack(side="left", padx=10)
+
+    controls_frame = ctk.CTkFrame(lbutton_frame, fg_color="transparent", bg_color="transparent")
+
+    translation_combobox = ctk.CTkComboBox(
+        controls_frame,
+        values=["English", "Portuguese"],
+        state="readonly",
+    )
+    translation_combobox.pack(side="top")
+
+    confirm_button = ctk.CTkButton(
+        controls_frame,
+        text="✔",
+        command=lambda: confirm_translation()
+    )
+    confirm_button.pack(side="top")
+    controls_frame.pack_forget()
+
+    def toggle_translation_controls():
+        if controls_frame.winfo_ismapped():
+            controls_frame.pack_forget()
+        else:
+            translation_combobox.set(interface_translator.get_language())
+            translation_combobox.focus()
+            controls_frame.pack()
+    
+    def confirm_translation():
+        selected_lang = translation_combobox.get()
+        if selected_lang in ["English", "Portuguese"]:
+            interface_translator.set_language(selected_lang)
+            translation_button.configure(text=f"🌎 {selected_lang[:3]}")
+            controls_frame.pack_forget()
+           # n_t_label.configure(text=interface_translator.get_translation('main_menu')) # Necessary for labels
+            
+            
+
+    # # Botão de teste de tradução
+    # test_button = ctk.CTkButton(
+    #     n_selection_frame,
+    #     text="Testar Tradução",
+    #     command=lambda: test_translation()
+    # )
+    # test_button.pack(pady=20)
+
+    # def test_translation():
+    #     # Teste com a chave do CSV
+    #     print("Tradução de 'main_menu':", interface_translator.get_translation('main_menu'))
+        
+    #     # Teste com uma chave que não existe (deve retornar a chave)
+    #     print("Tradução de 'chave_inexistente':", interface_translator.get_translation('chave_inexistente'))
+        
+    #     # Mostra o idioma atual
+    #     print("Idioma atual da interface:", interface_translator.get_language())
+        
+    #     # Alterna entre idiomas
+    #     new_lang = "Portuguese" if interface_translator.get_language() == "English" else "English"
+    #     interface_translator.set_language(new_lang)
+    #     n_t_label.configure(text=interface_translator.get_translation('main_menu'))
+    #     messagebox.showinfo("Idioma Alterado", f"Idioma da interface alterado para {new_lang}")
+
+    n_b_label = T_CTkLabel(
+        n_selection_frame,
+        text="select_level",
         font=("Arial", 16, "bold")
     )
     n_b_label.pack(pady=10)
@@ -178,9 +251,9 @@ def setup_module_selection(root, vocabulary, selected_frame):
     selection_frame = ctk.CTkFrame(root, bg_color="transparent")
     selection_frame.pack(fill=ctk.BOTH, expand=True)
 
-    ctk.CTkLabel(
+    T_CTkLabel(
         selection_frame,
-        text="Select a Module",
+        text="select_module",
         font=("Arial", 16, "bold")
     ).pack(pady=10)
 
@@ -202,7 +275,7 @@ def setup_module_selection(root, vocabulary, selected_frame):
     )
     language_button.pack()
 
-    controls_frame = ctk.CTkFrame(language_container, bg_color="transparent")
+    controls_frame = ctk.CTkFrame(language_container, fg_color="transparent", bg_color="transparent")
 
     # Combobox
 
@@ -272,7 +345,7 @@ def setup_module_selection(root, vocabulary, selected_frame):
 
         button = ctk.CTkButton(
             buttons_frame,
-            text=f"Module {module}",
+            text=f"{interface_translator.get_translation("module")} {module}",
             fg_color=fg_color,
             hover_color=hover_color,
             text_color="white",
@@ -289,7 +362,7 @@ def setup_module_selection(root, vocabulary, selected_frame):
 
     all_button = ctk.CTkButton(
         buttons_frame,
-        text="All Modules",
+        text=interface_translator.get_translation("all_modules"),
         fg_color="#2CC985",
         hover_color="#207a4c",
         text_color="white",
@@ -307,7 +380,7 @@ def setup_module_selection(root, vocabulary, selected_frame):
     from routes import return_to_main_menu
     m_menu = ctk.CTkButton(
         buttons_frame,
-        text="Back",
+        text=interface_translator.get_translation("back"),
         fg_color="#363636",
         hover_color="#242424",
         text_color="white",
@@ -354,28 +427,28 @@ def choose_study_mode(root, words, previous_frame=None):
 
     study_frame.vocabulary = words
 
-    ctk.CTkLabel(
+    T_CTkLabel(
         study_frame,
-        text="Choose Study Mode",
+        text="choose_study_mode",
         font=("Arial", 16, "bold")
     ).pack(pady=10)
 
     # Study modes buttons
 
     modes = {
-        "Standard Flashcards": {
+        f"🎨{interface_translator.get_translation("standard_flashcards")}": {  #emote temporario
             "mode": "standard",
         },
-        "Input Practice": {
+        f"{interface_translator.get_translation("input_practice")}": {
             "mode": "input",
         },
-        "Matching Game": {
+        f"{interface_translator.get_translation("matching_game")}": {
             "mode": "matching",
         },
-        "Multiple Choice": {
+        f"{interface_translator.get_translation("multiple_choice")}": {
             "mode": "multiple_choice",
         },
-        "True or False": {
+        f"{interface_translator.get_translation("true_or_false")}": {
             "mode": "true_or_false",
         },
         #"Listening Practice": {
@@ -397,7 +470,7 @@ def choose_study_mode(root, words, previous_frame=None):
     
     ctk.CTkButton(
         study_frame,
-        text="Back",
+        text=interface_translator.get_translation("back"),
         command=lambda: [study_frame.pack_forget(), setup_module_selection(root, load_vocabulary(), selected_frame=study_frame)],
         width=15
     ).pack(side=ctk.LEFT, padx=10, pady=20)
@@ -407,7 +480,7 @@ def choose_study_mode(root, words, previous_frame=None):
     from routes import return_to_main_menu
     m_m_button = ctk.CTkButton(
         study_frame,
-        text="Back to Main Menu",
+        text=interface_translator.get_translation("back_to_main_menu"),
         command=lambda: [study_frame.pack_forget(), return_to_main_menu(root, study_frame)],
         width=0
     )

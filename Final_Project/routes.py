@@ -1,5 +1,8 @@
 import customtkinter as ctk
 from customtkinter import *
+from language_manager import InterfaceTranslator
+
+translation = InterfaceTranslator()
 
 
 def return_to_main_menu(root, current_frame):
@@ -36,7 +39,7 @@ class Retry(ctk.CTkButton):
 
         super().__init__(
             master=parent,
-            text="⚙ Retry",
+            text=f"⚙ {translation.get_translation("retry")}",
             command=self._retry_session,
             width=20,
             height=30,
@@ -55,7 +58,7 @@ class Retry(ctk.CTkButton):
 
         self.current_frame.pack_forget()
 
-        from utilities import CustomizeStudySession
+        from customize_study_session import CustomizeStudySession
         customize_frame = ctk.CTkFrame(self.root)
         customize_frame.pack(fill=ctk.BOTH, expand=True)
 
