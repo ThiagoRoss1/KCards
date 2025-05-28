@@ -36,3 +36,20 @@ retry,Retry,Tentar Novamente
 input_results,Input Game Results,Resultados da Avaliação Escrita
 your_answer,Your Answer,Sua Resposta
 correct_answer,Correct Answer,Resposta Correta
+matching_results,Matching Game Results,Resultados do Combinar
+accuracy,Accuracy,Precisão
+attempts,Attempts,Tentativas
+session_time,Session Time,Tempo da Sessão
+words_list,Words List,Lista de Palavras
+true_false_results,True or False Results,Resultados do Verdadeiro ou Falso
+word,Word,Palavra
+question,Question,Pergunta
+multiple_choice_results,Multiple Choice Results,Resultados da Múltipla Escolha
+you_selected,You Selected,Você Selecionou
+correct_choice,Correct Choice,Alternativa Correta
+
+
+
+
+
+

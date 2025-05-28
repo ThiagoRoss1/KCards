@@ -78,7 +78,7 @@ class CustomizeStudySession:
 
     def create_header(self):
 
-        hframe = ctk.CTkFrame(self.cframe)
+        hframe = ctk.CTkFrame(self.cframe, fg_color="transparent")
         hframe.pack(fill=ctk.X, pady=(0, 20))
 
 
@@ -116,6 +116,51 @@ class CustomizeStudySession:
             wlabel.pack(anchor="nw", side=ctk.LEFT, padx=5)
 
             # Spinbox
+            
+            style = ttk.Style()
+            style.theme_use('clam')
+
+            fg_color = "white"
+            bg_color = "#2b2b2b"
+            border_color = "#3e3e3e"
+            button_color = "#1f6aa5"  
+            hover_color = "#144870"
+
+            style.configure(
+                'Custom.TSpinbox',
+                foreground=fg_color,
+                background=bg_color,
+                bordercolor=border_color,
+                lightcolor=bg_color,
+                darkcolor=bg_color,
+                arrowsize=14,
+                padding=8,
+                relief='flat',
+                arrowcolor=fg_color,
+                insertcolor=fg_color,
+                fieldbackground=bg_color,
+                selectbackground=button_color,
+                selectforeground=fg_color,
+                font=('Arial', 10),
+                borderwidth=10,
+                border=10
+            )
+            
+            def remove_focus(event):
+                self.root.focus_set()
+
+            style.map(
+                'Custom.TSpinbox',
+                background=[('active', bg_color), ('!disabled', bg_color)],
+                bordercolor=[
+                    ('focus', button_color),
+                    ('!focus', border_color),
+                    ('hover', hover_color)
+                ],
+                lightcolor=[('focus', button_color), ('!focus', bg_color)],
+                darkcolor=[('focus', button_color), ('!focus', bg_color)],
+                arrowcolor=[('pressed', hover_color), ('!pressed', fg_color)]
+            )
 
             min_words = min(4, len(self.vocabulary))
             default_value = max(min(10, len(self.vocabulary)), min_words)
@@ -129,6 +174,10 @@ class CustomizeStudySession:
             )
             self.spinbox.pack(anchor="nw", pady=5, side=ctk.LEFT)
             self.spinbox.bind("<KeyRelease>", self.sync_widgets)
+            self.spinbox.bind("<Return>", remove_focus)
+            self.spinbox.bind("<FocusOut>", remove_focus)
+            self.spinbox.bind("<<Increment>>", remove_focus)
+            self.spinbox.bind("<<Decrement>>", remove_focus)
 
             # Slider
 
@@ -198,9 +247,12 @@ class CustomizeStudySession:
             )
             slabel.pack(anchor="nw", side=ctk.LEFT, padx=5)
 
-            self.feedback_switch = ToggleSwitch(sframe)
-            self.feedback_switch.pack(anchor="nw", pady=5)
-            self.settings['realtime_feedback'] = self.feedback_switch.state
+            self.feedback_switch = ctk.CTkSwitch(
+                sframe,
+                text="",
+                variable=self.settings['realtime_feedback'],
+            )
+            self.feedback_switch.pack(anchor="nw", pady=5, side=ctk.LEFT)
 
     def create_timer_button(self):
         tframe = ctk.CTkFrame(self.cframe)
@@ -215,7 +267,11 @@ class CustomizeStudySession:
         )
         tlabel.pack(anchor="nw", side=ctk.LEFT, padx=5)
 
-        self.timer_switch = ToggleSwitch(tframe)
+        self.timer_switch = ctk.CTkSwitch(
+            tframe,
+            text="",
+            variable=self.settings['timer_enabled']
+        )
         self.timer_switch.pack(anchor="nw", pady=5)
 
     def create_difficulty_selector_button(self):
@@ -272,13 +328,13 @@ class CustomizeStudySession:
             'word_count': int(self.spinbox.get()) if self.root.session_settings.get('selected_mode') != "matching" else None,
             'study_direction': self.settings['study_direction'].get(),
             'realtime_feedback': self.settings['realtime_feedback'].get(),
-            'timer_enabled': self.timer_switch.state.get(),
+            'timer_enabled': self.timer_switch.get(),
             'difficulty': self.difficulty_var.get(),
             'selected_mode': self.root.session_settings['selected_mode']
         }
 
         if hasattr(self, 'feedback_switch'):
-            settings['show_styles'] = self.feedback_switch.state.get()
+            settings['show_styles'] = self.feedback_switch.get()
         else:
             settings['show_styles'] = False
 

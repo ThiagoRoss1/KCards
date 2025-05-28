@@ -85,6 +85,21 @@ class InterfaceTranslator:
         }
         return translations.get(difficulty_level, {}).get(self.current_language, difficulty_level)
     
+    def get_true_false_ua_translation(self, user_answer):
+        translation = {
+            "True": {"English": "True", "Portuguese": "Verdadeiro"},
+            "False": {"English": "False", "Portuguese": "Falso"}
+        }
+        return translation.get(user_answer, {}).get(self.current_language, user_answer)
+
+    def get_true_false_ca_translation(self, correct_answer):
+        translation = {
+            "True": {"English": "True", "Portuguese": "Verdadeiro"},
+            "False": {"English": "False", "Portuguese": "Falso"}
+        }
+        return translation.get(correct_answer, {}).get(self.current_language, correct_answer)
+    
+    
     # def _get_default_translations(self) -> Dict[str, Dict[str, str]]:
     #     return {
     #         'main_menu_title': {

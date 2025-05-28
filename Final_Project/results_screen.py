@@ -48,11 +48,11 @@ class ResultsScreen:
 
         if hasattr(root, 'session_timer') and getattr(root.session_timer, 'is_running', False):
             elapsed_time = root.session_timer.get_elapsed_time()
-            time_text = f"Session Time: {root.session_timer.format_time(elapsed_time)}"
+            time_text = f"{translation.get_translation("session_time")}: {root.session_timer.format_time(elapsed_time)}"
         else:
             time_text = ""
         
-        time_label = ctk.CTkLabel(
+        time_label = T_CTkLabel(
             self.main_frame,
             text=time_text,
             font=("Arial", 12)
@@ -184,11 +184,29 @@ class ResultsScreen:
 
         study_direction = item.get('study_direction', 'hangul_to_lang')
 
+        ##
+
+        word_hangul = word['Hangul']
+        if word.get('Type'):
+            word_hangul += f" ({word['Type']})"
+
+        translations = language_manager_flashcards.get_translations(word)
+        if language_manager_flashcards.get_language() == "Portuguese":
+            if word.get('MF'):
+                translations = language_manager_flashcards.get_translations(word).split(',')[0].strip()
+                translations += f"({word['MF']})"
+            else:
+                translations = language_manager_flashcards.get_translations(word)
+        else:
+            translations = language_manager_flashcards.get_translations(word)
+
+        ## 
+
         if study_direction == "hangul_to_lang":
-            question_text = f"{word['Hangul']} ({language_manager_flashcards.get_translations(word)})"
+            question_text = f"{word_hangul} ({translations})"
             correct_answer = language_manager_flashcards.get_translations(word)
         else:
-            question_text = f"{language_manager_flashcards.get_translations(word)} ({word['Hangul']})"
+            question_text = f"{translations} ({word_hangul})"
             correct_answer = word['Hangul']
 
         # Answers List
@@ -221,7 +239,7 @@ class ResultsScreen:
             border_color=("gray70", "gray30"),
             corner_radius=20,
             width=250,
-            height=130
+            height=150
         )
         a_frame.pack_propagate(False)
         a_frame.pack(expand=False, anchor="w", padx=10, pady=5)
@@ -244,6 +262,9 @@ class ResultsScreen:
             fg_color="transparent",
             text_color="white",
             font=("Malgun Gothic", 14, "bold"),
+            width=230,
+            wraplength=230,
+            anchor="w"
         )
         w_label.pack(anchor="w")
 
@@ -256,8 +277,11 @@ class ResultsScreen:
             content_frame,
             text=f"{status} {translation.get_translation("your_answer")}: {str(user_answer).capitalize()}",
             font=("Arial", 12),
-            wraplength=200,
-            text_color=color
+            wraplength=230,
+            width=230,
+            text_color=color,
+            justify="left",
+            anchor="w"
         )
         u_label.pack(anchor="w")
 
@@ -269,6 +293,10 @@ class ResultsScreen:
                 text=f"✔ {translation.get_translation("correct_answer")}: {correct_answer}",
                 font=("Arial", 13),
                 text_color="#3B8ED0",
+                wraplength=230,
+                width=230,
+                justify="left",
+                anchor="w"
             )
             c_label.pack(anchor="w")
 
@@ -373,11 +401,11 @@ class MultipleChoiceResultsScreen:
 
         if hasattr(root, 'session_timer') and getattr(root.session_timer, 'is_running', False):
             elapsed_time = root.session_timer.get_elapsed_time()
-            time_text = f"Session Time: {root.session_timer.format_time(elapsed_time)}"
+            time_text = f"{translation.get_translation("session_time")}: {root.session_timer.format_time(elapsed_time)}"
         else:
             time_text = ""
         
-        time_label = ctk.CTkLabel(
+        time_label = T_CTkLabel(
             self.main_frame,
             text=time_text,
             font=("Arial", 12)
@@ -386,16 +414,16 @@ class MultipleChoiceResultsScreen:
 
         # Title Label
 
-        tlabel = ctk.CTkLabel(
+        tlabel = T_CTkLabel(
             self.main_frame,
-            text="🔠 Multiple Choice Game Results",
+            text=f"🔠 {translation.get_translation("multiple_choice_results")}",
             font=("Arial", 16, "bold")
         )
         tlabel.pack(pady=10)
 
-        main_label = ctk.CTkLabel(
+        main_label = T_CTkLabel(
             self.main_frame,
-            text=f"Results: {self.correct}/{self.total} ({self.correct/self.total:.0%})",
+            text=f"{translation.get_translation("results")}: {self.correct}/{self.total} ({self.correct/self.total:.0%})",
             font=("Arial", 16, "bold")
         )
         main_label.pack(pady=10)
@@ -420,15 +448,15 @@ class MultipleChoiceResultsScreen:
         )
         stats_content_frame.pack(expand=True, fill=ctk.BOTH, pady=5, padx=5)
 
-        ctk.CTkLabel(
+        T_CTkLabel(
             stats_content_frame,
-            text=f"✔ Corrects: {self.correct}",
+            text=f"✔ {translation.get_translation("corrects")}: {self.correct}",
             text_color="green"
         ).pack(side=ctk.LEFT, padx=(100, 0))
 
-        ctk.CTkLabel(
+        T_CTkLabel(
             stats_content_frame,
-            text=f"❌ Incorrects: {self.incorrect}",
+            text=f"❌ {translation.get_translation("incorrects")}: {self.incorrect}",
             text_color="red"
         ).pack(side=ctk.RIGHT, padx=(0, 100))
 
@@ -462,7 +490,7 @@ class MultipleChoiceResultsScreen:
         vocabulary = load_vocabulary()
         ctk.CTkButton(
             button_frame,
-            text="🏠 Main Menu",
+            text=f"🏠 {translation.get_translation("main_menu")}",
             command=lambda: return_to_main_menu(self.root, self.main_frame),
             fg_color="#3B8ED0",
             hover_color="#36719F",
@@ -488,12 +516,26 @@ class MultipleChoiceResultsScreen:
 
         study_direction = item.get('study_direction', 'hangul_to_lang')
 
-        if study_direction == "hangul_to_lang":
-            question_text = f"{word['Hangul']} ({language_manager_flashcards.get_translations(word)})"
-            correct_answer = language_manager_flashcards.get_translations(word)
+        word_hangul = word['Hangul']
+        if word.get('Type'):
+            word_hangul += f" ({word['Type']})"
+        
+        translations = language_manager_flashcards.get_translations(word)
+        if language_manager_flashcards.get_language() == "Portuguese":
+            if word.get('MF'):
+                translations = language_manager_flashcards.get_translations(word).split(',')[0].strip()
+                translations += f"({word['MF']})"
+            else:
+                translations = language_manager_flashcards.get_translations(word).replace(',', '/').strip()
         else:
-            question_text = f"{language_manager_flashcards.get_translations(word)} ({word['Hangul']})"
-            correct_answer = word['Hangul']
+            translations = language_manager_flashcards.get_translations(word).replace(',', '/').strip()
+
+        if study_direction == "hangul_to_lang":
+            question_text = f"{word_hangul} ({translations})"
+            correct_answer = translations
+        else:
+            question_text = f"{translations} ({word_hangul})"
+            correct_answer = word_hangul
 
         # Answers List
 
@@ -525,7 +567,7 @@ class MultipleChoiceResultsScreen:
             border_color=("gray70", "gray30"),
             corner_radius=20,
             width=250,
-            height=130
+            height=150
         )
         a_frame.pack_propagate(False)
         a_frame.pack(expand=False, anchor="w", padx=10, pady=5)
@@ -548,7 +590,9 @@ class MultipleChoiceResultsScreen:
             fg_color="transparent",
             text_color="white",
             font=("Malgun Gothic", 14, "bold"),
-
+            width=230,
+            wraplength=230,
+            anchor="w"
         )
         w_label.pack(anchor="w")
 
@@ -557,11 +601,14 @@ class MultipleChoiceResultsScreen:
         status = "✔" if correct else "❌"
         color = "#2ecc71" if correct else "#e74c3c"
 
-        u_label = ctk.CTkLabel(
+        u_label = T_CTkLabel(
             content_frame,
-            text=f"{status} You Selected: {str(user_answer).capitalize()}",
+            text=f"{status} {translation.get_translation("you_selected")}: {str(user_answer).capitalize()}",
             font=("Arial", 13),
-            wraplength=200,
+            wraplength=230,
+            width=230,
+            justify="left",
+            anchor="w",
             text_color=color
         )
         u_label.pack(anchor="w")
@@ -569,11 +616,15 @@ class MultipleChoiceResultsScreen:
         # Correct Answer (if incorrect)
 
         if not correct:
-            c_label = ctk.CTkLabel(
+            c_label = T_CTkLabel(
                 content_frame,
-                text=f"✔ Correct Choice: {correct_answer}",
+                text=f"✔ {translation.get_translation("correct_choice")}: {correct_answer}",
                 font=("Arial", 13),
                 text_color="#3B8ED0",
+                wraplength=230,
+                width=230,
+                justify="left",
+                anchor="w"
             )
             c_label.pack(anchor="w")
 
@@ -583,9 +634,9 @@ class MultipleChoiceResultsScreen:
             'Hard': "#A78B12"    
         }
 
-        dlabel = ctk.CTkLabel(
+        dlabel = T_CTkLabel(
             content_frame,
-            text=f"📑 Difficulty: {word['Difficulty']}",
+            text=f"📑 {translation.get_translation("difficulty")}: {translation.get_difficulty_translation(word['Difficulty'])}",
             text_color=difficulty_color.get(word['Difficulty'], 'black')
         )
         dlabel.pack(anchor="w")
@@ -617,9 +668,9 @@ class MatchingResultsScreen:
 
         # Title Label
 
-        tlabel = ctk.CTkLabel(
+        tlabel = T_CTkLabel(
             self.main_frame,
-            text="🎯 Matching Game Results",
+            text=f"🎯 {translation.get_translation("matching_results")}",
             font=("Arial", 16, "bold")
         )
         tlabel.pack(pady=10)
@@ -634,25 +685,25 @@ class MatchingResultsScreen:
         )
         self.statsframe.pack(fill=ctk.X, pady=10)
 
-        accuracy_label = ctk.CTkLabel(
+        accuracy_label = T_CTkLabel(
             self.statsframe,
-            text=f"• ✔ Accuracy: {self.accuracy:.0%}",
+            text=f"• ✔ {translation.get_translation("accuracy")}: {self.accuracy:.0%}",
             font=("Arial", 16, "bold"),
             text_color="#13e263" if self.accuracy >= 0.75 else "#ff3a00" if self.accuracy >= 0.5 else "#ca1d10"
         )
         accuracy_label.pack(anchor="center", pady=5)
 
-        attempts_label = ctk.CTkLabel(
+        attempts_label = T_CTkLabel(
             self.statsframe,
-            text=f"• 📑 Attempts: {self.attempts}",
+            text=f"• 📑 {translation.get_translation("attempts")}: {self.attempts}",
             font=("Arial", 16, "bold"),
             text_color="#12eccf" if self.attempts == 6 else "#ff6400" if 6 < self.attempts < 12 else "#E0115F"
         )
         attempts_label.pack(anchor="center", pady=5)
 
-        wrong_label = ctk.CTkLabel(
+        wrong_label = T_CTkLabel(
             self.statsframe,
-            text=f"• ❌ Incorrects: {self.incorrect}",
+            text=f"• ❌ {translation.get_translation("incorrects")}: {self.incorrect}",
             font=("Arial", 16, "bold"),
             text_color="#4dd6a2" if self.incorrect == 0 else "#ff8f00" if 6 < self.incorrect < 12 else "#FF073A"
         )
@@ -660,11 +711,11 @@ class MatchingResultsScreen:
 
         if hasattr(root, 'session_timer') and root.session_timer.should_display(self.settings):
             elapsed_time = root.session_timer.get_elapsed_time()
-            time_text = f"• ⏱ Session Time: {root.session_timer.format_time(elapsed_time)}"
+            time_text = f"• ⏱ {translation.get_translation("session_time")}: {root.session_timer.format_time(elapsed_time)}"
         else:
             time_text = ""
 
-        time_label = ctk.CTkLabel(
+        time_label = T_CTkLabel(
             self.statsframe,
             text=time_text,
             font=("Arial", 16, "bold")
@@ -676,9 +727,9 @@ class MatchingResultsScreen:
         words_frame = ctk.CTkFrame(self.main_frame, fg_color="transparent")
         words_frame.pack(fill=ctk.BOTH, expand=True, pady=(0, 20))
 
-        wlabel = ctk.CTkLabel(
+        wlabel = T_CTkLabel(
             words_frame,
-            text="🔠 Words List",
+            text=f"🔠 {translation.get_translation("words_list")}",
             font=("Arial", 16, "bold")
         )
         wlabel.pack(anchor="center", pady=(0, 10))
@@ -721,7 +772,7 @@ class MatchingResultsScreen:
 
         Menu = ctk.CTkButton(
             button_frame,
-            text="🏠 Main Menu",
+            text=f"🏠 {translation.get_translation("main_menu")}",
             command=lambda: return_to_main_menu(self.root, self.main_frame),
             fg_color="#3B8ED0",
             hover_color="#36719F",
@@ -765,9 +816,24 @@ class MatchingResultsScreen:
         content_frame.grid_columnconfigure(2, weight=3)  
         content_frame.grid_columnconfigure(3, weight=2)  
 
+
+        word_hangul = word['Hangul']
+        if word.get('Type'):
+            word_hangul += f" ({word['Type']})"
+
+        translations = language_manager_flashcards.get_translations(word)
+        if language_manager_flashcards.get_language() == "Portuguese":
+            if word.get('MF'):
+                translations = language_manager_flashcards.get_translations(word).split(',')[0].strip()
+                translations += f"({word['MF']})"
+            else:
+                translations = language_manager_flashcards.get_translations(word).replace(',', '/')
+        else:
+            translations = language_manager_flashcards.get_translations(word).replace(',', '/').strip()
+
         ctk.CTkLabel(
             content_frame,
-            text=word['Hangul'],
+            text=word_hangul,
             font=("Malgun Gothic", 15, "bold"),
             width=15,
             anchor="w",
@@ -782,7 +848,7 @@ class MatchingResultsScreen:
 
         ctk.CTkLabel(
             content_frame,
-            text=language_manager_flashcards.get_translations(word),
+            text=translations,
             font=("Arial", 15),
             anchor="center",
             wraplength=150
@@ -798,7 +864,7 @@ class MatchingResultsScreen:
 
         ctk.CTkLabel(
             content_frame,
-            text=f"📑 Difficulty: {word['Difficulty']}",
+            text=f"📑 {translation.get_translation("difficulty")}: {translation.get_difficulty_translation(word['Difficulty'])}",
             font=("Arial", 10),
             text_color=difficulty_color.get(word['Difficulty'], 'gray')
         ).grid(row=0, column=3, padx=(10, 5), sticky="nse")
@@ -824,27 +890,27 @@ class TrueFalseResultsScreen:
 
         if hasattr(self.root, 'session_timer') and self.root.session_timer.should_display(self.settings):
             elapsed_time = self.root.session_timer.get_elapsed_time()
-            time_text = f"Session Time: {self.root.session_timer.format_time(elapsed_time)}"
+            time_text = f"{translation.get_translation("session_time")}: {self.root.session_timer.format_time(elapsed_time)}"
         else:
             time_text = ""
 
-        time_label = ctk.CTkLabel(
+        time_label = T_CTkLabel(
             self.main_frame,
             text=time_text,
             font=("Arial", 12)
         )
         time_label.pack(pady=10)
 
-        tlabel = ctk.CTkLabel(
+        tlabel = T_CTkLabel(
             self.main_frame,
-            text="⚫ True or False Game Results",
+            text=f"⚫ {translation.get_translation("true_false_results")}",
             font=("Arial", 16, "bold")
         )
         tlabel.pack(pady=10)
 
-        rlabel = ctk.CTkLabel(
+        rlabel = T_CTkLabel(
             self.main_frame,
-            text=f"Results: {self.correct}/{self.total} ({self.correct/self.total:.0%})",
+            text=f"{translation.get_translation("results")}: {self.correct}/{self.total} ({self.correct/self.total:.0%})",
             font=("Arial", 16, "bold")
         )
         rlabel.pack(pady=10)
@@ -864,15 +930,15 @@ class TrueFalseResultsScreen:
         stats_content_frame = ctk.CTkFrame(stats_frame, fg_color="transparent")
         stats_content_frame.pack(expand=True, fill=ctk.BOTH, pady=5, padx=5)
 
-        ctk.CTkLabel(
+        T_CTkLabel(
             stats_content_frame,
-            text=f"✔ Corrects: {self.correct}",
+            text=f"✔ {translation.get_translation("corrects")}: {self.correct}",
             text_color="green"
         ).pack(side=ctk.LEFT, padx=(100, 0))
 
-        ctk.CTkLabel(
+        T_CTkLabel(
             stats_content_frame,
-            text=f"❌ Incorrects: {self.incorrect}",
+            text=f"❌ {translation.get_translation("incorrects")}: {self.incorrect}",
             text_color="red"
         ).pack(side=ctk.RIGHT, padx=(0, 100))
 
@@ -896,7 +962,7 @@ class TrueFalseResultsScreen:
 
         Menu = ctk.CTkButton(
             button_frame,
-            text="🏠 Main Menu",
+            text=f"🏠 {translation.get_translation("main_menu")}",
             command=lambda: return_to_main_menu(self.root, self.main_frame),fg_color="#3B8ED0",
             hover_color="#36719F",
             text_color="white",
@@ -955,7 +1021,7 @@ class TrueFalseResultsScreen:
             border_color=("gray70", "gray30"),
             corner_radius=20,
             width=250,
-            height=130
+            height=150
         )
         a_frame.pack_propagate(False)
         a_frame.pack(expand=False, anchor="w", padx=10, pady=5)
@@ -967,41 +1033,56 @@ class TrueFalseResultsScreen:
         for i in range(4):
             content_frame.grid_rowconfigure(i, weight=0)
             
-        w_label = ctk.CTkLabel(
+        w_label = T_CTkLabel(
             content_frame,
-            text=f"Word: {item.get('question_word', '')}",
+            text=f"{translation.get_translation("word")}: {item.get('question_word', '')}",
             font=("Arial", 14, "bold"),
             fg_color="transparent",
             text_color="white",
+            width=230,
+            wraplength=230,
+            anchor="w"
         )
         w_label.pack(anchor="w")
 
-        q_label = ctk.CTkLabel(
+        q_label = T_CTkLabel(
             content_frame,
-            text=f"Question: {item.get('statement_question', '')}",
+            text=f"{translation.get_translation("question")}: {item.get('statement_question', '')}",
             font=("Arial", 14),
             fg_color="transparent",
-            text_color="white"
+            text_color="white",
+            wraplength=230,
+            width=230,
+            justify="left",
+            anchor="w"
         )
         q_label.pack(anchor="w")
 
         status = "✔" if is_correct else "❌"
         color = "#2ecc71" if is_correct else "#e74c3c"
         
-        u_label = ctk.CTkLabel(
+        u_label = T_CTkLabel(
             content_frame,
-            text=f"{status} Your Answer: {user_answer}",
+            text=f"{status} {translation.get_translation("your_answer")}: {translation.get_true_false_ua_translation(user_answer)}",
             font=("Arial", 12),
-            text_color=color
+            wraplength=230,
+            width=230,
+            text_color=color,
+            justify="left",
+            anchor="w" 
         )
         u_label.pack(anchor="w")
 
         if not is_correct:
-            c_label = ctk.CTkLabel(
+            c_label = T_CTkLabel(
                 content_frame,
-                text=f"Correct Answer: {correct_answer}",
+                text=f"{translation.get_translation("correct_answer")}: {translation.get_true_false_ca_translation(correct_answer)}",
                 font=("Arial", 12),
-                text_color="#3B8ED0"
+                text_color="#3B8ED0",
+                wraplength=230,
+                width=230,
+                justify="left",
+                anchor="w"
             )
             c_label.pack(anchor="w")
 
@@ -1011,9 +1092,9 @@ class TrueFalseResultsScreen:
             'Hard': "#A78B12"
         }
 
-        d_label = ctk.CTkLabel(
+        d_label = T_CTkLabel(
             content_frame,
-            text=f"📑 Difficulty: {word['Difficulty']}",
+            text=f"📑 {translation.get_translation("difficulty")}: {translation.get_difficulty_translation(word['Difficulty'])}",
             text_color=difficulty_color.get(word['Difficulty'], 'black')
         )
         d_label.pack(anchor="w")
@@ -1054,11 +1135,11 @@ class StandardResultsScreen:
 
         if hasattr(self.root, 'session_timer') and getattr(self.root.session_timer, 'is_running', False):
             elapsed_time = self.root.session_timer.get_elapsed_time()
-            time_text = f"Session Time: {self.root.session_timer.format_time(elapsed_time)}"
+            time_text = f"{translation.get_translation("session_time")}: {self.root.session_timer.format_time(elapsed_time)}"
         else:
             time_text = ""
         
-        time_label = ctk.CTkLabel(
+        time_label = T_CTkLabel(
             self.main_frame,
             text=time_text,
             font=("Arial", 12)
@@ -1204,12 +1285,31 @@ class StandardResultsScreen:
         top_frame.grid_columnconfigure(0, weight=1)
         top_frame.grid_columnconfigure(1, weight=0)
 
+        # Text Preparation
+
+        word_hangul = word['Hangul']
+        if word.get('Type'):
+            word_hangul += f" ({word['Type']})"
+
+        translations = language_manager_flashcards.get_translations(word)
+        if language_manager_flashcards.get_language() == "Portuguese":
+            if word.get('MF'):
+                translations = language_manager_flashcards.get_translations(word).split(',')[0].strip()
+                translations += f"({word['MF']})"
+            else:
+                translations = language_manager_flashcards.get_translations(word)
+        else:
+            translations = language_manager_flashcards.get_translations(word)
+
         w_label = ctk.CTkLabel(
             top_frame,
-            text=word['Hangul'] if self.settings['study_direction'] == "hangul_to_lang" else language_manager_flashcards.get_translations(word),
+            text=word_hangul if self.settings['study_direction'] == "hangul_to_lang" else translations,
             text_color="white",
             fg_color="transparent",
-            font=("Malgun Gothic", 16, "bold") if self.settings['study_direction'] == "hangul_to_lang" else ("Arial", 16)
+            font=("Malgun Gothic", 16, "bold") if self.settings['study_direction'] == "hangul_to_lang" else ("Arial", 16),
+            anchor="w",
+            width=200,
+            wraplength=200
         )
         w_label.grid(row=0, column=0, sticky="w")
 
@@ -1222,10 +1322,14 @@ class StandardResultsScreen:
 
         tdlabel = ctk.CTkLabel(
             content_frame,
-            text=f"→ {language_manager_flashcards.get_translations(word)}" if self.settings['study_direction'] == "hangul_to_lang" else f"→ {word['Hangul']}",
+            text=f"→ {translations}" if self.settings['study_direction'] == "hangul_to_lang" else f"→ {word_hangul}",
             font=("Arial", 16) if self.settings['study_direction'] == "hangul_to_lang" else ("Malgun Gothic", 16),
             text_color="white",
-            fg_color="transparent"
+            fg_color="transparent",
+            anchor="w",
+            width=230,
+            wraplength=230,
+            justify="left"
         )
         tdlabel.grid(row=1, column=0, columnspan=2, sticky="w", pady=(5, 0))
 

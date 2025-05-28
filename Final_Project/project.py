@@ -82,6 +82,8 @@ def load_vocabulary(filepath='vocabulary.csv'):
     try:
         with open(filepath, "r", encoding="utf-8") as file:
             reader = list(csv.DictReader(file))
+            # for word in reader:
+            #     word['Type'] = word.get('Type', '')
             return reader
     except FileNotFoundError:
         messagebox.showerror("Error", f"File not found: {filepath}")

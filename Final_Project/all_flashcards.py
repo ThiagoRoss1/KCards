@@ -16,10 +16,10 @@ def normalize_text(text):
         return ""
     
     text = str(text).strip().lower()
-    text = normalize('NFKD', text).encode('ASCII', 'ignore').decode('ASCII')
-    text = ''.join(c for c in text if c.isalnum() or c.isspace())
+    text = normalize('NFKD', text)
+    text = ''.join(c for c in text if not combining(c))
+    text = ''.join(c for c in text if c.isalnum() or c.isspace() or c in {'ç', 'ñ', '-', "'"})
     return text
-
 
 # Standard Flashcards Game Mode
 
@@ -54,12 +54,34 @@ class StandardFlashcards:
 
         for word in words:
             new_word = word.copy()
-            if settings['study_direction'] == "hangul_to_lang":
-                new_word['Question'] = word['Hangul'].split(',')[0].strip() # Get the first translation (teste certo)
-                new_word['Answer'] = language_manager_flashcards.get_translations(word)
+            word_hangul = word['Hangul']
+            if word.get('Type'):
+                word_hangul += f" ({word['Type']})"
+
+
+            translations = language_manager_flashcards.get_translations(word)
+            if language_manager_flashcards.get_language() == "Portuguese":
+                if word.get('MF'):
+                    translations = language_manager_flashcards.get_translations(word).split(',')[0].strip()
+                    translations += f"({word['MF']})"
+                else:
+                    translations = language_manager_flashcards.get_translations(word).replace(',', ' ')
             else:
-                new_word['Question'] = language_manager_flashcards.get_translations(word)
-                new_word['Answer'] = word['Hangul'].split(',')[0].strip()  
+                translations = language_manager_flashcards.get_translations(word).replace(',', '\n')
+            # if word.get('Tipo'):
+            #     if word['Tipo'] == 'Substantivo':
+            #         translations = language_manager_flashcards.get_translations(word).split(',')[0].strip()
+            #         if word.get('MF'):
+            #             translations += f"({word['MF']})"
+            #     elif word['Tipo'] == 'Verbo':   # meter um else visto que apenas substantivo tem mf
+            #         translations = language_manager_flashcards.get_translations(word).replace(',', ' ')
+                    
+            if settings['study_direction'] == "hangul_to_lang":
+                new_word['Question'] = word_hangul
+                new_word['Answer'] = translations
+            else:
+                new_word['Question'] = translations
+                new_word['Answer'] = word_hangul
 
             prepared_words.append(new_word)
         
@@ -258,11 +280,26 @@ class InputPractice:
 
         for word in words:
             new_word = word.copy()
+            word_hangul = word['Hangul']
+            if word.get('Type'):
+                word_hangul += f" ({word['Type']})"
+
+            translations = language_manager_flashcards.get_translations(word)
+            if language_manager_flashcards.get_language() == "Portuguese":
+                if word.get('MF'):
+                    translations = language_manager_flashcards.get_translations(word).split(',')[0].strip()
+                    translations += f"({word['MF']})"
+                else:
+                    translations = language_manager_flashcards.get_translations(word).replace(',', ' ')
+            else:
+                translations = language_manager_flashcards.get_translations(word).replace(',', '\n')
+
+                
             if settings['study_direction'] == "hangul_to_lang":
-                new_word['Question'] = word['Hangul']
+                new_word['Question'] = word_hangul
                 new_word['Answer'] = language_manager_flashcards.get_translations(word).lower()
             else:
-                new_word['Question'] = language_manager_flashcards.get_translations(word)
+                new_word['Question'] = translations
                 new_word['Answer'] = word['Hangul'].lower()
 
             prepared_words.append(new_word)
@@ -378,7 +415,7 @@ class InputPractice:
     def check_answer(self):
         user_input = self.answer_entry.get().lower().strip()
 
-        if user_input == "Type Your Answer" or "Digite a sua Resposta":
+        if user_input == translation.get_translation("type_your_answer").lower().strip():
             user_input = ""
 
         expected = self.current_word['Answer'].lower()
@@ -389,9 +426,10 @@ class InputPractice:
         valid_options = [opt.strip() for opt in expected.split(',')]
         # exact_match = user_input.lower().strip() == expected.lower().strip()
 
+        user_normalized = normalize_text(user_input)
+
         is_correct = any(
-            normalize_text(user_input) == normalize_text(opt)
-            for opt in valid_options
+            normalize_text(opt) == user_normalized for opt in valid_options
         )
 
         if is_correct:
@@ -494,12 +532,27 @@ class MultipleChoiceGame:
 
         for word in words:
             new_word = word.copy()
-            if settings['study_direction'] == "hangul_to_lang":
-                new_word['Question'] = word['Hangul']
-                new_word['Answer'] = language_manager_flashcards.get_translations(word)
+            word_hangul = word['Hangul']
+            if word.get('Type'):
+                word_hangul += f" ({word['Type']})"
+
+            translations = language_manager_flashcards.get_translations(word)
+            if language_manager_flashcards.get_language() == "Portuguese":
+                if word.get('MF'):
+                    translations = language_manager_flashcards.get_translations(word).split(',')[0].strip()
+                    translations += f"({word['MF']})"
+                else:
+                    translations = language_manager_flashcards.get_translations(word).replace(',', '/').strip()
             else:
-                new_word['Question'] = language_manager_flashcards.get_translations(word)
-                new_word['Answer'] = word['Hangul']
+                translations = language_manager_flashcards.get_translations(word).replace(',', '/').strip()
+
+
+            if settings['study_direction'] == "hangul_to_lang":
+                new_word['Question'] = word_hangul
+                new_word['Answer'] = translations
+            else:
+                new_word['Question'] = translations
+                new_word['Answer'] = word_hangul
 
             prepared_words.append(new_word)
 
@@ -723,16 +776,30 @@ class MatchingGame:
         pairs = []
 
         for word in game_words:
-            translation = language_manager_flashcards.get_translations(word).split(',')[0].strip()
+            word_hangul = word['Hangul']
+            if word.get('Type'):
+                word_hangul += f" ({word['Type']})"
+
+            translations = language_manager_flashcards.get_translations(word)
+            if language_manager_flashcards.get_language() == "Portuguese":
+                if word.get('MF'):
+                    translations = language_manager_flashcards.get_translations(word).split(',')[0].strip()
+                    translations += f"({word['MF']})"
+                else:
+                    translations = language_manager_flashcards.get_translations(word).replace(',', '/')
+            else:
+                translations = language_manager_flashcards.get_translations(word).replace(',', '/').strip()
+
+
             pairs.append({
                 'type': 'hangul',
-                'text': word['Hangul'].split(',')[0].strip(),
+                'text': word_hangul,
                 'match_id': word['Hangul'],
-                'translation': translation,
+                'translation': translations,
             })
             pairs.append({
                 'type': 'translation',
-                'text': translation,
+                'text': translations,
                 'match_id': word['Hangul']
             })
 
@@ -789,14 +856,13 @@ class MatchingGame:
                 text="",
                 width=self.card_width,
                 height=self.card_height,
-                wraplength=140,
                 fg_color="transparent"
             )
             placeholder.grid(row=row, column=col, padx=5, pady=5)
             self.card_placeholders.append(placeholder)
 
             original_text = self.words[i]['text']
-            max_chars_per_line = 10 
+            max_chars_per_line = 14 
             text_with_breaks = '\n'.join([original_text[j:j+max_chars_per_line] 
                                     for j in range(0, len(original_text), max_chars_per_line)])
 
@@ -808,8 +874,9 @@ class MatchingGame:
                 height=self.card_height,
                 fg_color=card_fg_color,
                 text_color=card_text_color,
-                corner_radius=20,
-                command=lambda idx=i: self.card_click(idx)
+                corner_radius=5,
+                command=lambda idx=i: self.card_click(idx),
+                anchor="center",
             )
             card.grid(row=row, column=col, padx=5, pady=5, sticky="nsew")
            # card.bind("<Button-1>", lambda e, idx=i: self.card_click(idx))
@@ -951,12 +1018,27 @@ class TrueFalseGame:
 
         for word in words:
             new_word = word.copy()
-            if settings['study_direction'] == "hangul_to_lang":
-                new_word['Question'] = word['Hangul']
-                new_word['Answer'] = language_manager_flashcards.get_translations(word)
+            word_hangul = word['Hangul']
+            if word.get('Type'):
+                word_hangul += f" ({word['Type']})"
+
+            translations = language_manager_flashcards.get_translations(word)
+            if language_manager_flashcards.get_language() == "Portuguese":
+                if word.get('MF'):
+                    translations = language_manager_flashcards.get_translations(word).split(',')[0].strip()
+                    translations += f"({word['MF']})"
+                else:
+                    translations = language_manager_flashcards.get_translations(word).strip()
             else:
-                new_word['Question'] = language_manager_flashcards.get_translations(word)
-                new_word['Answer'] = word['Hangul']
+                translations = language_manager_flashcards.get_translations(word).strip()
+
+            
+            if settings['study_direction'] == "hangul_to_lang":
+                new_word['Question'] = word_hangul
+                new_word['Answer'] = translations
+            else:
+                new_word['Question'] = word_hangul
+                new_word['Answer'] = translations
 
             prepared_words.append(new_word)
         
@@ -1104,7 +1186,6 @@ class TrueFalseGame:
         self.current_statement_is_true = random.choice([True, False])
 
         if self.current_statement_is_true:
-
             statement_text = f"{self.current_word['Answer']}"
         else:
             wrong_answer = random.choice([
