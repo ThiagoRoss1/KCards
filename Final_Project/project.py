@@ -12,6 +12,7 @@ import routes
 from language_manager import LanguageManager, InterfaceTranslator, T_CTkLabel
 from customize_study_session import CustomizeStudySession
 from utilities import SessionTimer
+import emoji
 
 
 
@@ -106,28 +107,50 @@ def main_menu_gui(root, vocabulary):
 
     # Main menu GUI
 
+    # image = ctk.CTkImage(dark_image=Image.open(os.path.join("assets", "ning.png")), size=(200, 200))
+    # image_label = ctk.CTkLabel(
+    #     root,
+    #     image=image,
+    #     text="",
+    # )
+    # image_label.pack(pady=20)
+
     n_selection_frame = ctk.CTkFrame(root)
     n_selection_frame.pack(fill="both", expand=True)
+
+    image = ctk.CTkImage(dark_image=Image.open(os.path.join("assets", "kr.png")), size=(70, 100))
+    image_label = ctk.CTkLabel(
+        n_selection_frame,
+        fg_color="transparent",
+        image=image,
+        text="",
+    )
+    image_label.pack(pady=0)
 
     n_t_label = T_CTkLabel(
         n_selection_frame,
         text="main_menu_korean",
-        font=("Arial", 22, "bold")
+        font=("Arial", 30, "bold")
     )
-    n_t_label.pack(pady=10)
+    n_t_label.pack(pady=(0, 30))
 
     lbutton_frame = ctk.CTkFrame(
         n_selection_frame,
-        fg_color="transparent",
+        fg_color="transparent"
     )
-    lbutton_frame.pack(pady=10)
+    lbutton_frame.pack(pady=(0, 10))
 
     translation_button = ctk.CTkButton(
         lbutton_frame,
         text=f"🌎 {interface_translator.get_language()[:3]}",
-        command=lambda: toggle_translation_controls()
+        corner_radius=20,
+        command=lambda: toggle_translation_controls(),
+        width=100,
+        height=32,
+        fg_color="#3B8ED0",
+        hover_color="#36719F"
     )
-    translation_button.pack(side="left", padx=10)
+    translation_button.pack(padx=10, pady=(0, 2))
 
     controls_frame = ctk.CTkFrame(lbutton_frame, fg_color="transparent", bg_color="transparent")
 
@@ -135,12 +158,21 @@ def main_menu_gui(root, vocabulary):
         controls_frame,
         values=["English", "Portuguese"],
         state="readonly",
+        corner_radius=20,
+        dropdown_fg_color="#777777",
+        dropdown_hover_color="#414141",
+        text_color="white",
     )
-    translation_combobox.pack(side="top")
+    translation_combobox.pack(side="top", pady=(0, 2))
 
     confirm_button = ctk.CTkButton(
         controls_frame,
         text="✔",
+        width=90,
+        height=28,
+        fg_color="#3B8ED0",
+        hover_color="#36719F",
+        corner_radius=20,
         command=lambda: confirm_translation()
     )
     confirm_button.pack(side="top")
@@ -161,39 +193,13 @@ def main_menu_gui(root, vocabulary):
             translation_button.configure(text=f"🌎 {selected_lang[:3]}")
             controls_frame.pack_forget()
            # n_t_label.configure(text=interface_translator.get_translation('main_menu')) # Necessary for labels
-            
-            
-
-    # # Botão de teste de tradução
-    # test_button = ctk.CTkButton(
-    #     n_selection_frame,
-    #     text="Testar Tradução",
-    #     command=lambda: test_translation()
-    # )
-    # test_button.pack(pady=20)
-
-    # def test_translation():
-    #     # Teste com a chave do CSV
-    #     print("Tradução de 'main_menu':", interface_translator.get_translation('main_menu'))
-        
-    #     # Teste com uma chave que não existe (deve retornar a chave)
-    #     print("Tradução de 'chave_inexistente':", interface_translator.get_translation('chave_inexistente'))
-        
-    #     # Mostra o idioma atual
-    #     print("Idioma atual da interface:", interface_translator.get_language())
-        
-    #     # Alterna entre idiomas
-    #     new_lang = "Portuguese" if interface_translator.get_language() == "English" else "English"
-    #     interface_translator.set_language(new_lang)
-    #     n_t_label.configure(text=interface_translator.get_translation('main_menu'))
-    #     messagebox.showinfo("Idioma Alterado", f"Idioma da interface alterado para {new_lang}")
 
     n_b_label = T_CTkLabel(
         n_selection_frame,
         text="select_level",
-        font=("Arial", 16, "bold")
+        font=("Arial", 24, "bold")
     )
-    n_b_label.pack(pady=10)
+    n_b_label.pack(pady=(50, 20))
 
     buttons_frame = ctk.CTkFrame(n_selection_frame, fg_color="transparent", bg_color="transparent")
     buttons_frame.pack(pady=20)
@@ -223,12 +229,12 @@ def main_menu_gui(root, vocabulary):
             fg_color=fg_color,
             hover_color=hover_color,
             text_color="white",
-            height=40,
-            width=120,
+            height=60,
+            width=160,
             command=lambda _=level: setup_module_selection(root, vocabulary, selected_frame=n_selection_frame),
             corner_radius=20
         )
-        button.grid(row=_ // 3, column=_ % 3, sticky="nsew") #padx=10, pady=10
+        button.grid(row=_//2, column=_%2, sticky="nsew", padx=10, pady=10) #padx=10, pady=10
 
     # All levels button
 
@@ -256,8 +262,8 @@ def setup_module_selection(root, vocabulary, selected_frame):
     T_CTkLabel(
         selection_frame,
         text="select_module",
-        font=("Arial", 16, "bold")
-    ).pack(pady=10)
+        font=("Arial", 30, "bold")
+    ).pack(pady=(30, 10))
 
     # Language Button
 
@@ -268,14 +274,15 @@ def setup_module_selection(root, vocabulary, selected_frame):
         language_container,
         text=f"🌎 {language_manager_flashcards.get_language()[:3]}",
         corner_radius=20,
-        border_width=0,
+        width=100,
+        height=32,
         fg_color="#3B8ED0",
         hover_color="#36719F",
         border_color="#3B8ED0",
         text_color="white",
         command=lambda: toggle_language_controls()
     )
-    language_button.pack()
+    language_button.pack(padx=10, pady=(0, 2))
 
     controls_frame = ctk.CTkFrame(language_container, fg_color="transparent", bg_color="transparent")
 
@@ -284,13 +291,13 @@ def setup_module_selection(root, vocabulary, selected_frame):
     language_combobox = ctk.CTkComboBox(
         controls_frame,
         values=["English", "Portuguese"],
-        border_color="#3B8ED0",
-        dropdown_fg_color="#9E9E9E",
-        dropdown_hover_color="#4e4e4e",
+        dropdown_fg_color="#777777",
+        dropdown_hover_color="#414141",
+        corner_radius=20,
         text_color="white",
         state="readonly",
     )
-    language_combobox.pack(side="top")
+    language_combobox.pack(side="top", pady=(0, 2))
 
     # Confirm Button
 
@@ -301,6 +308,8 @@ def setup_module_selection(root, vocabulary, selected_frame):
         hover_color="#36719F",
         border_color="#3B8ED0",
         corner_radius=20,
+        width=90,
+        height=28,
         command=lambda: confirm_language()
     )
     confirm_button.pack(side="top")
@@ -325,8 +334,24 @@ def setup_module_selection(root, vocabulary, selected_frame):
             
     # Modules buttons
 
-    buttons_frame = ctk.CTkFrame(master=selection_frame, bg_color="transparent", fg_color="transparent")
+    scrollable_frame = ctk.CTkScrollableFrame(
+        master=selection_frame,
+        fg_color="transparent",
+        scrollbar_button_color="#3B8ED0",
+        scrollbar_button_hover_color="#36719F",
+        height=300
+    )
+    scrollable_frame.pack(fill=ctk.BOTH, expand=True)
+
+    buttons_frame = ctk.CTkFrame(master=scrollable_frame, bg_color="transparent", fg_color="transparent")
     buttons_frame.pack(pady=20)
+
+    button_back_frame = ctk.CTkFrame(
+        selection_frame,
+        fg_color="transparent",
+        bg_color="transparent"
+    )
+    button_back_frame.pack(side=ctk.BOTTOM, pady=10)
 
     # Get all modules from vocabulary.csv
 
@@ -351,43 +376,43 @@ def setup_module_selection(root, vocabulary, selected_frame):
             fg_color=fg_color,
             hover_color=hover_color,
             text_color="white",
-            height=40,
-            width=120,
+            height=50,
+            width=140,
             border_width=0,
             border_color=fg_color,
             corner_radius=12,
             command=lambda m=module: start_session(root, selection_frame, vocabulary, m)
         )
-        button.grid(row=_//3, column=_%3, padx=10, pady=10, ipadx=10, ipady=10) #padx=10, pady=10, ipadx=10, ipady=10
+        button.grid(row=_//2, column=_%2, padx=10, pady=10, ipadx=10, ipady=10) #padx=10, pady=10, ipadx=10, ipady=10
 
     # All Modules button
 
     all_button = ctk.CTkButton(
         buttons_frame,
         text=interface_translator.get_translation("all_modules"),
-        fg_color="#2CC985",
-        hover_color="#207a4c",
+        fg_color="#DFC675",
+        hover_color="#c2a855",
         text_color="white",
         height=40,
         width=120,
         border_width=0,
         border_color=fg_color,
-        corner_radius=12,
+        corner_radius=8,
         command=lambda: start_session(root, selection_frame, vocabulary, "All Modules")
     )
-    all_button.grid(row=(len(modules)-1)//3 + 1, column=0, columnspan=3, pady=20, ipadx=10, ipady=5)  #pady=20, ipadx=10, ipady=5
+    all_button.grid(row=(len(modules)-1)//2 + 1, column=0, columnspan=3, pady=20, ipadx=10, ipady=5)  #pady=20, ipadx=10, ipady=5
 
     # Return to Main Menu
 
     from routes import return_to_main_menu
     m_menu = ctk.CTkButton(
-        buttons_frame,
+        button_back_frame,
         text=interface_translator.get_translation("back"),
         fg_color="#363636",
         hover_color="#242424",
         text_color="white",
-        height=40,
-        width=120,
+        height=35,
+        width=140,
         border_width=0,
         border_color="#363636",
         corner_radius=8,
@@ -432,13 +457,13 @@ def choose_study_mode(root, words, previous_frame=None):
     T_CTkLabel(
         study_frame,
         text="choose_study_mode",
-        font=("Arial", 16, "bold")
-    ).pack(pady=10)
+        font=("Arial", 30, "bold")
+    ).pack(pady=(50, 20))
 
     # Study modes buttons
 
     modes = {
-        f"🎨{interface_translator.get_translation("standard_flashcards")}": {  #emote temporario
+        f"{interface_translator.get_translation("standard_flashcards")}": {  #change names here
             "mode": "standard",
         },
         f"{interface_translator.get_translation("input_practice")}": {
@@ -464,7 +489,12 @@ def choose_study_mode(root, words, previous_frame=None):
             study_frame,
             text=text,
             command=lambda m=config["mode"]: start_study_session(root, study_frame, words, m),
-            width=25
+            text_color="white",
+            fg_color="#C7AA49",
+            hover_color="#9c8129",
+            width=200,
+            height=50,
+            corner_radius=20
         ).pack(pady=10, ipady=5)
 
 
@@ -473,9 +503,16 @@ def choose_study_mode(root, words, previous_frame=None):
     ctk.CTkButton(
         study_frame,
         text=interface_translator.get_translation("back"),
+        fg_color="#363636",
+        hover_color="#242424",
+        text_color="white",
         command=lambda: [study_frame.pack_forget(), setup_module_selection(root, load_vocabulary(), selected_frame=study_frame)],
-        width=15
-    ).pack(side=ctk.LEFT, padx=10, pady=20)
+        height=55,
+        width=130,
+        corner_radius=8,
+        border_width=2,
+        border_color="#ffffff"
+    ).pack(side=ctk.LEFT, padx=(100, 10), pady=(15, 35))
 
     # Return to Main Menu button
     
@@ -484,9 +521,16 @@ def choose_study_mode(root, words, previous_frame=None):
         study_frame,
         text=interface_translator.get_translation("back_to_main_menu"),
         command=lambda: [study_frame.pack_forget(), return_to_main_menu(root, study_frame)],
-        width=0
+        fg_color="#363636",
+        hover_color="#242424",
+        text_color="white",
+        border_width=2,
+        border_color="#ffffff",
+        height=55,
+        width=130,
+        corner_radius=8
     )
-    m_m_button.pack(side=ctk.RIGHT, padx=10, pady=20)
+    m_m_button.pack(side=ctk.RIGHT, padx=(10, 100), pady=(15, 35))
 
 
 def return_to_main_menu(root, current_frame):      # se eu precisar de um botao para voltar ( TUDO ) eu utilizo a funcao

@@ -110,7 +110,13 @@ class ResultsScreen:
 
         # Answer List Frame
 
-        self.scrollable_frame = ctk.CTkScrollableFrame(self.main_frame, fg_color="transparent", width=300)
+        self.scrollable_frame = ctk.CTkScrollableFrame(
+            self.main_frame,
+            fg_color="transparent",
+            width=300,
+            scrollbar_button_color="#ffffff",
+            scrollbar_button_hover_color="#EED585"
+        )
         self.scrollable_frame.pack(fill=ctk.BOTH, expand=True, padx=5)
 
         inner_frame = ctk.CTkFrame(self.scrollable_frame)
@@ -236,7 +242,7 @@ class ResultsScreen:
             target_column,
             fg_color="transparent",
             border_width=2,
-            border_color=("gray70", "gray30"),
+            border_color="#2ecc71" if correct else "#e74c3c",
             corner_radius=20,
             width=250,
             height=150
@@ -463,7 +469,13 @@ class MultipleChoiceResultsScreen:
 
         # Answer List Frame
 
-        self.scrollable_frame = ctk.CTkScrollableFrame(self.main_frame, fg_color="transparent", width=300)
+        self.scrollable_frame = ctk.CTkScrollableFrame(
+            self.main_frame,
+            fg_color="transparent",
+            width=300,
+            scrollbar_button_color="#ffffff",
+            scrollbar_button_hover_color="#EED585"
+        )
         self.scrollable_frame.pack(fill=ctk.BOTH, expand=True, padx=5)
 
         inner_frame = ctk.CTkFrame(self.scrollable_frame)
@@ -564,7 +576,7 @@ class MultipleChoiceResultsScreen:
             target_column,
             fg_color="transparent",
             border_width=2,
-            border_color=("gray70", "gray30"),
+            border_color="#2ecc71" if correct else "#e74c3c",
             corner_radius=20,
             width=250,
             height=150
@@ -737,7 +749,9 @@ class MatchingResultsScreen:
         self.scrollable_frame = ctk.CTkScrollableFrame(
             words_frame,
             fg_color="transparent",
-            width=300
+            width=300,
+            scrollbar_button_color="#ffffff",
+            scrollbar_button_hover_color="#EED585"
         )
         self.scrollable_frame.pack(fill=ctk.BOTH, expand=True, padx=5)
 
@@ -942,7 +956,13 @@ class TrueFalseResultsScreen:
             text_color="red"
         ).pack(side=ctk.RIGHT, padx=(0, 100))
 
-        self.scrollable_frame = ctk.CTkScrollableFrame(self.main_frame, fg_color="transparent", width=300)
+        self.scrollable_frame = ctk.CTkScrollableFrame(
+            self.main_frame,
+            fg_color="transparent",
+            width=300,
+            scrollbar_button_color="#ffffff",
+            scrollbar_button_hover_color="#EED585"
+        )
         self.scrollable_frame.pack(fill=ctk.BOTH, expand=True, padx=5)
 
         inner_frame = ctk.CTkFrame(self.scrollable_frame)
@@ -1018,7 +1038,7 @@ class TrueFalseResultsScreen:
             target_column,
             fg_color="transparent",
             border_width=2,
-            border_color=("gray70", "gray30"),
+            border_color="#2ecc71" if is_correct else "#e74c3c",
             corner_radius=20,
             width=250,
             height=150
@@ -1190,7 +1210,13 @@ class StandardResultsScreen:
             text_color="red"
         ).pack(side=ctk.RIGHT, padx=(0, 100))
 
-        self.scrollable_frame = ctk.CTkScrollableFrame(self.main_frame, fg_color="transparent", width=300)
+        self.scrollable_frame = ctk.CTkScrollableFrame(
+            self.main_frame,
+            fg_color="transparent",
+            width=300,
+            scrollbar_button_color="#ffffff",
+            scrollbar_button_hover_color="#EED585"
+        )
         self.scrollable_frame.pack(fill=ctk.BOTH, expand=True, padx=5)
 
         inner_frame = ctk.CTkFrame(self.scrollable_frame)
