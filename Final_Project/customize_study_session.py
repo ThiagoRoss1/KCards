@@ -115,7 +115,7 @@ class CustomizeStudySession:
 
         if self.root.session_settings.get('selected_mode') != "matching":
 
-            wframe = ctk.CTkFrame(self.cframe, fg_color="transparent", border_width=0, border_color="#3e3e3e", corner_radius=10)
+            wframe = ctk.CTkFrame(self.cframe, fg_color="transparent", border_width=2, border_color="#3e3e3e", corner_radius=10)
             wframe.pack(fill=ctk.X, pady=10)
 
             wlabel = T_CTkLabel(
@@ -208,7 +208,7 @@ class CustomizeStudySession:
     def create_direction_selector(self):
 
         if self.root.session_settings.get('selected_mode') != "matching":
-            tframe = ctk.CTkFrame(self.cframe, fg_color="transparent")
+            tframe = ctk.CTkFrame(self.cframe, fg_color="transparent", border_width=2, border_color="#3e3e3e", corner_radius=10)
             tframe.pack(fill=ctk.X, pady=25)
 
             tlabel = T_CTkLabel(
@@ -216,12 +216,12 @@ class CustomizeStudySession:
                 text="answer_with",
                 font=("Arial", 15, "bold")
             )
-            tlabel.pack(anchor="nw", side=ctk.LEFT, padx=5)
+            tlabel.pack(anchor="nw", side=ctk.LEFT, padx=5, pady=4)
 
             from project import language_manager_flashcards
             directions = [
-                (f"{interface_translator.get_translation("hangul_to")} {language_manager_flashcards.get_language()}", "hangul_to_lang"),
-                (f"{language_manager_flashcards.get_language()} {interface_translator.get_translation("lang_to")}", "lang_to_hangul")
+                (f"{interface_translator.get_translation("hangul_to")} {language_manager_flashcards.get_language_lower()}", "hangul_to_lang"),
+                (f"{language_manager_flashcards.get_language_lower()} {interface_translator.get_translation("lang_to")}", "lang_to_hangul")
             ]
 
             for text, value in directions:
@@ -230,7 +230,7 @@ class CustomizeStudySession:
                     text=text,
                     variable=self.settings['study_direction'],
                     value=value
-                ).pack(anchor="nw", padx=(10, 20), pady=(4, 4), side=ctk.LEFT)
+                ).pack(anchor="nw", padx=(10, 20), pady=(7, 7), side=ctk.LEFT)
 
             if self.root.session_settings.get('selected_mode') == "input":
                 info = ctk.CTkButton(
@@ -242,12 +242,12 @@ class CustomizeStudySession:
                     corner_radius=20,
                     border_width=0,
                 )
-                info.pack(anchor="nw", padx=(5, 10),pady=(4, 4), side=ctk.LEFT)
+                info.pack(anchor="nw", padx=(5, 10),pady=(7, 7), side=ctk.LEFT)
 
     def create_feedback_switch(self):
 
         if self.root.session_settings.get('selected_mode') == "multiple_choice" or self.root.session_settings.get('selected_mode') == "true_or_false":
-            sframe = ctk.CTkFrame(self.cframe, fg_color="transparent")
+            sframe = ctk.CTkFrame(self.cframe, fg_color="transparent", border_width=2, border_color="#3e3e3e", corner_radius=10)
             sframe.pack(fill=ctk.X, pady=(25, 10))
 
             slabel = T_CTkLabel(
@@ -255,17 +255,17 @@ class CustomizeStudySession:
                 text="auto_correction",
                 font=("Arial", 15, "bold")
             )
-            slabel.pack(anchor="nw", side=ctk.LEFT, padx=(5, 10))
+            slabel.pack(anchor="nw", side=ctk.LEFT, padx=(6, 10), pady=4)
 
             self.feedback_switch = ctk.CTkSwitch(
                 sframe,
                 text="",
                 variable=self.settings['realtime_feedback']
             )
-            self.feedback_switch.pack(anchor="nw", pady=(3, 3), side=ctk.LEFT)
+            self.feedback_switch.pack(anchor="nw", pady=(7, 7), side=ctk.LEFT)
 
     def create_timer_button(self):
-        tframe = ctk.CTkFrame(self.cframe, fg_color="transparent")
+        tframe = ctk.CTkFrame(self.cframe, fg_color="transparent", border_width=2, border_color="#3e3e3e", corner_radius=10)
         tframe.pack(fill=ctk.X, pady=(15, 10))
 
         from utilities import SessionTimer
@@ -275,17 +275,17 @@ class CustomizeStudySession:
             text="timer",
             font=("Arial", 15, "bold")
         )
-        tlabel.pack(anchor="nw", side=ctk.LEFT, padx=5)
+        tlabel.pack(anchor="nw", side=ctk.LEFT, padx=5, pady=4)
 
         self.timer_switch = ctk.CTkSwitch(
             tframe,
             text="",
             variable=self.settings['timer_enabled']
         )
-        self.timer_switch.pack(anchor="nw", pady=(3, 3))
+        self.timer_switch.pack(anchor="nw", pady=(7, 7))
 
     def create_difficulty_selector_button(self):
-        dframe = ctk.CTkFrame(self.cframe, fg_color="transparent")
+        dframe = ctk.CTkFrame(self.cframe, fg_color="transparent", border_width=2, border_color="#3e3e3e", corner_radius=10)
         dframe.pack(fill=ctk.X, pady=25)
 
         dlabel = T_CTkLabel(
@@ -293,7 +293,7 @@ class CustomizeStudySession:
             text="difficulty_selector",
             font=("Arial", 15, "bold")
         )
-        dlabel.pack(anchor="nw", side=ctk.LEFT, padx=5)
+        dlabel.pack(anchor="nw", side=ctk.LEFT, padx=5, pady=4)
 
         self.difficulty_var = ctk.StringVar(value="All")
 
@@ -303,7 +303,7 @@ class CustomizeStudySession:
                 text=interface_translator.get_difficulty_translation(level),
                 variable=self.difficulty_var,
                 value=level
-            ).pack(anchor="nw", padx=(10, 0), pady=(4, 4), side=ctk.LEFT)
+            ).pack(anchor="nw", padx=(4, 0), pady=(7, 7), side=ctk.LEFT)
         
     def create_start_button(self):
         bframe = ctk.CTkFrame(self.cframe, fg_color="transparent")

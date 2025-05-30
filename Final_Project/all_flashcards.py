@@ -92,12 +92,12 @@ class StandardFlashcards:
         self.frame = ctk.CTkFrame(self.root)
         self.frame.pack(fill=ctk.BOTH, expand=True)
 
-        if self.settings.get('timer_enabled', False):
-            self.timer_label = ctk.CTkLabel(self.frame, text="00:00")
-            self.timer_label.pack(anchor="se")
-
         from utilities import ProgressBar
         self.progress = ProgressBar(self.frame, len(self.words))
+
+        if self.settings.get('timer_enabled', False):
+            self.timer_label = ctk.CTkLabel(self.frame, text="00:00")
+            self.timer_label.pack(anchor="n")
 
         card_container = ctk.CTkFrame(
             self.frame,
@@ -115,7 +115,7 @@ class StandardFlashcards:
             fg_color=("white", "gray15")
         )
         self.card_frame.pack_propagate(False)
-        self.card_frame.pack(pady=20)
+        self.card_frame.pack(pady=(0, 10))
 
         # Card Style
 
@@ -139,18 +139,34 @@ class StandardFlashcards:
         self.ebutton = ctk.CTkButton(
             self.frame,
             text="❌",
+            width=120,
+            height=50,
+            corner_radius=20,
+            fg_color="transparent",
+            text_color="white",
+            hover_color="#FF6347",
+            border_width=2,
+            border_color=("gray70", "gray30"),
             command=lambda: self.check_answer(False)
         )
-        self.ebutton.pack(side=ctk.LEFT, padx=5)
+        self.ebutton.pack(side=ctk.LEFT, padx=(156, 0), pady=(0, 120))
 
         # Correct
 
         self.cbutton = ctk.CTkButton(
             self.frame,
             text="✅",
+            width=120,
+            height=50,
+            corner_radius=20,
+            fg_color="transparent",
+            text_color="white",
+            hover_color="#2ecc71",
+            border_width=2,
+            border_color=("gray70", "gray30"),
             command=lambda: self.check_answer(True)
         )
-        self.cbutton.pack(side=ctk.RIGHT, padx=5)
+        self.cbutton.pack(side=ctk.RIGHT, padx=(0, 156), pady=(0, 120))
 
     def update_timer(self):
         if not hasattr(self, 'timer_label') or not hasattr(self.root, 'session_timer'):
@@ -567,32 +583,60 @@ class MultipleChoiceGame:
 
         if self.settings.get('timer_enabled', False):
             self.timer_label = ctk.CTkLabel(self.frame, text="00:00")
-            self.timer_label.pack(anchor="n")
+            self.timer_label.pack(anchor="n", pady=(0, 10))
+
+        main_container = ctk.CTkFrame(
+            self.frame,
+            fg_color="transparent"
+        )
+        main_container.pack(expand=True, fill=ctk.BOTH)
+
+        q_frame = ctk.CTkFrame(
+            main_container,
+            fg_color="transparent",
+            border_width=4,
+            border_color=("gray70", "gray30"),
+            corner_radius=20
+        )
+        q_frame.pack(pady=(0, 20))
 
         self.question_label = ctk.CTkLabel(
-            self.frame,
-            font=("Malgun Gothic", 20) if self.settings['study_direction'] == "hangul_to_lang" else ("Arial", 20),
+            q_frame,
+            font=("Malgun Gothic", 40) if self.settings['study_direction'] == "hangul_to_lang" else ("Arial", 40),
             wraplength=500,
+            width=400,
+            height=200,
+            anchor="center",
+            text_color="white"
         )
-        self.question_label.pack(pady=20)
+        self.question_label.pack(pady=20, padx=60)
 
         self.original_button_config = {
-        'corner_radius': 20,
+        'corner_radius': 8,
         'fg_color': "transparent",
-        'text_color': "white",                            # Configurar legalzudo 
+        'text_color': "white",                           
         'hover_color': "#3B8ED0",
         'border_width': 2,
         'border_color': ("gray70", "gray30"),
     }
+        
+        buttons_frame = ctk.CTkFrame(
+            main_container,
+            fg_color="transparent"
+        )
+        buttons_frame.pack(fill=ctk.X, pady=(16, 10))
 
         # Answer Buttons
         self.answer_buttons = []
         for _ in range(4):
-            a_button = ctk.CTkButton(              # Aqui
-                self.frame,
-                **self.original_button_config
+            a_button = ctk.CTkButton(             
+                buttons_frame,
+                **self.original_button_config,
+                width=500,
+                height=60,
+                font=("Malgun Gothic", 18) if self.settings['study_direction'] == "lang_to_hangul" else ("Arial", 18)
             )
-            a_button.pack(pady=5, fill=ctk.X)
+            a_button.pack(pady=(10, 0)) 
             self.answer_buttons.append(a_button)
 
     def reset_button_styles(self):
@@ -807,17 +851,20 @@ class MatchingGame:
         return pairs
     
     def setup_ui(self):
-        self.frame = ctk.CTkFrame(self.root)
+        self.frame = ctk.CTkFrame(self.root, fg_color="transparent")
         self.frame.pack(fill=ctk.BOTH, expand=True)
+
+        from utilities import ProgressBar
+        self.progress = ProgressBar(self.frame, self.max_pairs)
 
         if self.settings.get('timer_enabled', False):
             self.timer_label = ctk.CTkLabel(self.frame, text="00:00")
-            self.timer_label.pack(anchor="se")
+            self.timer_label.pack(anchor="n")
 
-        container = ctk.CTkFrame(self.frame)
+        container = ctk.CTkFrame(self.frame, fg_color="transparent")
         container.pack(expand=True, fill=ctk.BOTH)
 
-        self.cards_frame = ctk.CTkFrame(container)
+        self.cards_frame = ctk.CTkFrame(container, fg_color="transparent")
         self.cards_frame.pack(expand=True, anchor="center")
 
         self.setup_grid()
@@ -862,7 +909,7 @@ class MatchingGame:
             self.card_placeholders.append(placeholder)
 
             original_text = self.words[i]['text']
-            max_chars_per_line = 14 
+            max_chars_per_line = 10 if self.words[i]['type'] == 'hangul' else 14 
             text_with_breaks = '\n'.join([original_text[j:j+max_chars_per_line] 
                                     for j in range(0, len(original_text), max_chars_per_line)])
 
@@ -874,7 +921,9 @@ class MatchingGame:
                 height=self.card_height,
                 fg_color=card_fg_color,
                 text_color=card_text_color,
-                corner_radius=5,
+                border_width=2,
+                border_color=("gray70", "gray30"),
+                corner_radius=6,
                 command=lambda idx=i: self.card_click(idx),
                 anchor="center",
             )
@@ -912,9 +961,10 @@ class MatchingGame:
         word2 = self.words[idx2]
 
         if word1['match_id'] == word2['match_id'] and word1['type'] != word2['type']:
-            card1.configure(fg_color="#96F97B")
-            card2.configure(fg_color="#96F97B")
+            card1.configure(fg_color="#96F97B", hover_color="#96F97B")
+            card2.configure(fg_color="#96F97B", hover_color="#96F97B")
             self.matched_pairs += 1
+            self.progress.increment()
             self.selected_cards = []
             self.root.after(500, lambda: self.remove_cards(card1, card2))
 
@@ -922,8 +972,8 @@ class MatchingGame:
                 self.root.after(500, lambda: self.end_game())
         
         else:
-            card1.configure(fg_color="#FF6347")
-            card2.configure(fg_color="#FF6347")
+            card1.configure(fg_color="#FF6347", hover_color="#FF6347")
+            card2.configure(fg_color="#FF6347", hover_color="#FF6347")
             self.root.after(500, self.reset_cards)
 
     def remove_cards(self, card1, card2):
@@ -933,8 +983,13 @@ class MatchingGame:
         card1.grid_remove()
         card2.grid_remove()
 
-        self.card_placeholders[idx1].configure(text="✓", text_color="green")
-        self.card_placeholders[idx2].configure(text="✓", text_color="green")    # Modificar 
+        from PIL import Image
+
+        # ning = ctk.CTkImage(dark_image=Image.open(os.path.join("assets", "ning.png")))  #image=ning    
+        # gisela = ctk.CTkImage(dark_image=Image.open(os.path.join("assets", "gisela.jpg")))  #image=gisela
+
+        self.card_placeholders[idx1].configure(text="✔", text_color="gray70")
+        self.card_placeholders[idx2].configure(text="✔", text_color="gray70")
 
     def reset_cards(self):
         for idx, card in self.selected_cards:

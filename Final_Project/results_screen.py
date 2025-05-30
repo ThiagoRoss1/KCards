@@ -983,7 +983,8 @@ class TrueFalseResultsScreen:
         Menu = ctk.CTkButton(
             button_frame,
             text=f"🏠 {translation.get_translation("main_menu")}",
-            command=lambda: return_to_main_menu(self.root, self.main_frame),fg_color="#3B8ED0",
+            command=lambda: return_to_main_menu(self.root, self.main_frame),
+            fg_color="#3B8ED0",
             hover_color="#36719F",
             text_color="white",
             border_width=0,
@@ -1238,6 +1239,7 @@ class StandardResultsScreen:
             button_frame,
             text=f"🏠 {translation.get_translation("main_menu")}",
             command=lambda: return_to_main_menu(self.root, self.main_frame),
+            fg_color="#3B8ED0",
             hover_color="#36719F",
             text_color="white",
             border_width=0,

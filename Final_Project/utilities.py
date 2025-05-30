@@ -4,6 +4,9 @@ from tkinter import ttk, messagebox
 from customtkinter import *
 from tkinter import ttk, messagebox
 import time
+from language_manager import InterfaceTranslator
+
+translations = InterfaceTranslator()
 
 # Progress Bar
 
@@ -15,7 +18,7 @@ class ProgressBar:
 
         # Progress Bar Frame
 
-        self.progress_frame = ctk.CTkFrame(self.root)
+        self.progress_frame = ctk.CTkFrame(self.root, fg_color="transparent", bg_color="transparent")
         self.progress_frame.pack(fill=ctk.X, pady=10)
 
         # Progress Bar
@@ -24,6 +27,7 @@ class ProgressBar:
             self.progress_frame,
             orientation="horizontal",
             width=300,
+            height=10,
             mode="determinate"
         )
         self.bar.set(0)  # Start at 0 progress
@@ -33,7 +37,7 @@ class ProgressBar:
 
         self.percent_label = ctk.CTkLabel(
             self.progress_frame,
-            text=f"{self.current_question} of {self.total_questions}"
+            text=f"{self.current_question} {translations.get_translation("of")} {self.total_questions}"
         )
         self.percent_label.pack()
 
@@ -45,17 +49,17 @@ class ProgressBar:
         self.update_display()
 
     def update_display(self):
-        self.bar['value'] = self.current_question
+        progress = self.current_question / self.total_questions
+        self.bar.set(progress)
         self.percent_label.configure(
-            text=f"{self.current_question} of {self.total_questions}"
+            text=f"{self.current_question} {translations.get_translation("of")} {self.total_questions}"
         )
 
     def reset(self, new_total=None):
         if new_total:
             self.total_questions = new_total
         self.current_question = 0
-        self.bar['value'] = 0
-        self.bar['maximum'] = self.total_questions
+        self.bar.set(0)
         self.update_display()
 
 

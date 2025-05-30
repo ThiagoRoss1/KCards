@@ -412,7 +412,7 @@ def setup_module_selection(root, vocabulary, selected_frame):
         hover_color="#242424",
         text_color="white",
         height=35,
-        width=140,
+        width=180,
         border_width=0,
         border_color="#363636",
         corner_radius=8,

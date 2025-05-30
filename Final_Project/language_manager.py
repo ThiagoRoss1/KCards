@@ -18,6 +18,7 @@ class LanguageManager:
             self.current_language = "English"
             self.languages = ["English", "Portuguese"]
             self._initialized = True
+            self.translations = InterfaceTranslator()
 
     def set_language(self, language):
         if language in self.languages:
@@ -25,6 +26,9 @@ class LanguageManager:
 
     def get_language(self):
         return self.current_language
+    
+    def get_language_lower(self):
+        return self.translations.get_translation(self.current_language.lower())
     
     def get_translations(self, word):
         if self.current_language == "English":
