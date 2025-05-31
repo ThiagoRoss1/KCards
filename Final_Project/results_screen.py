@@ -197,7 +197,7 @@ class ResultsScreen:
             word_hangul += f" ({word['Type']})"
 
         translations = language_manager_flashcards.get_translations(word)
-        if language_manager_flashcards.get_language() == "Portuguese":
+        if language_manager_flashcards.get_language() == "Português":
             if word.get('MF'):
                 translations = language_manager_flashcards.get_translations(word).split(',')[0].strip()
                 translations += f"({word['MF']})"
@@ -533,7 +533,7 @@ class MultipleChoiceResultsScreen:
             word_hangul += f" ({word['Type']})"
         
         translations = language_manager_flashcards.get_translations(word)
-        if language_manager_flashcards.get_language() == "Portuguese":
+        if language_manager_flashcards.get_language() == "Português":
             if word.get('MF'):
                 translations = language_manager_flashcards.get_translations(word).split(',')[0].strip()
                 translations += f"({word['MF']})"
@@ -836,7 +836,7 @@ class MatchingResultsScreen:
             word_hangul += f" ({word['Type']})"
 
         translations = language_manager_flashcards.get_translations(word)
-        if language_manager_flashcards.get_language() == "Portuguese":
+        if language_manager_flashcards.get_language() == "Português":
             if word.get('MF'):
                 translations = language_manager_flashcards.get_translations(word).split(',')[0].strip()
                 translations += f"({word['MF']})"
@@ -1320,7 +1320,7 @@ class StandardResultsScreen:
             word_hangul += f" ({word['Type']})"
 
         translations = language_manager_flashcards.get_translations(word)
-        if language_manager_flashcards.get_language() == "Portuguese":
+        if language_manager_flashcards.get_language() == "Português":
             if word.get('MF'):
                 translations = language_manager_flashcards.get_translations(word).split(',')[0].strip()
                 translations += f"({word['MF']})"

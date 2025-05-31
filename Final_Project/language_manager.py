@@ -16,7 +16,7 @@ class LanguageManager:
     def __init__(self):
         if not hasattr(self, '_initialized'):
             self.current_language = "English"
-            self.languages = ["English", "Portuguese"]
+            self.languages = ["English", "Português"]
             self._initialized = True
             self.translations = InterfaceTranslator()
 
@@ -33,8 +33,8 @@ class LanguageManager:
     def get_translations(self, word):
         if self.current_language == "English":
             return word.get('English', '')
-        elif self.current_language == "Portuguese":
-            return word.get('Portuguese', '')
+        elif self.current_language == "Português":
+            return word.get('Português', '')
         return word.get('English', '')
     
 #@singleton -> Could be used instead of __new__ and cls.
@@ -49,7 +49,7 @@ class InterfaceTranslator:
     def __init__(self):
         if not hasattr(self, '_initialized'):
             self.current_language = "English"
-            self.languages = ["English", "Portuguese"]
+            self.languages = ["English", "Português"]
             self._initialized = True
             self.interface_translation = self._load_interface_translations()
             self.observers = []
@@ -73,7 +73,7 @@ class InterfaceTranslator:
                     key = row['Key']
                     translations[key] = {
                         'English': row['English'],
-                        'Portuguese': row['Portuguese']
+                        'Português': row['Português']
                     }
         except FileNotFoundError:
             translations = self._get_default_translations()
@@ -82,24 +82,24 @@ class InterfaceTranslator:
     
     def get_difficulty_translation(self, difficulty_level):
         translations = {
-            "Easy": {"English": "Easy", "Portuguese": "Fácil"},
-            "Medium": {"English": "Medium", "Portuguese": "Médio"},
-            "Hard": {"English": "Hard", "Portuguese": "Difícil"},
-            "All": {"English": "All", "Portuguese": "Todas"}
+            "Easy": {"English": "Easy", "Português": "Fácil"},
+            "Medium": {"English": "Medium", "Português": "Médio"},
+            "Hard": {"English": "Hard", "Português": "Difícil"},
+            "All": {"English": "All", "Português": "Todas"}
         }
         return translations.get(difficulty_level, {}).get(self.current_language, difficulty_level)
     
     def get_true_false_ua_translation(self, user_answer):
         translation = {
-            "True": {"English": "True", "Portuguese": "Verdadeiro"},
-            "False": {"English": "False", "Portuguese": "Falso"}
+            "True": {"English": "True", "Português": "Verdadeiro"},
+            "False": {"English": "False", "Português": "Falso"}
         }
         return translation.get(user_answer, {}).get(self.current_language, user_answer)
 
     def get_true_false_ca_translation(self, correct_answer):
         translation = {
-            "True": {"English": "True", "Portuguese": "Verdadeiro"},
-            "False": {"English": "False", "Portuguese": "Falso"}
+            "True": {"English": "True", "Português": "Verdadeiro"},
+            "False": {"English": "False", "Português": "Falso"}
         }
         return translation.get(correct_answer, {}).get(self.current_language, correct_answer)
     
@@ -108,11 +108,11 @@ class InterfaceTranslator:
     #     return {
     #         'main_menu_title': {
     #             'English': 'Korean Flashcards App',
-    #             'Portuguese': 'Aplicativo de Flashcards Coreano'
+    #             'Português': 'Aplicativo de Flashcards Coreano'
     #         },
     #         'select_level': {
     #             'English': 'Select a Level',
-    #             'Portuguese': 'Selecione um Nível'
+    #             'Português': 'Selecione um Nível'
     #         },
 
     #         # ADICIONAR MAIS DEPOIS
@@ -136,8 +136,8 @@ class InterfaceTranslator:
     def get_translations(self, word: Dict[str, str]) -> str:
         if self.current_language == "English":
             return word.get('English', '')
-        elif self.current_language == "Portuguese":
-            return word.get('Portuguese', '')
+        elif self.current_language == "Português":
+            return word.get('Português', '')
         return word.get('English', '')
     
 

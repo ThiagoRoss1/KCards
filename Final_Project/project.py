@@ -59,22 +59,7 @@ def myapp_gui(root):
     root.title("Flashcard App - Coreano")
     root.geometry("600x700")
 
-    # root.minsize(400, 300)
-    # root.columnconfigure(0, weight=1)   # Resize uniforme, ver depois
-    # root.rowconfigure(0, weight=1)
     root.resizable(True, True)
-
-    # style = ttk.Style()
-    # style.configure(
-    #     "Correct.TButton",
-    #     background="green",          # Funcionando (Testado apenas no Multiple Choice)
-    #     foreground="white",
-    # )
-    # style.configure(
-    #     "Incorrect.TButton",
-    #     background="red",
-    #     foreground="white",
-    # )
 
 def load_vocabulary(filepath='vocabulary.csv'):
 
@@ -83,8 +68,6 @@ def load_vocabulary(filepath='vocabulary.csv'):
     try:
         with open(filepath, "r", encoding="utf-8") as file:
             reader = list(csv.DictReader(file))
-            # for word in reader:
-            #     word['Type'] = word.get('Type', '')
             return reader
     except FileNotFoundError:
         messagebox.showerror("Error", f"File not found: {filepath}")
@@ -93,27 +76,6 @@ def load_vocabulary(filepath='vocabulary.csv'):
 
 def main_menu_gui(root, vocabulary):
 
-    # image_path = os.path.join("assets", "ning.png")
-    # image = Image.open(image_path)
-
-    # ctk_image = ctk.CTkImage(light_image=image, dark_image=image, size=(200, 200))
-
-    # image_label = ctk.CTkLabel(
-    #     root,
-    #     image=ctk_image,
-    #     text="",
-    # )
-    # image_label.pack(pady=20)
-
-    # Main menu GUI
-
-    # image = ctk.CTkImage(dark_image=Image.open(os.path.join("assets", "ning.png")), size=(200, 200))
-    # image_label = ctk.CTkLabel(
-    #     root,
-    #     image=image,
-    #     text="",
-    # )
-    # image_label.pack(pady=20)
 
     n_selection_frame = ctk.CTkFrame(root)
     n_selection_frame.pack(fill="both", expand=True)
@@ -156,7 +118,7 @@ def main_menu_gui(root, vocabulary):
 
     translation_combobox = ctk.CTkComboBox(
         controls_frame,
-        values=["English", "Portuguese"],
+        values=["English", "Português"],
         state="readonly",
         corner_radius=20,
         dropdown_fg_color="#777777",
@@ -188,7 +150,7 @@ def main_menu_gui(root, vocabulary):
     
     def confirm_translation():
         selected_lang = translation_combobox.get()
-        if selected_lang in ["English", "Portuguese"]:
+        if selected_lang in ["English", "Português"]:
             interface_translator.set_language(selected_lang)
             translation_button.configure(text=f"🌎 {selected_lang[:3]}")
             controls_frame.pack_forget()
@@ -270,6 +232,9 @@ def setup_module_selection(root, vocabulary, selected_frame):
     language_container = ctk.CTkFrame(selection_frame, bg_color="transparent", fg_color="transparent")
     language_container.pack(pady=10)
 
+    selected_interface_language = interface_translator.get_language()
+    language_manager_flashcards.set_language(selected_interface_language)
+
     language_button = ctk.CTkButton(
         language_container,
         text=f"🌎 {language_manager_flashcards.get_language()[:3]}",
@@ -290,7 +255,7 @@ def setup_module_selection(root, vocabulary, selected_frame):
 
     language_combobox = ctk.CTkComboBox(
         controls_frame,
-        values=["English", "Portuguese"],
+        values=["English", "Português"],
         dropdown_fg_color="#777777",
         dropdown_hover_color="#414141",
         corner_radius=20,
@@ -327,7 +292,7 @@ def setup_module_selection(root, vocabulary, selected_frame):
 
     def confirm_language():
         selected_lang = language_combobox.get()
-        if selected_lang in ["English", "Portuguese"]:
+        if selected_lang in ["English", "Português"]:
             language_manager_flashcards.set_language(selected_lang)
             language_button.configure(text=f"🌎 {selected_lang[:3]}")
             controls_frame.pack_forget()

@@ -220,8 +220,8 @@ class CustomizeStudySession:
 
             from project import language_manager_flashcards
             directions = [
-                (f"{interface_translator.get_translation("hangul_to")} {language_manager_flashcards.get_language_lower()}", "hangul_to_lang"),
-                (f"{language_manager_flashcards.get_language_lower()} {interface_translator.get_translation("lang_to")}", "lang_to_hangul")
+                (f"{interface_translator.get_translation("hangul_to")} {interface_translator.get_translation("english_") if language_manager_flashcards.get_language() == "English" else interface_translator.get_translation("portuguese_")}", "hangul_to_lang"),
+                (f"{interface_translator.get_translation("english_") if language_manager_flashcards.get_language() == "English" else interface_translator.get_translation("portuguese_")} {interface_translator.get_translation("lang_to")}", "lang_to_hangul")
             ]
 
             for text, value in directions:
