@@ -6,6 +6,7 @@ from tkinter import ttk, messagebox
 from utilities import *
 from language_manager import InterfaceTranslator, T_CTkLabel
 import time
+import random
 
 interface_translator = InterfaceTranslator()
 
@@ -172,8 +173,14 @@ class CustomizeStudySession:
                 arrowcolor=[('pressed', hover_color), ('!pressed', fg_color)]
             )
 
+            # min_words = min(5, len(self.vocabulary))
+            # default_value = max(min(10, len(self.vocabulary)), min_words)
+
             min_words = min(5, len(self.vocabulary))
-            default_value = max(min(10, len(self.vocabulary)), min_words)
+            max_words = len(self.vocabulary)
+
+            default_value = min(10, max_words) if max_words >= min_words else min_words
+        
 
             self.spinbox = ttk.Spinbox(                  
                 wframe,
@@ -201,9 +208,15 @@ class CustomizeStudySession:
             self.slider.pack(side=ctk.LEFT, fill=ctk.X, expand=True, padx=5)
 
             # Valores Iniciais
-            
+
+            self.spinbox.configure(from_=min_words, to=max_words)
+            self.slider.configure(from_=min_words, to=max_words) 
+
             self.spinbox.set(default_value)
             self.slider.set(default_value)
+            
+            # self.spinbox.set(default_value)
+            # self.slider.set(default_value)
 
     def create_direction_selector(self):
 
@@ -302,8 +315,42 @@ class CustomizeStudySession:
                 dframe,
                 text=interface_translator.get_difficulty_translation(level),
                 variable=self.difficulty_var,
-                value=level
+                value=level,
+                command=self.update_word_count_widgets
             ).pack(anchor="nw", padx=(4, 0), pady=(7, 7), side=ctk.LEFT)
+
+    def update_word_count_widgets(self):
+        selected_difficulty = self.difficulty_var.get()
+
+        min_words = 5
+        preferred_default = 10
+
+        if selected_difficulty == "All":
+            available_words = self.vocabulary
+        else:
+            available_words = [word for word in self.vocabulary if word['Difficulty'] == selected_difficulty]
+        
+        num_available = len(available_words)
+
+        self.slider.configure(
+            to=num_available
+        )
+        self.spinbox.configure(
+            to=num_available
+        )
+
+        if num_available >= preferred_default:
+            new_value = preferred_default
+        elif num_available >= min_words:
+            new_value = num_available
+        else:
+            new_value = min_words
+        
+        self.spinbox.set(new_value)
+        self.slider.set(new_value)
+        
+        if hasattr(self, 'range_label'):
+            self.range_label.configure(text=f"({min_words}-{num_available})")
         
     def create_start_button(self):
         bframe = ctk.CTkFrame(self.cframe, fg_color="transparent")
@@ -370,7 +417,7 @@ class CustomizeStudySession:
             self.root.session_timer = SessionTimer()
             self.root.session_timer.start()
 
-        words = self.vocabulary[:settings['word_count']]
+        words = random.sample(self.vocabulary, min(settings['word_count'], len(self.vocabulary)))
 
         if settings['difficulty'] != "All":
             words = [word for word in words if word['Difficulty'] == settings['difficulty']]

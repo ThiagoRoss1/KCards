@@ -55,19 +55,66 @@ class StandardFlashcards:
         for word in words:
             new_word = word.copy()
             word_hangul = word['Hangul']
-            if word.get('Type'):
+            if word.get('Extra') and word.get('Extra') != "-" and word.get('Type') and word.get('Type') != "-":
+                word_hangul += f"[{word['Extra']}] ({word['Type']})"
+            elif word.get('Type') and word['Type'] != "-":
                 word_hangul += f" ({word['Type']})"
+            
+            elif word.get('Extra') and word.get('Extra') != "-":
+                word_hangul += f"[{word['Extra']}]"
 
-
-            translations = language_manager_flashcards.get_translations(word)
-            if language_manager_flashcards.get_language() == "Português":
-                if word.get('MF'):
-                    translations = language_manager_flashcards.get_translations(word).split(',')[0].strip()
-                    translations += f"({word['MF']})"
-                else:
-                    translations = language_manager_flashcards.get_translations(word).replace(',', ' ')
             else:
-                translations = language_manager_flashcards.get_translations(word).replace(',', '\n')
+                word_hangul = word['Hangul']
+
+
+            original_translations = language_manager_flashcards.get_translations(word)
+            translations_list = original_translations.split(',')
+
+
+            if len(translations_list) > 4:
+                translations = ','.join([t.strip() for t in translations_list[:2]])
+                if word.get('MF') and word.get('MF') != "-":
+                    translations += f"({word['MF']})"
+
+            elif language_manager_flashcards.get_language() == "Português" and word.get('MF') and word.get('MF') != "-":
+                translations = translations_list[0].strip()
+                translations += f"({word['MF']})"
+            
+            elif language_manager_flashcards.get_language() == "Português" and word.get('ExtraPT') and word.get('ExtraPT') != "-":
+                translations = translations_list[0].strip()
+                translations += f"({word['ExtraPT']})"
+
+            else:
+                translations = language_manager_flashcards.get_translations(word).replace(',', ' /').strip()
+                
+            
+            # else:
+            #     translations = ', '.join([t.strip() for t in translations_list])  #talvez
+
+
+            if language_manager_flashcards.get_language() != "Português":
+                if word.get('ExtraENG') and word.get('ExtraENG') != "-":
+                    translations = translations_list[0].strip()
+                    translations += f" ({word['ExtraENG']})"
+
+                elif len(translations_list) >= 1 and len(translations_list) < 3:
+                    translations = ','.join([t.strip() for t in translations_list[:2]])
+                    if word.get('ExtraENG') and word.get('ExtraENG') != "-":
+                        translations += f" ({word['ExtraENG']})"
+
+                elif len(translations_list) >= 3:
+                    translations = ','.join([t.strip() for t in translations_list[:2]])
+                    if word.get('ExtraENG') and word.get('ExtraENG') != "-":
+                        translations += f" ({word['ExtraENG']})"
+
+                else:
+                    translations = language_manager_flashcards.get_translations(word).replace(',', ' /').strip()
+                    if word.get('ExtraENG') and word.get('ExtraENG') != "-":
+                        translations += f" ({word['ExtraENG']})"     
+                    
+                    # ver depois  [2], tirar Carac
+
+
             # if word.get('Tipo'):
             #     if word['Tipo'] == 'Substantivo':
             #         translations = language_manager_flashcards.get_translations(word).split(',')[0].strip()
@@ -297,18 +344,75 @@ class InputPractice:
         for word in words:
             new_word = word.copy()
             word_hangul = word['Hangul']
-            if word.get('Type'):
+            if word.get('Extra') and word.get('Extra') != "-" and word.get('Type') and word.get('Type') != "-":
+                word_hangul += f"[{word['Extra']}] ({word['Type']})"
+            elif word.get('Type') and word['Type'] != "-":
                 word_hangul += f" ({word['Type']})"
+            
+            elif word.get('Extra') and word.get('Extra') != "-":
+                word_hangul += f"[{word['Extra']}]"
 
-            translations = language_manager_flashcards.get_translations(word)
-            if language_manager_flashcards.get_language() == "Português":
-                if word.get('MF'):
-                    translations = language_manager_flashcards.get_translations(word).split(',')[0].strip()
-                    translations += f"({word['MF']})"
-                else:
-                    translations = language_manager_flashcards.get_translations(word).replace(',', ' ')
             else:
-                translations = language_manager_flashcards.get_translations(word).replace(',', '\n')
+                word_hangul = word['Hangul']
+
+            original_translations = language_manager_flashcards.get_translations(word)
+            translations_list = original_translations.split(',')
+
+
+            if len(translations_list) > 4:
+                translations = ','.join([t.strip() for t in translations_list[:2]])
+                if word.get('MF') and word.get('MF') != "-":
+                    translations += f"({word['MF']})"
+
+            elif language_manager_flashcards.get_language() == "Português" and word.get('MF') and word.get('MF') != "-":
+                translations = translations_list[0].strip()
+                translations += f"({word['MF']})"
+            
+            elif language_manager_flashcards.get_language() == "Português" and word.get('ExtraPT') and word.get('ExtraPT') != "-":
+                translations = translations_list[0].strip()
+                translations += f"({word['ExtraPT']})"
+
+            else:
+                translations = language_manager_flashcards.get_translations(word).replace(',', ' /').strip()
+                
+            
+            # else:
+            #     translations = ', '.join([t.strip() for t in translations_list])  #talvez
+
+
+            if language_manager_flashcards.get_language() != "Português":
+                if word.get('ExtraENG') and word.get('ExtraENG') != "-":
+                    translations = translations_list[0].strip()
+                    translations += f" ({word['ExtraENG']})"
+
+                elif len(translations_list) >= 1 and len(translations_list) < 3:
+                    translations = ','.join([t.strip() for t in translations_list[:2]])
+                    if word.get('ExtraENG') and word.get('ExtraENG') != "-":
+                        translations += f" ({word['ExtraENG']})"
+
+                elif len(translations_list) >= 3:
+                    translations = ','.join([t.strip() for t in translations_list[:2]])
+                    if word.get('ExtraENG') and word.get('ExtraENG') != "-":
+                        translations += f" ({word['ExtraENG']})"
+
+                else:
+                    translations = language_manager_flashcards.get_translations(word).replace(',', ' /').strip()
+                    if word.get('ExtraENG') and word.get('ExtraENG') != "-":
+                        translations += f" ({word['ExtraENG']})"
+            # translations_list = language_manager_flashcards.get_translations(word).split(',')
+            # if len(translations_list) > 4:
+            #     translations = ','.join(translations_list[:2])
+
+            # if language_manager_flashcards.get_language() == "Português":
+            #     if word.get('MF'):
+            #         translations = language_manager_flashcards.get_translations(word).split(',')[0].strip()
+            #         translations += f"({word['MF']})"
+
+            #     else:
+            #         translations = language_manager_flashcards.get_translations(word).replace(',', ' ')
+
+            # else:
+            #     translations = language_manager_flashcards.get_translations(word).split(',')[0].strip()  # ver legalzudo 
 
                 
             if settings['study_direction'] == "hangul_to_lang":
@@ -345,8 +449,8 @@ class InputPractice:
         self.word_frame = ctk.CTkFrame(
             word_container,
             border_width=4,
-            width=430,
-            height=200,
+            width=450,
+            height=250,
             border_color=("gray70", "gray30"),
             corner_radius=20,
             fg_color=("white", "gray15")
@@ -374,8 +478,8 @@ class InputPractice:
         self.entry_frame = ctk.CTkFrame(
             entry_container,
             border_width=0,
-            width=350,
-            height=100,
+            width=380,
+            height=120,
             corner_radius=20,
             fg_color=("transparent")
         )
@@ -549,18 +653,61 @@ class MultipleChoiceGame:
         for word in words:
             new_word = word.copy()
             word_hangul = word['Hangul']
-            if word.get('Type'):
+            if word.get('Extra') and word.get('Extra') != "-" and word.get('Type') and word.get('Type') != "-":
+                word_hangul += f"[{word['Extra']}] ({word['Type']})"
+            elif word.get('Type') and word['Type'] != "-":
                 word_hangul += f" ({word['Type']})"
+            
+            elif word.get('Extra') and word.get('Extra') != "-":
+                word_hangul += f"[{word['Extra']}]"
 
-            translations = language_manager_flashcards.get_translations(word)
-            if language_manager_flashcards.get_language() == "Português":
-                if word.get('MF'):
-                    translations = language_manager_flashcards.get_translations(word).split(',')[0].strip()
-                    translations += f"({word['MF']})"
-                else:
-                    translations = language_manager_flashcards.get_translations(word).replace(',', '/').strip()
             else:
-                translations = language_manager_flashcards.get_translations(word).replace(',', '/').strip()
+                word_hangul = word['Hangul']
+
+            original_translations = language_manager_flashcards.get_translations(word)
+            translations_list = original_translations.split(',')
+
+
+            if len(translations_list) > 4:
+                translations = ','.join([t.strip() for t in translations_list[:2]])
+                if word.get('MF') and word.get('MF') != "-":
+                    translations += f"({word['MF']})"
+
+            elif language_manager_flashcards.get_language() == "Português" and word.get('MF') and word.get('MF') != "-":
+                translations = translations_list[0].strip()
+                translations += f"({word['MF']})"
+            
+            elif language_manager_flashcards.get_language() == "Português" and word.get('ExtraPT') and word.get('ExtraPT') != "-":
+                translations = translations_list[0].strip()
+                translations += f"({word['ExtraPT']})"
+
+            else:
+                translations = language_manager_flashcards.get_translations(word).replace(',', ' /').strip()
+                
+            
+            # else:
+            #     translations = ', '.join([t.strip() for t in translations_list])  #talvez
+
+
+            if language_manager_flashcards.get_language() != "Português":
+                if word.get('ExtraENG') and word.get('ExtraENG') != "-":
+                    translations = translations_list[0].strip()
+                    translations += f" ({word['ExtraENG']})"
+
+                elif len(translations_list) >= 1 and len(translations_list) < 3:
+                    translations = ','.join([t.strip() for t in translations_list[:2]])
+                    if word.get('ExtraENG') and word.get('ExtraENG') != "-":
+                        translations += f" ({word['ExtraENG']})"
+
+                elif len(translations_list) >= 3:
+                    translations = ','.join([t.strip() for t in translations_list[:2]])
+                    if word.get('ExtraENG') and word.get('ExtraENG') != "-":
+                        translations += f" ({word['ExtraENG']})"
+
+                else:
+                    translations = language_manager_flashcards.get_translations(word).replace(',', ' /').strip()
+                    if word.get('ExtraENG') and word.get('ExtraENG') != "-":
+                        translations += f" ({word['ExtraENG']})"
 
 
             if settings['study_direction'] == "hangul_to_lang":
@@ -821,18 +968,71 @@ class MatchingGame:
 
         for word in game_words:
             word_hangul = word['Hangul']
-            if word.get('Type'):
+            if word.get('Extra') and word.get('Extra') != "-" and word.get('Type') and word.get('Type') != "-":
+                word_hangul += f"[{word['Extra']}] ({word['Type']})"
+            elif word.get('Type') and word['Type'] != "-":
                 word_hangul += f" ({word['Type']})"
+            
+            elif word.get('Extra') and word.get('Extra') != "-":
+                word_hangul += f"[{word['Extra']}]"
 
-            translations = language_manager_flashcards.get_translations(word)
-            if language_manager_flashcards.get_language() == "Português":
-                if word.get('MF'):
-                    translations = language_manager_flashcards.get_translations(word).split(',')[0].strip()
-                    translations += f"({word['MF']})"
-                else:
-                    translations = language_manager_flashcards.get_translations(word).replace(',', '/')
             else:
-                translations = language_manager_flashcards.get_translations(word).replace(',', '/').strip()
+                word_hangul = word['Hangul']
+
+            original_translations = language_manager_flashcards.get_translations(word)
+            translations_list = original_translations.split(',')
+
+
+            if len(translations_list) > 4:
+                translations = ','.join([t.strip() for t in translations_list[:2]])
+                if word.get('MF') and word.get('MF') != "-":
+                    translations += f"({word['MF']})"
+
+            elif language_manager_flashcards.get_language() == "Português" and word.get('MF') and word.get('MF') != "-":
+                translations = translations_list[0].strip()
+                translations += f"({word['MF']})"
+            
+            elif language_manager_flashcards.get_language() == "Português" and word.get('ExtraPT') and word.get('ExtraPT') != "-":
+                translations = translations_list[0].strip()
+                translations += f"({word['ExtraPT']})"
+
+            else:
+                translations = language_manager_flashcards.get_translations(word).replace(',', ' /').strip()
+                
+            
+            # else:
+            #     translations = ', '.join([t.strip() for t in translations_list])  #talvez
+
+
+            if language_manager_flashcards.get_language() != "Português":
+                if word.get('ExtraENG') and word.get('ExtraENG') != "-":
+                    translations = translations_list[0].strip()
+                    translations += f" ({word['ExtraENG']})"
+
+                elif len(translations_list) >= 1 and len(translations_list) < 3:
+                    translations = ','.join([t.strip() for t in translations_list[:2]])
+                    if word.get('ExtraENG') and word.get('ExtraENG') != "-":
+                        translations += f" ({word['ExtraENG']})"
+
+                elif len(translations_list) >= 3:
+                    translations = ','.join([t.strip() for t in translations_list[:2]])
+                    if word.get('ExtraENG') and word.get('ExtraENG') != "-":
+                        translations += f" ({word['ExtraENG']})"
+
+                else:
+                    translations = language_manager_flashcards.get_translations(word).replace(',', ' /').strip()
+                    if word.get('ExtraENG') and word.get('ExtraENG') != "-":
+                        translations += f" ({word['ExtraENG']})"
+
+            # translations = language_manager_flashcards.get_translations(word)
+            # if language_manager_flashcards.get_language() == "Português":
+            #     if word.get('MF'):
+            #         translations = language_manager_flashcards.get_translations(word).split(',')[0].strip()
+            #         translations += f"({word['MF']})"
+            #     else:
+            #         translations = language_manager_flashcards.get_translations(word).replace(',', '/')
+            # else:
+            #     translations = language_manager_flashcards.get_translations(word).replace(',', '/').strip()
 
 
             pairs.append({
@@ -909,7 +1109,7 @@ class MatchingGame:
             self.card_placeholders.append(placeholder)
 
             original_text = self.words[i]['text']
-            max_chars_per_line = 10 if self.words[i]['type'] == 'hangul' else 14 
+            max_chars_per_line = 9 if self.words[i]['type'] == 'hangul' else 14 
             text_with_breaks = '\n'.join([original_text[j:j+max_chars_per_line] 
                                     for j in range(0, len(original_text), max_chars_per_line)])
 
@@ -1074,18 +1274,61 @@ class TrueFalseGame:
         for word in words:
             new_word = word.copy()
             word_hangul = word['Hangul']
-            if word.get('Type'):
+            if word.get('Extra') and word.get('Extra') != "-" and word.get('Type') and word.get('Type') != "-":
+                word_hangul += f"[{word['Extra']}] ({word['Type']})"
+            elif word.get('Type') and word['Type'] != "-":
                 word_hangul += f" ({word['Type']})"
+            
+            elif word.get('Extra') and word.get('Extra') != "-":
+                word_hangul += f"[{word['Extra']}]"
 
-            translations = language_manager_flashcards.get_translations(word)
-            if language_manager_flashcards.get_language() == "Português":
-                if word.get('MF'):
-                    translations = language_manager_flashcards.get_translations(word).split(',')[0].strip()
-                    translations += f"({word['MF']})"
-                else:
-                    translations = language_manager_flashcards.get_translations(word).strip()
             else:
-                translations = language_manager_flashcards.get_translations(word).strip()
+                word_hangul = word['Hangul']
+
+            original_translations = language_manager_flashcards.get_translations(word)
+            translations_list = original_translations.split(',')
+
+
+            if len(translations_list) > 4:
+                translations = ','.join([t.strip() for t in translations_list[:2]])
+                if word.get('MF') and word.get('MF') != "-":
+                    translations += f"({word['MF']})"
+
+            elif language_manager_flashcards.get_language() == "Português" and word.get('MF') and word.get('MF') != "-":
+                translations = translations_list[0].strip()
+                translations += f"({word['MF']})"
+            
+            elif language_manager_flashcards.get_language() == "Português" and word.get('ExtraPT') and word.get('ExtraPT') != "-":
+                translations = translations_list[0].strip()
+                translations += f"({word['ExtraPT']})"
+
+            else:
+                translations = language_manager_flashcards.get_translations(word).replace(',', ' /').strip()
+                
+            
+            # else:
+            #     translations = ', '.join([t.strip() for t in translations_list])  #talvez
+
+
+            if language_manager_flashcards.get_language() != "Português":
+                if word.get('ExtraENG') and word.get('ExtraENG') != "-":
+                    translations = translations_list[0].strip()
+                    translations += f" ({word['ExtraENG']})"
+
+                elif len(translations_list) >= 1 and len(translations_list) < 3:
+                    translations = ','.join([t.strip() for t in translations_list[:2]])
+                    if word.get('ExtraENG') and word.get('ExtraENG') != "-":
+                        translations += f" ({word['ExtraENG']})"
+
+                elif len(translations_list) >= 3:
+                    translations = ','.join([t.strip() for t in translations_list[:2]])
+                    if word.get('ExtraENG') and word.get('ExtraENG') != "-":
+                        translations += f" ({word['ExtraENG']})"
+
+                else:
+                    translations = language_manager_flashcards.get_translations(word).replace(',', ' /').strip()
+                    if word.get('ExtraENG') and word.get('ExtraENG') != "-":
+                        translations += f" ({word['ExtraENG']})"
 
             
             if settings['study_direction'] == "hangul_to_lang":

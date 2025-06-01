@@ -84,7 +84,7 @@ The [`vocabulary.csv`](vocabulary.csv) file contains all the words used in your 
 | `Português`| Portuguese translation                                                  |
 | `Difficulty`| Optional difficulty level (`Easy`, `Medium`, `Hard` or `All`)                                                                                     |
 | `Type`     | Word type (`명사`, `동사`, `형용사`, etc.) - can be in korean or your preferred language                                                   |
-| `MF`       | Gender marker for **Portuguese** — use `o` for masculine, `a` for feminine, or leave it blank. When both forms are present (e.g.,gato,gata), the program defaults to the first one due to internal logic.
+| `MF`       | Gender marker for **Portuguese** — use `a` for feminine, `o` for masculine, fill it with another word or leave it blank. When both forms are present (e.g.,gato,gata), the program defaults to the first one due to internal logic.
 
 #### 🧪 Example
 
@@ -115,12 +115,18 @@ You can modify the CSV to fit your target language or study goals. Just make sur
 - `True or False`
   - Decide whether a statement is **true or false**.
 
-## Final Thoughts
+## 💭 Final Thoughts
 This project was created for personal use, but feel free to fork it and make your own changes!  
 Pull requests and suggestions are welcome — Happy Studying! ✨
 
-### Acknowledgements
+### 📝 Acknowledgements
 
+#### 📒 Learning Resources & Content:
+- Vocabulary translations supported by [Naver Dictionary](https://en.dict.naver.com/#/main)
+- Korean Language course provided by [Coreano Online](https://coreanoonline.com.br/)
+
+#### 💭 Project Inspirations & Tools
+- English Tranlations 
 - Inspired by [Quizlet](https://quizlet.com)
 - Built using [CustomTkinter](https://github.com/TomSchimansky/CustomTkinter)
 - Designed as part of the [CS50P Final Project](https://cs50.harvard.edu/python/)
