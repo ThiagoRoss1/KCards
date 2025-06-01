@@ -1,69 +1,69 @@
 Level,Module,Hangul,Português,English,Difficulty,Type,MF,ExtraPT,ExtraENG,Extra
-N1,1,가수,Cantor,Singer,Easy,명사,-,-,-
-N1,1,강아지,Cachorro,Dog,Easy,명사,-,-,-
-N1,1,고양이,"Gato, Gata",Cat,Easy,명사,a,-,-
-N1,1,공부하다,Estudar,Study,Easy,동사,-,-,-
-N1,1,공책,Caderno,Notebook,Easy,명사,-,-,-
-N1,1,나쁘다,Ser mal,"Bad, Wrong",Easy,형용사,-,-,-
-N1,1,남자,Homem,Man,Easy,명사,-,-,-
-N1,1,네,Sim,Yes,Easy,감탄사,-,-,-
-N1,1,높다 [놉따],Ser alto,"High, Tall",Easy,형용사,-,-,-
-N1,1,느리다,Ser lento,Slow,Easy,형용사,-,-,-
-N1,1,늦다 [늗따],"Atrasar-se, Estar atrasado","Be late, Late",Easy,동사/형용사,-,-,-
-N1,1,덥다 [덥따],"Estar calor, Calor",Hot,Easy,형용사,-,-,-
-N1,1,도서관,Biblioteca,Library,Easy,명사,-,-,-
-N1,1,도쿄,Tóquio,Tokyo,Easy,명사,-,-,-
-N1,1,똑똑하다 [똑또카다],Ser inteligente,"Smart, Clever, Bright, Intelligent",Easy,형용사,-,-,-
-N1,1,마시다,Beber,Drink,Easy,동사,-,-,-
-N1,1,먹다 [먹따],Comer,Eat,Easy,동사,-,-,-
-N1,1,물,Água,Water,Easy,명사,-,-,-
-N1,1,뭐 (= 무엇),"O que, Que",What,Easy,대명사,-,-,-
-N1,1,미국,Estados Unidos,United States,Easy,명사,-,-,-
-N1,1,바나나,Banana,Banana,Easy,명사,-,-,-
-N1,1,밤,Noite,Night,Easy,명사,-,-,-
-N1,1,배우,"Ator, Atriz","Actor, Actress",Easy,명사,-,Atriz,Actress
-N1,1,베트남,Vietnã,Vietnam,Easy,명사,-,-,-
-N1,1,부산,Busan,Busan,Easy,명사,-,Cidade coreana,Korean City
-N1,1,브라질,Brasil,Brazil,Easy,명사,-,-,-
-N1,1,사과,Maçã,Apple,Easy,명사,-,-,-
-N1,1,사람,Pessoa,Person,Easy,명사,-,-,-
-N1,1,살다,"Viver, Morar",Live,Easy,동사,-,-,-
-N1,1,샤워하다,Tomar Banho,Shower,Easy,동사,-,-,-
-N1,1,선생님,Professor,"Teacher, Master",Easy,명사,-,-,-
-N1,1,쉬다,Descansar,"Rest, Relax",Easy,동사,-,-,-
-N1,1,싫다,"Ser Ruim, Não Gostar","Hate, Dislike",Easy,형용사,-,-,-
-N1,1,아니요,Não,No,Easy,감탄사,-,-,-
-N1,1,아이,Criança,"Child, Children, Kid",Easy,명사,-,-,-
-N1,1,아프다,Estar Doente,"Sick, Painful, Hurt",Easy,형용사/동사,-,-,-
-N1,1,알다,Saber,"Know, Learn",Easy,동사,-,-,-
-N1,1,양치하다,Escovar os Dentes,Brush Teeth,Easy,동사,-,-,-
-N1,1,열심히 [열씸히],"Fervorosamente, Com Dedicação, Com Devoção, Com Esforço, Com Afinco","Diligently, Easy, Enthusiastically, Zealously",Easy,부사,-,-,-
-N1,1,오다,Vir,Come,Easy,동사,-,-,-
-N1,1,요리하다,Cozinhar,"Cook, Handle",Easy,동사,-,-,-
-N1,1,우리,"Nós, Nosso, Nossa, Nossos, Nossas","We, Our, Us, Ours, Ourselves",Easy,대명사,"s, (a), (as)",-,-
-N1,1,운동하다,"Exercitar, Exercitar-se","Exercise, Take Exercise",Easy,동사,-,-,-
-N1,1,웃다 [욷따],Rir,"Laugh, Giggle, Chuckle, Smile",Easy,동사,-,-,-
-N1,1,이름,Nome,Name,Easy,명사,-,-,-
-N1,1,인터넷 [인터넫],Internet,Internet,Easy,명사,-,-,-
-N1,1,일하다,Trabalhar,Work,Easy,동사,-,-,-
-N1,1,읽다 [익따],Ler,Read,Easy,동사,-,-,-
-N1,1,자다,Dormir,"Sleep, Slumber",Easy,동사,-,-,-
-N1,1,잘,Bem,Well,Easy,부사,-,-,-
-N1,1,자전거,Bicicleta,"Bicycle, Bike, Cycle",Easy,명사,-,-,-
-N1,1,작다 [작따],Ser Pequeno,"Small, Short, Tiny, Little, Tight",Easy,형용사,a,-,-
+N1,1,가수,Cantor,Singer,Easy,명사,-,-,-,-
+N1,1,강아지,Cachorro,Dog,Easy,명사,-,-,-,-
+N1,1,고양이,"Gato, Gata",Cat,Easy,명사,a,-,-,-
+N1,1,공부하다,Estudar,Study,Easy,동사,-,-,-,-
+N1,1,공책,Caderno,Notebook,Easy,명사,-,-,-,-
+N1,1,나쁘다,Ser mal,"Bad, Wrong",Easy,형용사,-,-,-,-
+N1,1,남자,Homem,Man,Easy,명사,-,-,-,-
+N1,1,네,Sim,Yes,Easy,감탄사,-,-,-,-
+N1,1,높다 [놉따],Ser alto,"High, Tall",Easy,형용사,-,-,-,-
+N1,1,느리다,Ser lento,Slow,Easy,형용사,-,-,-,-
+N1,1,늦다 [늗따],"Atrasar-se, Estar atrasado","Be late, Late",Easy,동사/형용사,-,-,-,-
+N1,1,덥다 [덥따],"Estar calor, Calor",Hot,Easy,형용사,-,-,-,-
+N1,1,도서관,Biblioteca,Library,Easy,명사,-,-,-,-
+N1,1,도쿄,Tóquio,Tokyo,Easy,명사,-,-,-,-
+N1,1,똑똑하다 [똑또카다],Ser inteligente,"Smart, Clever, Bright, Intelligent",Easy,형용사,-,-,-,-
+N1,1,마시다,Beber,Drink,Easy,동사,-,-,-,-
+N1,1,먹다 [먹따],Comer,Eat,Easy,동사,-,-,-,-
+N1,1,물,Água,Water,Easy,명사,-,-,-,-
+N1,1,뭐 (= 무엇),"O que, Que",What,Easy,대명사,-,-,-,-
+N1,1,미국,Estados Unidos,United States,Easy,명사,-,-,-,-
+N1,1,바나나,Banana,Banana,Easy,명사,-,-,-,-
+N1,1,밤,Noite,Night,Easy,명사,-,-,-,-
+N1,1,배우,"Ator, Atriz","Actor, Actress",Easy,명사,-,Atriz,Actress,-
+N1,1,베트남,Vietnã,Vietnam,Easy,명사,-,-,-,-
+N1,1,부산,Busan,Busan,Easy,명사,-,Cidade coreana,Korean City,-
+N1,1,브라질,Brasil,Brazil,Easy,명사,-,-,-,-
+N1,1,사과,Maçã,Apple,Easy,명사,-,-,-,-
+N1,1,사람,Pessoa,Person,Easy,명사,-,-,-,-
+N1,1,살다,"Viver, Morar",Live,Easy,동사,-,-,-,-
+N1,1,샤워하다,Tomar Banho,Shower,Easy,동사,-,-,-,-
+N1,1,선생님,Professor,"Teacher, Master",Easy,명사,-,-,-,-
+N1,1,쉬다,Descansar,"Rest, Relax",Easy,동사,-,-,-,-
+N1,1,싫다,"Ser Ruim, Não Gostar","Hate, Dislike",Easy,형용사,-,-,-,-
+N1,1,아니요,Não,No,Easy,감탄사,-,-,-,-
+N1,1,아이,Criança,"Child, Children, Kid",Easy,명사,-,-,-,-
+N1,1,아프다,Estar Doente,"Sick, Painful, Hurt",Easy,형용사/동사,-,-,-,-
+N1,1,알다,Saber,"Know, Learn",Easy,동사,-,-,-,-
+N1,1,양치하다,Escovar os Dentes,Brush Teeth,Easy,동사,-,-,-,-
+N1,1,열심히 [열씸히],"Fervorosamente, Com Dedicação, Com Devoção, Com Esforço, Com Afinco","Diligently, Easy, Enthusiastically, Zealously",Easy,부사,-,-,-,-
+N1,1,오다,Vir,Come,Easy,동사,-,-,-,-
+N1,1,요리하다,Cozinhar,"Cook, Handle",Easy,동사,-,-,-,-
+N1,1,우리,"Nós, Nosso, Nossa, Nossos, Nossas","We, Our, Us, Ours, Ourselves",Easy,대명사,"s, (a), (as)",-,-,-
+N1,1,운동하다,"Exercitar, Exercitar-se","Exercise, Take Exercise",Easy,동사,-,-,-,-
+N1,1,웃다 [욷따],Rir,"Laugh, Giggle, Chuckle, Smile",Easy,동사,-,-,-,-
+N1,1,이름,Nome,Name,Easy,명사,-,-,-,-
+N1,1,인터넷 [인터넫],Internet,Internet,Easy,명사,-,-,-,-
+N1,1,일하다,Trabalhar,Work,Easy,동사,-,-,-,-
+N1,1,읽다 [익따],Ler,Read,Easy,동사,-,-,-,-
+N1,1,자다,Dormir,"Sleep, Slumber",Easy,동사,-,-,-,-
+N1,1,잘,Bem,Well,Easy,부사,-,-,-,-
+N1,1,자전거,Bicicleta,"Bicycle, Bike, Cycle",Easy,명사,-,-,-,-
+N1,1,작다 [작따],Ser Pequeno,"Small, Short, Tiny, Little, Tight",Easy,형용사,a,-,-,-
 N1,1,저,Eu,"I, Me, My, Mine, Myself",Easy,대명사,-,-,-,-
-N1,1,좋다 [조타],Ser Bom,"Good, Fine, Nice",Easy,형용사,-,-,-
-N1,1,중국,China,China,Easy,명사,-,-,-
-N1,1,집,Casa,"House, Home",Easy,명사,-,-,-
+N1,1,좋다 [조타],Ser Bom,"Good, Fine, Nice",Easy,형용사,-,-,-,-
+N1,1,중국,China,China,Easy,명사,-,-,-,-
+N1,1,집,Casa,"House, Home",Easy,명사,-,-,-,-
 N1,1,차,Carro,Car,Easy,명사,-,-,-,자동차
-N1,1,착하다 [차카다],Ser Gentil,"Good, Kind, Nice",Easy,형용사,-,-,-
-N1,1,책,Livro,Book,Easy,명사,-,-,-
-N1,1,춥다 [춥따],"Estar Frio, Ser Frio","Cold, Frosty, Chilly",Easy,형용사,-,-,-
-N1,1,친구,Amigo,"Friend, Companion",Easy,명사,a,-,-
-N1,1,콜라,"Refrigerante, Refrigerante de Cola","Cola, Coke, Coca-Cola",Easy,명사,-,-,-
-N1,1,피곤하다,Estar Cansado,"Tired, Exhausted, Weary",Easy,형용사,a,-,-
-N1,1,하다,Fazer,Do,Easy,동사,-,-,-
-N1,1,학생 [학쌩],Estudante,Student,Easy,명사,-,-,-
-N1,1,한국,Coreia do Sul,"Korea, South Korea, Republic of Korea",Easy,명사,-,-,-
-N1,1,행복하다 [행보카다],Ser Feliz,"Happy, Content, Joyful",Easy,형용사,-,-,-
+N1,1,착하다 [차카다],Ser Gentil,"Good, Kind, Nice",Easy,형용사,-,-,-,-
+N1,1,책,Livro,Book,Easy,명사,-,-,-,-
+N1,1,춥다 [춥따],"Estar Frio, Ser Frio","Cold, Frosty, Chilly",Easy,형용사,-,-,-,-
+N1,1,친구,Amigo,"Friend, Companion",Easy,명사,a,-,-,-
+N1,1,콜라,"Refrigerante, Refrigerante de Cola","Cola, Coke, Coca-Cola",Easy,명사,-,-,-,-
+N1,1,피곤하다,Estar Cansado,"Tired, Exhausted, Weary",Easy,형용사,a,-,-,-
+N1,1,하다,Fazer,Do,Easy,동사,-,-,-,-
+N1,1,학생 [학쌩],Estudante,Student,Easy,명사,-,-,-,-
+N1,1,한국,Coreia do Sul,"Korea, South Korea, Republic of Korea",Easy,명사,-,-,-,-
+N1,1,행복하다 [행보카다],Ser Feliz,"Happy, Content, Joyful",Easy,형용사,-,-,-,-
 
