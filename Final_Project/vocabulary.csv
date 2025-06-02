@@ -28,20 +28,20 @@ N1,1,브라질,Brasil,Brazil,Easy,명사,-,-,-,-
 N1,1,사과,Maçã,Apple,Easy,명사,-,-,-,-
 N1,1,사람,Pessoa,Person,Easy,명사,-,-,-,-
 N1,1,살다,"Viver, Morar",Live,Easy,동사,-,-,-,-
-N1,1,샤워하다,Tomar Banho,Shower,Easy,동사,-,-,-,-
+N1,1,샤워하다,Tomar banho,Shower,Easy,동사,-,-,-,-
 N1,1,선생님,Professor,"Teacher, Master",Easy,명사,-,-,-,-
 N1,1,쉬다,Descansar,"Rest, Relax",Easy,동사,-,-,-,-
-N1,1,싫다,"Ser Ruim, Não Gostar","Hate, Dislike",Easy,형용사,-,-,-,-
+N1,1,싫다,"Ser ruim, Não gostar","Hate, Dislike",Easy,형용사,-,-,-,-
 N1,1,아니요,Não,No,Easy,감탄사,-,-,-,-
 N1,1,아이,Criança,"Child, Children, Kid",Easy,명사,-,-,-,-
-N1,1,아프다,Estar Doente,"Sick, Painful, Hurt",Easy,형용사/동사,-,-,-,-
+N1,1,아프다,Estar doente,"Sick, Painful, Hurt",Easy,형용사/동사,-,-,-,-
 N1,1,알다,Saber,"Know, Learn",Easy,동사,-,-,-,-
-N1,1,양치하다,Escovar os Dentes,Brush Teeth,Easy,동사,-,-,-,-
-N1,1,열심히 [열씸히],"Fervorosamente, Com Dedicação, Com Devoção, Com Esforço, Com Afinco","Diligently, Easy, Enthusiastically, Zealously",Easy,부사,-,-,-,-
+N1,1,양치하다,Escovar os dentes,Brush teeth,Easy,동사,-,-,-,-
+N1,1,열심히 [열씸히],"Fervorosamente, Com dedicação, Com devoção, Com esforço, Com afinco","Diligently, Easy, Enthusiastically, Zealously",Easy,부사,-,-,-,-
 N1,1,오다,Vir,Come,Easy,동사,-,-,-,-
 N1,1,요리하다,Cozinhar,"Cook, Handle",Easy,동사,-,-,-,-
 N1,1,우리,"Nós, Nosso, Nossa, Nossos, Nossas","We, Our, Us, Ours, Ourselves",Easy,대명사,"s, (a), (as)",-,-,-
-N1,1,운동하다,"Exercitar, Exercitar-se","Exercise, Take Exercise",Easy,동사,-,-,-,-
+N1,1,운동하다,"Exercitar, Exercitar-se","Exercise, Take exercise",Easy,동사,-,-,-,-
 N1,1,웃다 [욷따],Rir,"Laugh, Giggle, Chuckle, Smile",Easy,동사,-,-,-,-
 N1,1,이름,Nome,Name,Easy,명사,-,-,-,-
 N1,1,인터넷 [인터넫],Internet,Internet,Easy,명사,-,-,-,-
@@ -50,20 +50,118 @@ N1,1,읽다 [익따],Ler,Read,Easy,동사,-,-,-,-
 N1,1,자다,Dormir,"Sleep, Slumber",Easy,동사,-,-,-,-
 N1,1,잘,Bem,Well,Easy,부사,-,-,-,-
 N1,1,자전거,Bicicleta,"Bicycle, Bike, Cycle",Easy,명사,-,-,-,-
-N1,1,작다 [작따],Ser Pequeno,"Small, Short, Tiny, Little, Tight",Easy,형용사,a,-,-,-
+N1,1,작다 [작따],Ser pequeno,"Small, Short, Tiny, Little, Tight",Easy,형용사,a,-,-,-
 N1,1,저,Eu,"I, Me, My, Mine, Myself",Easy,대명사,-,-,-,-
-N1,1,좋다 [조타],Ser Bom,"Good, Fine, Nice",Easy,형용사,-,-,-,-
+N1,1,좋다 [조타],Ser bom,"Good, Fine, Nice",Easy,형용사,-,-,-,-
 N1,1,중국,China,China,Easy,명사,-,-,-,-
 N1,1,집,Casa,"House, Home",Easy,명사,-,-,-,-
 N1,1,차,Carro,Car,Easy,명사,-,-,-,자동차
-N1,1,착하다 [차카다],Ser Gentil,"Good, Kind, Nice",Easy,형용사,-,-,-,-
+N1,1,착하다 [차카다],Ser gentil,"Good, Kind, Nice",Easy,형용사,-,-,-,-
 N1,1,책,Livro,Book,Easy,명사,-,-,-,-
-N1,1,춥다 [춥따],"Estar Frio, Ser Frio","Cold, Frosty, Chilly",Easy,형용사,-,-,-,-
+N1,1,춥다 [춥따],"Estar frio, Ser frio","Cold, Frosty, Chilly",Easy,형용사,-,-,-,-
 N1,1,친구,Amigo,"Friend, Companion",Easy,명사,a,-,-,-
 N1,1,콜라,"Refrigerante, Refrigerante de Cola","Cola, Coke, Coca-Cola",Easy,명사,-,-,-,-
-N1,1,피곤하다,Estar Cansado,"Tired, Exhausted, Weary",Easy,형용사,a,-,-,-
+N1,1,피곤하다,Estar cansado,"Tired, Exhausted, Weary",Easy,형용사,a,-,-,-
 N1,1,하다,Fazer,Do,Easy,동사,-,-,-,-
 N1,1,학생 [학쌩],Estudante,Student,Easy,명사,-,-,-,-
-N1,1,한국,Coreia do Sul,"Korea, South Korea, Republic of Korea",Easy,명사,-,-,-,-
-N1,1,행복하다 [행보카다],Ser Feliz,"Happy, Content, Joyful",Easy,형용사,-,-,-,-
-
+N1,1,한국,Coreia do Sul,"South Korea, Korea, Republic of Korea",Easy,명사,-,-,-,-
+N1,1,행복하다 [행보카다],Ser feliz,"Happy, Content, Joyful",Easy,형용사,-,-,-,-
+N1,2,-어,"Língua, Idioma","Language, Idiom",Easy,조사,-,-,-,-
+N1,2,-에,"Indica lugar ou tempo, Em, No, Na","Indicates place or time, In, At, On",Easy,조사,-,-,-,-
+N1,2,-에서,"Indica local de uma ação ou origem, De, Do, Da, Em, No, Na","Indicates the place of an action or origin, From, In, At",Easy,조사,-,-,-,-
+N1,2,-요,"Indica polidez, Partícula de formalidade","Indicates politeness, Indicates formality",Easy,조사,-,-,-,-
+N1,2,-은/는,"Indica o tópico da oração, Partícula de tópico","Indicates the topic of the sentence, Topic particle",Easy,조사,-,-,-,-
+N1,2,-을/를,"Indica objeto verbal, Partícula de objeto","Indicates the object of the verb, Object particle",Easy,조사,-,-,-,-
+N1,2,가다,Ir,Go,Easy,동사,-,-,-,-
+N1,2,가르치다,Ensinar,"Teach, Instruct",Easy,동사,-,-,-,-
+N1,2,고기,Carne,Meat,Easy,명사,-,-,-,-
+N1,2,과일,Fruta,Fruit,Easy,명사,-,-,-,-
+N1,2,괜찮다 [괜찬타],Estar bem,"All right, Nice, Fine, okay",Easy,형용사,-,-,-,-
+N1,2,교수,"Professor universitário, Professora universitária","University professor, Professor",Easy,명사,a,-,-,-
+N1,2,그리스,Grécia,Greece,Easy,명사,-,-,-,-
+N1,2,깨끗하다 [깨끄타다],Ser limpo,Clean,Easy,형용사,-,-,-,-
+N1,2,꽃 [꼳],Flor,"Flower, Blossom, Bloom",Easy,명사,-,-,-,-
+N1,2,꾸다,Sonhar,"Have a dream, Dream",Easy,동사,-,-,-,-
+N1,2,꿈,Sonho,Dream,Easy,명사,-,-,-,-
+N1,2,나,Eu,"I, Me, My, Mine, Myself",Easy,대명사,-,informal,informal,-
+N1,2,나가다,Sair,"Go out, Get out, leave",Easy,동사,-,-,-,-
+N1,2,나라,"País, Nação","Country, Nation",Easy,명사,-,-,-,-
+N1,2,날씨,"Tempo, Clima",Weather,Easy,명사,-,-,-,-
+N1,2,날씬하다,Ser magro,"Slim, Slender, Thin",Easy,형용사,-,-,-,-
+N1,2,낮다 [낟따],Ser baixo,"Low, Flat",Easy,형용사,-,para coisas,for things,-
+N1,2,너,Você,"You, Your, Yours, Yourself",Easy,대명사,-,informal,informal,-
+N1,2,넓다 [널따],"Ser amplo, Ser largo","Large, Big, Extensive, Wide",Easy,형용사,-,-,-,-
+N1,2,네,Sim,Yes,Easy,감탄사,-,-,-,-
+N1,2,누나,Irmã mais velha,"Older sister, Big sister",Easy,명사,-,de homem,for man,-
+N1,2,느리다,"Ser lento, Ser devagar, lento, devagar",Slow,Easy,형용사,-,-,-,-
+N1,2,늙다 [늑따],"Envelhecer, Ficar velho","Be old, Age",Easy,동사,-,-,-,-
+N1,2,당신,"Você, Tu","You, Your, Yours, Yourself",Easy,대명사,-,formal,formal,-
+N1,2,대단하다,Incrível,"Incredible, Great, Huge, Awesome",Easy,형용사,-,-,-,-
+N1,2,독일 [도길],Alemanha,Germany,Easy,명사,-,-,-,-
+N1,2,독일어 [도기러],Alemão,German,Easy,명사,-,língua,language,-
+N1,2,뚱뚱하다,Ser gordo,"Fat, Overweight, Plump, Chubby",Easy,형용사,-,-,-,-
+N1,2,러시아,Rússia,Russia,Easy,명사,-,-,-,-
+N1,2,러시아어,Russo,Russian,Easy,명사,-,língua,language,-
+N1,2,많다 [만타],Ser muito,"A lot of, Plenty of, many",Easy,형용사,-,-,-,-
+N1,2,말,"Fala, Língua","Speech, Tongue, Word, Language",Easy,명사,-,-,-,-
+N1,2,말하다,"Falar, Dizer","Say, Speak, Tell, Talk, Ask",Easy,동사,-,-,-,-
+N1,2,맛없다 [마덥따],"Não ser saboroso","Not tasty, Not good, Tasteless",Easy,형용사,-,-,-,-
+N1,2,맛있다 [마싣따],"Ser gostoso, Ser saboroso","Tasty, Delicious, Appetizing, Mouthwatering",Easy,형용사,-,-,-,-
+N1,2,멀다,Ser longe,"Far, Distant, Remote",Easy,형용사,-,-,-,-
+N1,2,멋있다 [머싣따],"Ser bonito, Ser estiloso","Stylish, Wonderful, Cool, Nice, Splendid, Lovely",Easy,형용사,-,usado para homens e coisas,use for man and things,-
+N1,2,멕시코,México,Mexico,Easy,명사,-,-,-,-
+N1,2,모로코,Marrocos,Morocco,Easy,명사,-,-,-,-
+N1,2,못 [몯],"Não poder, Não conseguir","Cannot, Unable to, Cannot do",Easy,부사,-,-,-,-
+N1,2,몽골,Mongólia,Mongolia,Easy,명사,-,-,-,-
+N1,2,문자 [문짜],"Caractere, Letra, Mensagem","Letter, Character, Big words",Easy,명사,-,-,-,-
+N1,2,받다 [받따],"Receber, Ganhar, Obter","Receive, Get, Accept, Take",Easy,동사,-,-,-,-
+N1,2,밝다 [박따],Ser claro,"Bright, Light, Brilliant",Easy,형용사,-,-,-,-
+N1,2,밥,"Arroz, Comida, Arroz cozido","Rice, Meal, Food, Feed, Steamed Rice, Boiled Rice",Easy,명사,-,-,-,-
+N1,2,방,"Cômodo, Quarto, Sala","Room, Chamber, Hall",Easy,명사,-,-,-,-
+N1,2,버스,Ônibus,Bus,Easy,명사,-,-,-,-
+N1,2,벨기에,Bélgica,Belgium,Easy,명사,-,-,-,-
+N1,2,보다,"Ver, Enxergar, Olhar, Assistir","See, Watch, Look, View",Easy,동사,-,-,-,-
+N1,2,볼리비아,Bolívia,Bolivia,Easy,명사,-,-,-,-
+N1,2,북한 [부칸],Coreia do Norte,"North Korea, Democratic People's Republic of Korea",Easy,명사,-,-,-,-
+N1,2,비싸다,"Ser caro, Caro","Expensive, Costly, Pricey",Easy,형용사,-,-,-,-
+N1,2,빵,Pão,Bread,Easy,명사,-,-,-,-
+N1,2,사랑하다,Amar,"Love, Be in love",Easy,동사,-,-,-,-
+N1,2,생각하다 [생가카다],Pensar,"Think, Recall, Consider, Reflect",Easy,동사,-,-,-,-
+N1,2,서다,"Ficar de pé, Ficar em pé, Ficar parado","Stand, Stop, Halt",Easy,동사,-,-,-,-
+N1,2,쉬다,Descansar,"Rest, Relax, Take a break, Breathe",Easy,동사,-,-,-,-
+N1,2,스위스,Suíça,Switzerland,Easy,명사,-,-,-,-
+N1,2,스페인,Espanha,Spain,Easy,명사,-,-,-,-
+N1,2,스페인어,Espanhol,Spanish,Easy,명사,-,língua,language,-
+N1,2,싫어하다 [시러하다],"Detestar, Não gostar","Hate, Dislike",Easy,동사,-,-,-,-
+N1,2,싸다,"Ser barato, Barato","Cheap, Inexpensive, Low-priced",Easy,형용사,-,-,-,-
+N1,2,아랍어 [아라버],Árabe,Arabic,Easy,명사,-,língua,language,-
+N1,2,아르헨티나,Argentina,Argentina,Easy,명사,-,-,-,-
+N1,2,아버지,Pai,"Father, Dad, Pop",Easy,명사,-,-,-,-
+N1,2,아빠,Papai,"Daddy, Dad, Pop",Easy,명사,-,-,-,-
+N1,2,아저씨,"Homem mais velho, Senhor, Tio","Middle aged man, Mister",Easy,명사,-,-,-,-
+N1,2,아주머니,"Mulher mais velha, Senhora, Tia","Middle aged woman, Madam, Lady, Ma'am",Easy,명사,-,-,-,-
+N1,2,아줌마,"Mulher mais velha, Senhora, Tia","Middle aged woman, Madam, Lady, Ma'am",Easy,명사,-,-,-,-
+N1,2,아직,Ainda,"Still, Yet",Easy,부사,-,-,-,-
+N1,2,안,Não,"No, Not",Easy,부사,-,indica negativa,indicates negative,-
+N1,2,앉다 [안따],"Sentar, Sentar-se","Sit, Take a seat, seat, settle on",Easy,동사,-,-,-,-
+N1,2,알다,"Saber, Conhecer","Know, Learn",Easy,동사,-,-,-,-
+N1,2,어느,Qual,Which,Easy,대명사,-,-,-,-
+N1,2,어디,"Onde, Aonde",Where,Easy,대명사,-,-,-,-
+N1,2,어머니,Mãe,"Mother, Mom",Easy,명사,-,-,-,-
+N1,2,언니,Irmã mais velha,"Older sister, Big sister",Easy,명사,-,de mulher,for woman,-
+N1,2,언어,"Idioma, Língua",Language,Easy,명사,-,-,-,-
+N1,2,엄마,Mamãe,"Mommy, Mama, Mom",Easy,명사,-,-,-,-
+N1,2,열다,Abrir,"Open, Unlock",Easy,동사,-,-,-,-
+N1,2,영국,"Inglaterra, Reino Unido","England, United Kingdom",Easy,명사,-,-,-,-
+N1,2,영어,Inglês,English,Easy,명사,-,língua,language,-
+N1,2,오늘,Hoje,Today,Easy,명사,-,-,-,-
+N1,2,오다,Vir,"Come, Turn up, Show up, Visit",Easy,동사,-,-,-,-
+N1,2,오렌지,Laranja,Orange,Easy,명사,-,-,-,-
+N1,2,오빠,Irmão mais velho,"Older brother, Big brother",Easy,명사,-,de mulher,for woman,-
+N1,2,옷 [옫],Roupa,Clothes,Easy,명사,-,-,-,-
+N1,2,요리,"Prato, Comida, Cozinha","Dish, Food, Cuisine",Easy,명사,-,-,-,-
+N1,2,우유,Leite,Milk,Easy,명사,-,-,-,-
+N1,2,울다,Chorar,"Cry, Weep",Easy,동사,-,-,-,-
+N1,2,이라크,Iraque,Iraq,Easy,명사,-,-,-,-
+N1,2,이메일,"Email, E-mail","Email, E-mail, Eletronic mail",Easy,명사,-,-,-,-
+N1,2,이집트,Egito,Egypt,Easy,명사,-,-,-,-
