@@ -55,7 +55,7 @@ def myapp_gui(root):
 
     # Graphical User Interface
 
-    root.title("Flashcard App - Coreano")
+    root.title("KCards")
     root.geometry("600x700")
 
     root.resizable(True, True)
@@ -535,26 +535,5 @@ def start_study_session(root, previous_frame, words, selected_mode, selected_mod
     elif selected_mode == "true_or_false":
         CustomizeStudySession(root, words)
         
-
-
-
-        
-    
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-    
 if __name__ == "__main__":
     main()
