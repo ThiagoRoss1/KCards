@@ -139,11 +139,10 @@ Pull requests and suggestions are welcome — Happy Studying! ✨
 ### 📝 Acknowledgements
 
 #### 📒 Learning Resources & Content:
-- Vocabulary translations supported by [Naver Dictionary](https://en.dict.naver.com/#/main)
+- English vocabulary translations supported by [Naver Dictionary](https://en.dict.naver.com/#/main)
 - Korean Language course provided by [Coreano Online](https://coreanoonline.com.br/)
 
 #### 💭 Project Inspirations & Tools
-- English Translations 
 - Inspired by [Quizlet](https://quizlet.com)
 - Built using [CustomTkinter](https://github.com/TomSchimansky/CustomTkinter)
 - Designed as part of the [CS50P Final Project](https://cs50.harvard.edu/python/)

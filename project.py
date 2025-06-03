@@ -55,7 +55,7 @@ def myapp_gui(root):
 
     # Graphical User Interface
 
-    root.title("Flashcard App - Coreano")
+    root.title("KCards")
     root.geometry("600x700")
 
     root.resizable(True, True)
