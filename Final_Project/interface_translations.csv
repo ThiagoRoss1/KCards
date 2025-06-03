@@ -1,0 +1,52 @@
+Key,English,Português
+main_menu_korean,-Korean Flashcards App-,-Aplicativo de Flashcards Coreano-
+select_level,Select a Level,Selecione um Nível
+select_module,Select a Module,Selecione um Módulo
+module,Module, Módulo
+all_modules,All Modules,Todos os Módulos
+back,Back,Voltar
+start,Start,Iniciar
+choose_study_mode,Choose Study Mode,Escolha o Modo de Estudo
+standard_flashcards,Standard Flashcards,Flashcards
+input_practice,Input Practice,Avaliação Escrita
+matching_game,Matching Game,Combinar
+multiple_choice,Multiple Choice,Múltipla Escolha
+true_or_false,True or False,Verdadeiro ou Falso
+back_to_main_menu,Back to Main Menu,Voltar ao Menu Principal
+main_menu,Main Menu,Menu Principal
+customize_study_session,Customize Your Study Session,Customize a sua Sessão de Estudo
+words_number,Words Number:,Número de Palavras:
+answer_with,Answer With:,Responder com:
+hangul_to,Hangul to,Hangul para
+lang_to,to Hangul,para Hangul
+info_hangul_entry,Hangul Entry is a little bit buggy due Tkinter limitations.,A escrita em Hangul esta um pouco bugada devido às limitações do Tkinter.
+n_info,                              --But it works--!,                          --Mas funciona--!
+auto_correction,Auto Correction:,Correção Automática:
+timer,Timer:,Cronômetro:
+difficulty_selector,Select Difficulty:,Selecione a Dificuldade:
+difficulty,Difficulty,Dificuldade
+type_your_answer,Type Your Answer,Digite a sua Resposta
+true,True,Verdadeiro
+false,False,Falso
+standard_results,Standard Flashcards Results,Resultados dos Flashcards
+results,Results,Resultados
+corrects,Corrects,Acertos
+incorrects,Incorrects,Erros
+retry,Retry,Tentar Novamente
+input_results,Input Game Results,Resultados da Avaliação Escrita
+your_answer,Your Answer,Sua Resposta
+correct_answer,Correct Answer,Resposta Correta
+matching_results,Matching Game Results,Resultados do Combinar
+accuracy,Accuracy,Precisão
+attempts,Attempts,Tentativas
+session_time,Session Time,Tempo da Sessão
+words_list,Words List,Lista de Palavras
+true_false_results,True or False Results,Resultados do Verdadeiro ou Falso
+word,Word,Palavra
+question,Question,Pergunta
+multiple_choice_results,Multiple Choice Results,Resultados da Múltipla Escolha
+you_selected,You Selected,Você Selecionou
+correct_choice,Correct Choice,Alternativa Correta
+of,of,de
+english_,English,Inglês
+portuguese_,Portuguese,Português

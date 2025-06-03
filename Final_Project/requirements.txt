@@ -1,0 +1,5 @@
+customtkinter==5.2.2
+emoji==2.14.1
+Pillow==11.2.1
+pyautogui==0.9.54
+pytest==8.3.5
