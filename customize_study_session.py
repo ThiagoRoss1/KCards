@@ -91,15 +91,6 @@ class CustomizeStudySession:
         tlabel.pack(anchor="center", padx=(20, 20), pady=(20, 5))
 
         minfo = f"{interface_translator.get_translation("module")} {self.vocabulary[0]['Module']} - {self.vocabulary[0]['Level']}"
-
-        # mlabel_frame = ctk.CTkFrame(
-        #     self.cframe,
-        #     fg_color="transparent",
-        #     border_width=1,
-        #     border_color="gray70",
-        #     corner_radius=20
-        # )
-        # mlabel_frame.pack(anchor="w", pady=(10, 10))
         
         mlabel = ctk.CTkLabel(
             self.cframe,
@@ -173,9 +164,6 @@ class CustomizeStudySession:
                 arrowcolor=[('pressed', hover_color), ('!pressed', fg_color)]
             )
 
-            # min_words = min(5, len(self.vocabulary))
-            # default_value = max(min(10, len(self.vocabulary)), min_words)
-
             min_words = min(5, len(self.vocabulary))
             max_words = len(self.vocabulary)
 
@@ -215,9 +203,6 @@ class CustomizeStudySession:
             self.spinbox.set(default_value)
             self.slider.set(default_value)
             
-            # self.spinbox.set(default_value)
-            # self.slider.set(default_value)
-
     def create_direction_selector(self):
 
         if self.root.session_settings.get('selected_mode') != "matching":
@@ -417,7 +402,7 @@ class CustomizeStudySession:
             self.root.session_timer = SessionTimer()
             self.root.session_timer.start()
 
-        words = random.sample(self.vocabulary, min(settings['word_count'], len(self.vocabulary)))
+        words = random.sample(self.vocabulary, min(settings['word_count'], len(self.vocabulary))) if self.root.session_settings['selected_mode'] != "matching" else self.vocabulary
 
         if settings['difficulty'] != "All":
             words = [word for word in words if word['Difficulty'] == settings['difficulty']]

@@ -17,8 +17,6 @@ from customize_study_session import CustomizeStudySession
 from all_flashcards import StandardFlashcards, MultipleChoiceGame, MatchingGame, TrueFalseGame, InputPractice
 
 
-
-
 def test_main_menu_gui():
     try:
         root = ctk.CTk()

@@ -70,8 +70,30 @@ class StandardFlashcards:
             original_translations = language_manager_flashcards.get_translations(word)
             translations_list = original_translations.split(',')
 
+            if word.get('Type') is not None and word.get('Type').strip() == "조사":
+                if (translations_list[0]).startswith("Indica") or (translations_list[0]).startswith("Conecta"):
+                    translations = translations_list[0].strip()
+                
+                elif len(translations_list) > 4:
+                    translations = ','.join([t.strip() for t in translations_list[:2]])
 
-            if len(translations_list) > 4:
+                else:
+                    translations = language_manager_flashcards.get_translations(word)
+
+            elif word.get('Type') is not None and word.get('Type').strip() == "어미":
+                if (translations_list[0]).startswith("Indica") or (translations_list[0]).startswith("Conecta"):
+                    translations = translations_list[0].strip()
+
+                elif len(translations_list) > 4:
+                    translations = ','.join([t.strip() for t in translations_list[:2]])
+                
+                else:
+                    translations = language_manager_flashcards.get_translations(word)
+            
+            elif word.get('Type') is not None and word.get('Type').strip() == "구성":
+                translations = translations_list[0].strip()
+
+            elif len(translations_list) > 4:
                 translations = ','.join([t.strip() for t in translations_list[:2]])
                 if word.get('MF') and word.get('MF') != "-":
                     translations += f"({word['MF']})"
@@ -85,15 +107,34 @@ class StandardFlashcards:
                 translations += f"({word['ExtraPT']})"
 
             else:
-                translations = language_manager_flashcards.get_translations(word).replace(',', ' /').strip()
+                translations = language_manager_flashcards.get_translations(word).strip()
                 
-            
-            # else:
-            #     translations = ', '.join([t.strip() for t in translations_list])  #talvez
-
 
             if language_manager_flashcards.get_language() != "Português":
-                if word.get('ExtraENG') and word.get('ExtraENG') != "-":
+
+                if word.get('Type') is not None and word.get('Type').strip() == "조사":
+                    if (translations_list[0]).startswith("Indicates") or (translations_list[0]).startswith("Connects"):
+                        translations = translations_list[0].strip()
+
+                    elif len(translations_list) > 4:
+                        translations = ','.join([t.strip() for t in translations_list[:2]])
+
+                    else:
+                        translations = language_manager_flashcards.get_translations(word)
+                
+                elif word.get('Type') is not None and word.get('Type').strip() == "어미":
+                    if (translations_list[0]).startswith("Indicates") or (translations_list[0]).startswith("Connects"):
+                        translations = translations_list[0].strip()
+                    elif len(translations_list) > 4:
+                        translations = ','.join([t.strip() for t in translations_list[:2]])
+                        
+                    else:
+                        translations = language_manager_flashcards.get_translations(word)
+                
+                elif word.get('Type') is not None and word.get('Type').strip() == "구성":
+                    translations = translations_list[0].strip()
+
+                elif word.get('ExtraENG') and word.get('ExtraENG') != "-":
                     translations = translations_list[0].strip()
                     translations += f" ({word['ExtraENG']})"
 
@@ -108,20 +149,10 @@ class StandardFlashcards:
                         translations += f" ({word['ExtraENG']})"
 
                 else:
-                    translations = language_manager_flashcards.get_translations(word).replace(',', ' /').strip()
+                    translations = language_manager_flashcards.get_translations(word).strip()
                     if word.get('ExtraENG') and word.get('ExtraENG') != "-":
                         translations += f" ({word['ExtraENG']})"     
                     
-                    # ver depois  [2], tirar Carac
-
-
-            # if word.get('Tipo'):
-            #     if word['Tipo'] == 'Substantivo':
-            #         translations = language_manager_flashcards.get_translations(word).split(',')[0].strip()
-            #         if word.get('MF'):
-            #             translations += f"({word['MF']})"
-            #     elif word['Tipo'] == 'Verbo':   # meter um else visto que apenas substantivo tem mf
-            #         translations = language_manager_flashcards.get_translations(word).replace(',', ' ')
                     
             if settings['study_direction'] == "hangul_to_lang":
                 new_word['Question'] = word_hangul
@@ -171,6 +202,7 @@ class StandardFlashcards:
             font=("Malgun Gothic", 36) if self.settings['study_direction'] == "hangul_to_lang" else ("Arial", 36),
             anchor="center",
             wraplength=280,
+            justify="center",
             cursor="hand2",
             text_color=("black", "white")
         )
@@ -355,11 +387,34 @@ class InputPractice:
             else:
                 word_hangul = word['Hangul']
 
+
             original_translations = language_manager_flashcards.get_translations(word)
             translations_list = original_translations.split(',')
 
+            if word.get('Type') is not None and word.get('Type').strip() == "조사":
+                if (translations_list[0]).startswith("Indica") or (translations_list[0]).startswith("Conecta"):
+                    translations = translations_list[0].strip()
+                
+                elif len(translations_list) > 4:
+                    translations = ','.join([t.strip() for t in translations_list[:2]])
 
-            if len(translations_list) > 4:
+                else:
+                    translations = language_manager_flashcards.get_translations(word)
+
+            elif word.get('Type') is not None and word.get('Type').strip() == "어미":
+                if (translations_list[0]).startswith("Indica") or (translations_list[0]).startswith("Conecta"):
+                    translations = translations_list[0].strip()
+
+                elif len(translations_list) > 4:
+                    translations = ','.join([t.strip() for t in translations_list[:2]])
+                
+                else:
+                    translations = language_manager_flashcards.get_translations(word)
+            
+            elif word.get('Type') is not None and word.get('Type').strip() == "구성":
+                translations = translations_list[0].strip()
+
+            elif len(translations_list) > 4:
                 translations = ','.join([t.strip() for t in translations_list[:2]])
                 if word.get('MF') and word.get('MF') != "-":
                     translations += f"({word['MF']})"
@@ -373,15 +428,34 @@ class InputPractice:
                 translations += f"({word['ExtraPT']})"
 
             else:
-                translations = language_manager_flashcards.get_translations(word).replace(',', ' /').strip()
-                
-            
-            # else:
-            #     translations = ', '.join([t.strip() for t in translations_list])  #talvez
-
+                translations = language_manager_flashcards.get_translations(word).strip()
+        
 
             if language_manager_flashcards.get_language() != "Português":
-                if word.get('ExtraENG') and word.get('ExtraENG') != "-":
+
+                if word.get('Type') is not None and word.get('Type').strip() == "조사":
+                    if (translations_list[0]).startswith("Indicates") or (translations_list[0]).startswith("Connects"):
+                        translations = translations_list[0].strip()
+
+                    elif len(translations_list) > 4:
+                        translations = ','.join([t.strip() for t in translations_list[:2]])
+
+                    else:
+                        translations = language_manager_flashcards.get_translations(word)
+                
+                elif word.get('Type') is not None and word.get('Type').strip() == "어미":
+                    if (translations_list[0]).startswith("Indicates") or (translations_list[0]).startswith("Connects"):
+                        translations = translations_list[0].strip()
+                    elif len(translations_list) > 4:
+                        translations = ','.join([t.strip() for t in translations_list[:2]])
+                        
+                    else:
+                        translations = language_manager_flashcards.get_translations(word)
+                
+                elif word.get('Type') is not None and word.get('Type').strip() == "구성":
+                    translations = translations_list[0].strip()
+
+                elif word.get('ExtraENG') and word.get('ExtraENG') != "-":
                     translations = translations_list[0].strip()
                     translations += f" ({word['ExtraENG']})"
 
@@ -396,23 +470,9 @@ class InputPractice:
                         translations += f" ({word['ExtraENG']})"
 
                 else:
-                    translations = language_manager_flashcards.get_translations(word).replace(',', ' /').strip()
+                    translations = language_manager_flashcards.get_translations(word).strip()
                     if word.get('ExtraENG') and word.get('ExtraENG') != "-":
-                        translations += f" ({word['ExtraENG']})"
-            # translations_list = language_manager_flashcards.get_translations(word).split(',')
-            # if len(translations_list) > 4:
-            #     translations = ','.join(translations_list[:2])
-
-            # if language_manager_flashcards.get_language() == "Português":
-            #     if word.get('MF'):
-            #         translations = language_manager_flashcards.get_translations(word).split(',')[0].strip()
-            #         translations += f"({word['MF']})"
-
-            #     else:
-            #         translations = language_manager_flashcards.get_translations(word).replace(',', ' ')
-
-            # else:
-            #     translations = language_manager_flashcards.get_translations(word).split(',')[0].strip()  # ver legalzudo 
+                        translations += f" ({word['ExtraENG']})"     
 
                 
             if settings['study_direction'] == "hangul_to_lang":
@@ -638,9 +698,6 @@ class MultipleChoiceGame:
                 root.session_timer = SessionTimer()
                 root.session_timer.start()
             self.update_timer()
-        # self.settings.setdefault('study_direction', 'hangul_to_lang')
-        # self.settings.setdefault('show_styles', True)
-        # self.settings.setdefault('timer_enabled', False)
 
         self.configure_button_styles()
 
@@ -664,11 +721,34 @@ class MultipleChoiceGame:
             else:
                 word_hangul = word['Hangul']
 
+
             original_translations = language_manager_flashcards.get_translations(word)
             translations_list = original_translations.split(',')
 
+            if word.get('Type') is not None and word.get('Type').strip() == "조사":
+                if (translations_list[0]).startswith("Indica") or (translations_list[0]).startswith("Conecta"):
+                    translations = translations_list[0].strip()
+                
+                elif len(translations_list) > 4:
+                    translations = ','.join([t.strip() for t in translations_list[:2]])
 
-            if len(translations_list) > 4:
+                else:
+                    translations = language_manager_flashcards.get_translations(word)
+
+            elif word.get('Type') is not None and word.get('Type').strip() == "어미":
+                if (translations_list[0]).startswith("Indica") or (translations_list[0]).startswith("Conecta"):
+                    translations = translations_list[0].strip()
+
+                elif len(translations_list) > 4:
+                    translations = ','.join([t.strip() for t in translations_list[:2]])
+                
+                else:
+                    translations = language_manager_flashcards.get_translations(word)
+            
+            elif word.get('Type') is not None and word.get('Type').strip() == "구성":
+                translations = translations_list[0].strip()
+
+            elif len(translations_list) > 4:
                 translations = ','.join([t.strip() for t in translations_list[:2]])
                 if word.get('MF') and word.get('MF') != "-":
                     translations += f"({word['MF']})"
@@ -682,15 +762,34 @@ class MultipleChoiceGame:
                 translations += f"({word['ExtraPT']})"
 
             else:
-                translations = language_manager_flashcards.get_translations(word).replace(',', ' /').strip()
+                translations = language_manager_flashcards.get_translations(word).strip()
                 
             
-            # else:
-            #     translations = ', '.join([t.strip() for t in translations_list])  #talvez
-
-
             if language_manager_flashcards.get_language() != "Português":
-                if word.get('ExtraENG') and word.get('ExtraENG') != "-":
+
+                if word.get('Type') is not None and word.get('Type').strip() == "조사":
+                    if (translations_list[0]).startswith("Indicates") or (translations_list[0]).startswith("Connects"):
+                        translations = translations_list[0].strip()
+
+                    elif len(translations_list) > 4:
+                        translations = ','.join([t.strip() for t in translations_list[:2]])
+
+                    else:
+                        translations = language_manager_flashcards.get_translations(word)
+                
+                elif word.get('Type') is not None and word.get('Type').strip() == "어미":
+                    if (translations_list[0]).startswith("Indicates") or (translations_list[0]).startswith("Connects"):
+                        translations = translations_list[0].strip()
+                    elif len(translations_list) > 4:
+                        translations = ','.join([t.strip() for t in translations_list[:2]])
+                        
+                    else:
+                        translations = language_manager_flashcards.get_translations(word)
+                
+                elif word.get('Type') is not None and word.get('Type').strip() == "구성":
+                    translations = translations_list[0].strip()
+
+                elif word.get('ExtraENG') and word.get('ExtraENG') != "-":
                     translations = translations_list[0].strip()
                     translations += f" ({word['ExtraENG']})"
 
@@ -705,9 +804,9 @@ class MultipleChoiceGame:
                         translations += f" ({word['ExtraENG']})"
 
                 else:
-                    translations = language_manager_flashcards.get_translations(word).replace(',', ' /').strip()
+                    translations = language_manager_flashcards.get_translations(word).strip()
                     if word.get('ExtraENG') and word.get('ExtraENG') != "-":
-                        translations += f" ({word['ExtraENG']})"
+                        translations += f" ({word['ExtraENG']})"     
 
 
             if settings['study_direction'] == "hangul_to_lang":
@@ -902,18 +1001,6 @@ class MultipleChoiceGame:
             elif btn_text == selected_answer:
                 btn.configure(**self.incorrect_style)
             
-        # style = ttk.Style()
-        # style.configure(
-        #     "Correct.TButton",
-        #     background="green", 
-        #     foreground="white",
-        # )
-        # style.configure(
-        #     "Incorrect.TButton",
-        #     background="red",
-        #     foreground="white",
-        # )
-
     def show_results(self):
         from results_screen import MultipleChoiceResultsScreen
         from routes import return_to_main_menu
@@ -979,11 +1066,34 @@ class MatchingGame:
             else:
                 word_hangul = word['Hangul']
 
+
             original_translations = language_manager_flashcards.get_translations(word)
             translations_list = original_translations.split(',')
 
+            if word.get('Type') is not None and word.get('Type').strip() == "조사":
+                if (translations_list[0]).startswith("Indica") or (translations_list[0]).startswith("Conecta"):
+                    translations = translations_list[0].strip()
+                
+                elif len(translations_list) > 4:
+                    translations = ','.join([t.strip() for t in translations_list[:2]])
 
-            if len(translations_list) > 4:
+                else:
+                    translations = language_manager_flashcards.get_translations(word)
+
+            elif word.get('Type') is not None and word.get('Type').strip() == "어미":
+                if (translations_list[0]).startswith("Indica") or (translations_list[0]).startswith("Conecta"):
+                    translations = translations_list[0].strip()
+
+                elif len(translations_list) > 4:
+                    translations = ','.join([t.strip() for t in translations_list[:2]])
+                
+                else:
+                    translations = language_manager_flashcards.get_translations(word)
+            
+            elif word.get('Type') is not None and word.get('Type').strip() == "구성":
+                translations = translations_list[0].strip()
+
+            elif len(translations_list) > 4:
                 translations = ','.join([t.strip() for t in translations_list[:2]])
                 if word.get('MF') and word.get('MF') != "-":
                     translations += f"({word['MF']})"
@@ -997,15 +1107,34 @@ class MatchingGame:
                 translations += f"({word['ExtraPT']})"
 
             else:
-                translations = language_manager_flashcards.get_translations(word).replace(',', ' /').strip()
+                translations = translations_list[0].strip()
                 
-            
-            # else:
-            #     translations = ', '.join([t.strip() for t in translations_list])  #talvez
-
 
             if language_manager_flashcards.get_language() != "Português":
-                if word.get('ExtraENG') and word.get('ExtraENG') != "-":
+
+                if word.get('Type') is not None and word.get('Type').strip() == "조사":
+                    if (translations_list[0]).startswith("Indicates") or (translations_list[0]).startswith("Connects"):
+                        translations = translations_list[0].strip()
+
+                    elif len(translations_list) > 4:
+                        translations = ','.join([t.strip() for t in translations_list[:2]])
+
+                    else:
+                        translations = language_manager_flashcards.get_translations(word)
+                
+                elif word.get('Type') is not None and word.get('Type').strip() == "어미":
+                    if (translations_list[0]).startswith("Indicates") or (translations_list[0]).startswith("Connects"):
+                        translations = translations_list[0].strip()
+                    elif len(translations_list) > 4:
+                        translations = ','.join([t.strip() for t in translations_list[:2]])
+                        
+                    else:
+                        translations = language_manager_flashcards.get_translations(word)
+                
+                elif word.get('Type') is not None and word.get('Type').strip() == "구성":
+                    translations = translations_list[0].strip()
+
+                elif word.get('ExtraENG') and word.get('ExtraENG') != "-":
                     translations = translations_list[0].strip()
                     translations += f" ({word['ExtraENG']})"
 
@@ -1020,20 +1149,9 @@ class MatchingGame:
                         translations += f" ({word['ExtraENG']})"
 
                 else:
-                    translations = language_manager_flashcards.get_translations(word).replace(',', ' /').strip()
+                    translations = translations_list[0].strip()
                     if word.get('ExtraENG') and word.get('ExtraENG') != "-":
-                        translations += f" ({word['ExtraENG']})"
-
-            # translations = language_manager_flashcards.get_translations(word)
-            # if language_manager_flashcards.get_language() == "Português":
-            #     if word.get('MF'):
-            #         translations = language_manager_flashcards.get_translations(word).split(',')[0].strip()
-            #         translations += f"({word['MF']})"
-            #     else:
-            #         translations = language_manager_flashcards.get_translations(word).replace(',', '/')
-            # else:
-            #     translations = language_manager_flashcards.get_translations(word).replace(',', '/').strip()
-
+                        translations += f" ({word['ExtraENG']})"     
 
             pairs.append({
                 'type': 'hangul',
@@ -1128,7 +1246,6 @@ class MatchingGame:
                 anchor="center",
             )
             card.grid(row=row, column=col, padx=5, pady=5, sticky="nsew")
-           # card.bind("<Button-1>", lambda e, idx=i: self.card_click(idx))
             self.cards.append(card)
 
             card.grid_info()['original_pos'] = (row, col)
@@ -1184,9 +1301,6 @@ class MatchingGame:
         card2.grid_remove()
 
         from PIL import Image
-
-        # ning = ctk.CTkImage(dark_image=Image.open(os.path.join("assets", "ning.png")))  #image=ning    
-        # gisela = ctk.CTkImage(dark_image=Image.open(os.path.join("assets", "gisela.jpg")))  #image=gisela
 
         self.card_placeholders[idx1].configure(text="✔", text_color="gray70")
         self.card_placeholders[idx2].configure(text="✔", text_color="gray70")
@@ -1285,11 +1399,34 @@ class TrueFalseGame:
             else:
                 word_hangul = word['Hangul']
 
+
             original_translations = language_manager_flashcards.get_translations(word)
             translations_list = original_translations.split(',')
 
+            if word.get('Type') is not None and word.get('Type').strip() == "조사":
+                if (translations_list[0]).startswith("Indica") or (translations_list[0]).startswith("Conecta"):
+                    translations = translations_list[0].strip()
+                
+                elif len(translations_list) > 4:
+                    translations = ','.join([t.strip() for t in translations_list[:2]])
 
-            if len(translations_list) > 4:
+                else:
+                    translations = language_manager_flashcards.get_translations(word)
+
+            elif word.get('Type') is not None and word.get('Type').strip() == "어미":
+                if (translations_list[0]).startswith("Indica") or (translations_list[0]).startswith("Conecta"):
+                    translations = translations_list[0].strip()
+
+                elif len(translations_list) > 4:
+                    translations = ','.join([t.strip() for t in translations_list[:2]])
+                
+                else:
+                    translations = language_manager_flashcards.get_translations(word)
+            
+            elif word.get('Type') is not None and word.get('Type').strip() == "구성":
+                translations = translations_list[0].strip()
+
+            elif len(translations_list) > 4:
                 translations = ','.join([t.strip() for t in translations_list[:2]])
                 if word.get('MF') and word.get('MF') != "-":
                     translations += f"({word['MF']})"
@@ -1303,15 +1440,33 @@ class TrueFalseGame:
                 translations += f"({word['ExtraPT']})"
 
             else:
-                translations = language_manager_flashcards.get_translations(word).replace(',', ' /').strip()
+                translations = language_manager_flashcards.get_translations(word).strip()
                 
-            
-            # else:
-            #     translations = ', '.join([t.strip() for t in translations_list])  #talvez
-
-
             if language_manager_flashcards.get_language() != "Português":
-                if word.get('ExtraENG') and word.get('ExtraENG') != "-":
+
+                if word.get('Type') is not None and word.get('Type').strip() == "조사":
+                    if (translations_list[0]).startswith("Indicates") or (translations_list[0]).startswith("Connects"):
+                        translations = translations_list[0].strip()
+
+                    elif len(translations_list) > 4:
+                        translations = ','.join([t.strip() for t in translations_list[:2]])
+
+                    else:
+                        translations = language_manager_flashcards.get_translations(word)
+                
+                elif word.get('Type') is not None and word.get('Type').strip() == "어미":
+                    if (translations_list[0]).startswith("Indicates") or (translations_list[0]).startswith("Connects"):
+                        translations = translations_list[0].strip()
+                    elif len(translations_list) > 4:
+                        translations = ','.join([t.strip() for t in translations_list[:2]])
+                        
+                    else:
+                        translations = language_manager_flashcards.get_translations(word)
+                
+                elif word.get('Type') is not None and word.get('Type').strip() == "구성":
+                    translations = translations_list[0].strip()
+
+                elif word.get('ExtraENG') and word.get('ExtraENG') != "-":
                     translations = translations_list[0].strip()
                     translations += f" ({word['ExtraENG']})"
 
@@ -1326,9 +1481,9 @@ class TrueFalseGame:
                         translations += f" ({word['ExtraENG']})"
 
                 else:
-                    translations = language_manager_flashcards.get_translations(word).replace(',', ' /').strip()
+                    translations = language_manager_flashcards.get_translations(word).strip()
                     if word.get('ExtraENG') and word.get('ExtraENG') != "-":
-                        translations += f" ({word['ExtraENG']})"
+                        translations += f" ({word['ExtraENG']})"     
 
             
             if settings['study_direction'] == "hangul_to_lang":
@@ -1498,12 +1653,6 @@ class TrueFalseGame:
         for btn in self.answer_buttons:
             btn.configure(state=ctk.NORMAL)
 
-        # for button, answer in zip(self.answer_buttons, ["True", "False"]):
-        #     button.configure(
-        #         text=answer,
-        #         command=lambda a=answer: self.check_answer(a),
-        #         state=ctk.NORMAL
-        #     )
 
     def reset_button_styles(self):
         for btn in self.answer_buttons:
@@ -1597,13 +1746,4 @@ class TrueFalseGame:
         )
         self.used_words = []
         self.progress.reset()
-
-        # Auto Correction Bugado #####
-        #Difficulty Selector - Testar ######
-        # Results Screen - Criar Nova
-        #Talvez mudar o design pique quizlet - Definiçao >>>> Embaixo o Termo
-
-
-
-        
 

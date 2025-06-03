@@ -8,7 +8,7 @@ You can also customize it to study **any language** by modifying the [`vocabular
 
 ---
 
-## 📦 Install Dependences
+## 📦 Install Dependencies
 
 Before running the project, install the required packages listed in `requirements.txt`.
 
@@ -41,7 +41,7 @@ $ python project.py
 ## 🛠 Features
 
 ### 💡 Interface Language
-- Toggle the language button to change the `interface language`.
+- Use the language switch to change the `interface language`.
   - Supported Languages - `English` and `Portuguese`
 
 ### ⚙ Module Selection
@@ -59,7 +59,7 @@ $ python project.py
   - ❌ [True or False](#-study-modes)
 
 ### 🌌 Customize Study Session
-- There any **several** ways to configure your study session:
+- There are **several** ways to configure your study session:
   - `Words Number` - Set how many words you want to study (**minimum of 5**)
   - `Auto Correction` - A real-time corrector (**not available in all modes**)
   - `Answer With` - Choose how you want to answer the questions (**with Hangul or your selected language**)
@@ -68,7 +68,7 @@ $ python project.py
 
   
 # 🛑 Before Start
-There are some important informations that you may know before starting.
+Before you begin, here's some essential information to help you understand how the app works.
 
 ## 📃 About `vocabulary.csv`
 The [`vocabulary.csv`](vocabulary.csv) file contains all the words used in your study session. Each row represents a vocabulary item with different language translations and data.
@@ -80,23 +80,40 @@ The [`vocabulary.csv`](vocabulary.csv) file contains all the words used in your 
 | `Level`    | The level group where the word belongs to                                     |
 | `Module`   | Module/lesson number                                                        |
 | `Hangul`   | The Korean word                                                             |
-| `English`  | English translation                                                     |
-| `Português`| Portuguese translation                                                  |
+| `Português`  | Portuguese translation                                                    |
+| `English`| English translation                                                  |
 | `Difficulty`| Optional difficulty level (`Easy`, `Medium`, `Hard` or `All`)                                                                                     |
 | `Type`     | Word type (`명사`, `동사`, `형용사`, etc.) - can be in korean or your preferred language                                                   |
-| `MF`       | Gender marker for **Portuguese** — use `a` for feminine, `o` for masculine, fill it with another word or leave it blank. When both forms are present (e.g.,gato,gata), the program defaults to the first one due to internal logic.
+| `MF`       | Gender marker for **Portuguese** — use `a` for feminine, `o` for masculine, or leave it blank. When both forms are present (e.g. Gato, Gata), the program defaults to the first one due to internal logic.                                                          |
+| `ExtraPT`  | An extra column for another **portuguese variations** (e.g. Ator, Atriz) or differ some similar words by their classifications or status (e.g. City, Language)                                                   |
+| `ExtraENG` | An extra column for **english variations** (e.g. Actor, Actress) or differ some similar words by their classifications or status (e.g. City, Language)                                                |
+| `Extra`   | An extra column for **Hangul variations** or to differ similar words by their classifications or status (e.g. City, Language) |
+
+> **❗ Info**: Empty fields in my [vocabulary.csv](vocabulary.csv) are marked with `-` to improve readability and differentiate intentional absence from missing data. However, you can let it Empty and the program will not be affected.
 
 #### 🧪 Example
 
 ```csv
-Level,Module,Hangul,English,Português,Difficulty,Type,MF
-1,1,고양이,Cat,"Gato, Gata",Easy,명사,a
-1,1,집,House,Casa,Easy,명사,
+Level,Module,Hangul,Português,English,Difficulty,Type,MF,ExtraPT,ExtraENG,Extra
+N1,1,고양이,"Gato, Gata",Cat,Easy,명사,a,-,-,-
+N1,2,한국어 [한구거],Coreano,Korean,Easy,명사,-,língua,language,-
+N1,1,차,Carro,Car,Easy,명사,,,,자동차
+N1,2,날씬하다,Ser magro,"Slim, Slender, Thin",Easy,형용사,,,,
 ```
+> ❕ **Note**: If a word has multiple synonyms, you can include them in quotes (e.g. "Slim, Slender, Thin"). The program will automatically split the string by commas and treat each word separately.
 
 ```markdown
-You can modify the CSV to fit your target language or study goals. Just make sure the headers match the expected keys in the program, or update he corresponding code.
+You can modify the CSV to fit your target language or study goals. Just make sure the headers match the expected keys in the program, or update the corresponding code.
 ```
+
+## 🔮 About `Prepared Words`
+If any column in [vocabulary.csv](vocabulary.csv) is modified, it's recommended to review the `prepare_words` function in [`all_flashcards`](all_flashcards.py)
+> ⚠️ **Note**: Each Game mode has its own `prepare_words` function and a corresponding `result screen`, as listed below:  
+> 🃏 [Standard Flashcards](all_flashcards.py#L51) &nbsp;|&nbsp; 🔮 [Standard Results Screen](results_screen.py#L1486)  
+> ⌨ [Input Practice](all_flashcards.py#L372) &nbsp;|&nbsp; 🔮 [Input Results Screen](results_screen.py#L173)  
+> 🎯 [Matching Game](all_flashcards.py#L1050) &nbsp;|&nbsp; 🔮 [Matching Results Screen](results_screen.py#L925)  
+> 🔠 [Multiple Choice](all_flashcards.py#L706) &nbsp;|&nbsp; 🔮 [Multiple Results Screen](results_screen.py#L540)  
+> ❌ [True or False](all_flashcards.py#L1384) &nbsp;|&nbsp; 🔮 [True or False Results Screen](results_screen.py#L1063) | *No dedicated results screen for this mode*
 
 ## 📚 Study Modes
 
@@ -126,10 +143,12 @@ Pull requests and suggestions are welcome — Happy Studying! ✨
 - Korean Language course provided by [Coreano Online](https://coreanoonline.com.br/)
 
 #### 💭 Project Inspirations & Tools
-- English Tranlations 
+- English Translations 
 - Inspired by [Quizlet](https://quizlet.com)
 - Built using [CustomTkinter](https://github.com/TomSchimansky/CustomTkinter)
 - Designed as part of the [CS50P Final Project](https://cs50.harvard.edu/python/)
 
 
-#### Thanks for stopping by 😉 (teste commit)
+#### Thanks for stopping by 😉
+
+![Python](https://img.shields.io/badge/Python-3.13.3-blue?logo=python)

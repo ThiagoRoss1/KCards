@@ -103,21 +103,6 @@ class InterfaceTranslator:
         }
         return translation.get(correct_answer, {}).get(self.current_language, correct_answer)
     
-    
-    # def _get_default_translations(self) -> Dict[str, Dict[str, str]]:
-    #     return {
-    #         'main_menu_title': {
-    #             'English': 'Korean Flashcards App',
-    #             'Português': 'Aplicativo de Flashcards Coreano'
-    #         },
-    #         'select_level': {
-    #             'English': 'Select a Level',
-    #             'Português': 'Selecione um Nível'
-    #         },
-
-    #         # ADICIONAR MAIS DEPOIS
-    #     }
-    
     def set_language(self, language: str):
         if language in self.languages:
             self.current_language = language

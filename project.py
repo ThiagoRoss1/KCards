@@ -42,7 +42,6 @@ def main():
 
     ctk.set_appearance_mode("dark")
     ctk.set_default_color_theme("dark-blue")
-    #ctk.set_default_color_theme("dark-blue")
 
     # Starts the GUI
     myapp_gui(root)
@@ -80,7 +79,7 @@ def main_menu_gui(root, vocabulary):
     n_selection_frame = ctk.CTkFrame(root)
     n_selection_frame.pack(fill="both", expand=True)
 
-    image = ctk.CTkImage(dark_image=Image.open(os.path.join("assets", "kr.png")), size=(70, 100))
+    image = ctk.CTkImage(dark_image=Image.open(os.path.join("assets", "kr.png")), size=(100, 140))
     image_label = ctk.CTkLabel(
         n_selection_frame,
         fg_color="transparent",
@@ -91,10 +90,19 @@ def main_menu_gui(root, vocabulary):
 
     n_t_label = T_CTkLabel(
         n_selection_frame,
-        text="main_menu_korean",
-        font=("Arial", 30, "bold")
+        text="「KCards」",
+        font=("Arial", 54, "bold")
     )
-    n_t_label.pack(pady=(0, 30))
+    n_t_label.pack(pady=(0, 10))
+
+    subt_label = T_CTkLabel(
+        n_selection_frame,
+        text="main_menu_korean",
+        font=("Arial", 15, "bold")
+    )
+    subt_label.pack(pady=(0, 20))
+
+
 
     lbutton_frame = ctk.CTkFrame(
         n_selection_frame,
@@ -154,14 +162,13 @@ def main_menu_gui(root, vocabulary):
             interface_translator.set_language(selected_lang)
             translation_button.configure(text=f"🌎 {selected_lang[:3]}")
             controls_frame.pack_forget()
-           # n_t_label.configure(text=interface_translator.get_translation('main_menu')) # Necessary for labels
 
     n_b_label = T_CTkLabel(
         n_selection_frame,
         text="select_level",
         font=("Arial", 24, "bold")
     )
-    n_b_label.pack(pady=(50, 20))
+    n_b_label.pack(pady=(60, 20))
 
     buttons_frame = ctk.CTkFrame(n_selection_frame, fg_color="transparent", bg_color="transparent")
     buttons_frame.pack(pady=20)
@@ -200,13 +207,7 @@ def main_menu_gui(root, vocabulary):
 
     # All levels button
 
-    # a_button = ctk.CTkButton(
-    #     buttons_frame,
-    #     text="All Levels",
-    #     style="Accent.TButton",
-    #     command=lambda: setup_module_selection(root, vocabulary, selected_frame=n_selection_frame)  # Esta funcionando, mas eu queria que chamasse direto o Choose Study Mode
-    # )
-    # a_button.grid(row=(len(levels)-1)//3 + 1, column=0, columnspan=3, pady=20, ipadx=10, ipady=5)
+    ##    Future Updates    ##
 
 
 def setup_module_selection(root, vocabulary, selected_frame):
@@ -348,7 +349,7 @@ def setup_module_selection(root, vocabulary, selected_frame):
             corner_radius=12,
             command=lambda m=module: start_session(root, selection_frame, vocabulary, m)
         )
-        button.grid(row=_//2, column=_%2, padx=10, pady=10, ipadx=10, ipady=10) #padx=10, pady=10, ipadx=10, ipady=10
+        button.grid(row=_//2, column=_%2, padx=10, pady=10, ipadx=10, ipady=10)
 
     # All Modules button
 
@@ -365,7 +366,7 @@ def setup_module_selection(root, vocabulary, selected_frame):
         corner_radius=8,
         command=lambda: start_session(root, selection_frame, vocabulary, "All Modules")
     )
-    all_button.grid(row=(len(modules)-1)//2 + 1, column=0, columnspan=3, pady=20, ipadx=10, ipady=5)  #pady=20, ipadx=10, ipady=5
+    all_button.grid(row=(len(modules)-1)//2 + 1, column=0, columnspan=3, pady=20, ipadx=10, ipady=5)
 
     # Return to Main Menu
 
@@ -425,10 +426,10 @@ def choose_study_mode(root, words, previous_frame=None):
         font=("Arial", 30, "bold")
     ).pack(pady=(50, 20))
 
-    # Study modes buttons
+    # Study modes buttons  ##  Names can be changed here  ## 
 
     modes = {
-        f"{interface_translator.get_translation("standard_flashcards")}": {  #change names here
+        f"{interface_translator.get_translation("standard_flashcards")}": { 
             "mode": "standard",
         },
         f"{interface_translator.get_translation("input_practice")}": {
@@ -442,10 +443,7 @@ def choose_study_mode(root, words, previous_frame=None):
         },
         f"{interface_translator.get_translation("true_or_false")}": {
             "mode": "true_or_false",
-        },
-        #"Listening Practice": {
-        #    "mode": "listening",
-       # }
+        }
     }
 
     for text, config in modes.items():
@@ -498,7 +496,7 @@ def choose_study_mode(root, words, previous_frame=None):
     m_m_button.pack(side=ctk.RIGHT, padx=(10, 100), pady=(15, 35))
 
 
-def return_to_main_menu(root, current_frame):      # se eu precisar de um botao para voltar ( TUDO ) eu utilizo a funcao
+def return_to_main_menu(root, current_frame):
 
     # Return to the module selection frame
 
