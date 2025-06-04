@@ -61,17 +61,20 @@ def myapp_gui(root):
     root.resizable(True, True)
 
 def load_vocabulary(filepath='vocabulary.csv'):
-
-    # Load vocabulary from a CSV file
-
     try:
-        with open(filepath, "r", encoding="utf-8") as file:
+        base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+        full_path = os.path.join(base_path, filepath)
+        
+        with open(full_path, "r", encoding="utf-8") as file:
             reader = list(csv.DictReader(file))
             return reader
+        
     except FileNotFoundError:
-        messagebox.showerror("Error", f"File not found: {filepath}")
+        messagebox.showerror("Error", f"File not found: {full_path}\nCurrent dir: {os.getcwd()}")
         return []
-    
+    except Exception as e:
+        messagebox.showerror("Error", f"Failed to load vocabulary: {str(e)}")
+        return []
 
 def main_menu_gui(root, vocabulary):
 
@@ -79,7 +82,12 @@ def main_menu_gui(root, vocabulary):
     n_selection_frame = ctk.CTkFrame(root)
     n_selection_frame.pack(fill="both", expand=True)
 
-    image = ctk.CTkImage(dark_image=Image.open(os.path.join("assets", "kr.png")), size=(100, 140))
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    full_path = os.path.join(base_path, "assets", "kr.png")
+
+    
+
+    image = ctk.CTkImage(dark_image=Image.open(full_path), size=(100, 140))
     image_label = ctk.CTkLabel(
         n_selection_frame,
         fg_color="transparent",
